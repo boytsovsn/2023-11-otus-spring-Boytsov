@@ -1,7 +1,6 @@
 package ru.otus.hw.dao.dto;
 
 import com.opencsv.bean.AbstractCsvConverter;
-import lombok.var;
 import ru.otus.hw.domain.Answer;
 
 public class AnswerCsvConverter extends AbstractCsvConverter {
