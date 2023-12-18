@@ -9,7 +9,7 @@ import ru.otus.hw.config.TestFileNameProvider;
 
 @Configuration
 @PropertySource("classpath:application.properties")
-@ComponentScan("ru.otus.hw")
+@ComponentScan("ru.otus.hw.test")
 public class AppPropTest implements TestConfig, TestFileNameProvider {
     // внедрить свойство из application.properties
     @Value("${test.rightAnswersCountToPass}")
