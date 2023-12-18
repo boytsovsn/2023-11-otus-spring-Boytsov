@@ -1,23 +1,25 @@
 package ru.otus.hw.test.config;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 import ru.otus.hw.config.TestConfig;
 import ru.otus.hw.config.TestFileNameProvider;
 
-@Configuration
-@PropertySource("classpath:application.properties")
-@ComponentScan("ru.otus.hw.test")
+//@Configuration
+////@PropertySource("classpath:/test-classes/application.properties")
+//@Setter
+//@RequiredArgsConstructor
 public class AppPropTest implements TestConfig, TestFileNameProvider {
     // внедрить свойство из application.properties
-    @Value("${test.rightAnswersCountToPass}")
+//    @Value("${test.rightAnswersCountToPass}")
     private int rightAnswersCountToPass;
 
     // внедрить свойство из application.properties
-    @Value("${test.fileName}")
+//    @Value("${test.questions}")
     private String testFileName;
+
+    public AppPropTest(int rightAnswersCountToPass_, String testFileName_) {
+        rightAnswersCountToPass = rightAnswersCountToPass_;
+        testFileName = testFileName_;
+    }
 
     @Override
     public int getRightAnswersCountToPass() {

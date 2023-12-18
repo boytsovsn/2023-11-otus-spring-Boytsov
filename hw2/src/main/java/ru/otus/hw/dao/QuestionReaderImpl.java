@@ -2,7 +2,6 @@ package ru.otus.hw.dao;
 
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
@@ -14,6 +13,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.util.List;
 
 @Component
@@ -26,6 +26,9 @@ public class QuestionReaderImpl implements QuestionReader {
         FileReader fileReader = null;
         CsvToBean<QuestionDto> csvBean = null;
         String questionsFileName = fileNameProvider.getTestFileName();
+        if (questionsFileName == null)
+                throw new QuestionReadException("Questions filename is null");
+//        try (InputStream iStream = Application.class.getClassLoader().getResourceAsStream(questionsFileName)) {
         try {
             ClassPathResource classPathResource = null;
             if (questionsFileName != null)
@@ -37,8 +40,11 @@ public class QuestionReaderImpl implements QuestionReader {
                 file = classPathResource.getFile();
             else
                 throw new QuestionReadException("Path for file not found, filename - " + questionsFileName);
-            fileReader = new FileReader(file);
-            csvBean = new CsvToBeanBuilder(fileReader).withType(QuestionDto.class)
+            Reader reader = new FileReader(file);
+//            if (iStream == null)
+//                throw new QuestionReadException("Questions input stream is null");
+//            Reader reader = new BufferedReader(new InputStreamReader(iStream, StandardCharsets.UTF_8));
+            csvBean = new CsvToBeanBuilder(reader).withType(QuestionDto.class)
                     .withSeparator(';').withSkipLines(1).build();
         } catch (FileNotFoundException fe) {
             throw new QuestionReadException("File not found, filename - " + questionsFileName, fe);
