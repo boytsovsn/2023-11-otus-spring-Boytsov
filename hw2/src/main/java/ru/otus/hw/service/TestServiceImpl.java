@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.otus.hw.dao.QuestionDao;
 import ru.otus.hw.domain.Student;
 import ru.otus.hw.domain.TestResult;
+import ru.otus.hw.exceptions.QuestionProcessException;
 
 @Service
 @RequiredArgsConstructor
@@ -14,6 +15,8 @@ public class TestServiceImpl implements TestService {
 
     private final QuestionDao questionDao;
 
+    private final QuestionProcessor questionProcessor;
+
     @Override
     public TestResult executeTestFor(Student student) {
         ioService.printLine("");
@@ -22,21 +25,12 @@ public class TestServiceImpl implements TestService {
         var testResult = new TestResult(student);
 
         for (var question: questions) {
-            var isAnswerValid = false; // Задать вопрос, получить ответ
-            ioService.printFormattedLine(question.text());
-            ioService.printLine("Possible answers:");
-            int i = 1;
-            int trueN = 0;
-            for (var answer : question.answers()) {
-                ioService.printLine(i + ". " + answer.text());
-                if (answer.isCorrect())
-                    trueN = i;
-                i++;
+            try {
+                boolean isAnswerValid = questionProcessor.checkAnswer(question);
+                testResult.applyAnswer(question, isAnswerValid);
+            } catch (QuestionProcessException qe) {
+                ioService.printLine(qe.getMessage());
             }
-            int n = ioService.readIntForRangeWithPrompt(1, i, "Get number of the correct answer: ", "Wrong number!");
-            if (n==trueN)
-                isAnswerValid = true;
-            testResult.applyAnswer(question, isAnswerValid);
         }
         return testResult;
     }

@@ -3,8 +3,10 @@ package ru.otus.hw.dao;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
+import ru.otus.hw.config.TestFileNameProvider;
 import ru.otus.hw.dao.dto.QuestionDto;
 import ru.otus.hw.exceptions.QuestionReadException;
 
@@ -15,14 +17,26 @@ import java.io.IOException;
 import java.util.List;
 
 @Component
-@NoArgsConstructor
+@RequiredArgsConstructor
 public class QuestionReaderImpl implements QuestionReader {
 
-    public List<QuestionDto> readCsvQuestions(String questionsFileName) {
+    private final TestFileNameProvider fileNameProvider;
+
+    public List<QuestionDto> readCsvQuestions() {
         FileReader fileReader = null;
         CsvToBean<QuestionDto> csvBean = null;
+        String questionsFileName = fileNameProvider.getTestFileName();
         try {
-            File file = new ClassPathResource(questionsFileName).getFile();
+            ClassPathResource classPathResource = null;
+            if (questionsFileName != null)
+                classPathResource = new ClassPathResource(questionsFileName);
+            else
+                throw new QuestionReadException("filename is null");
+            File file = null;
+            if (classPathResource != null)
+                file = classPathResource.getFile();
+            else
+                throw new QuestionReadException("Path for file not found, filename - " + questionsFileName);
             fileReader = new FileReader(file);
             csvBean = new CsvToBeanBuilder(fileReader).withType(QuestionDto.class)
                     .withSeparator(';').withSkipLines(1).build();

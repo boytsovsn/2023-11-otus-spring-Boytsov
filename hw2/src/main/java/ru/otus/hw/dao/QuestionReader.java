@@ -5,5 +5,5 @@ import ru.otus.hw.dao.dto.QuestionDto;
 import java.util.List;
 
 public interface QuestionReader {
-    List<QuestionDto> readCsvQuestions(String questionsFileName);
+    List<QuestionDto> readCsvQuestions();
 }

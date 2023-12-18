@@ -8,7 +8,6 @@ import org.springframework.context.annotation.PropertySource;
 @Setter
 @Configuration
 @PropertySource("classpath:application.properties")
-
 public class AppProperties implements TestConfig, TestFileNameProvider {
 
     // внедрить свойство из application.properties
