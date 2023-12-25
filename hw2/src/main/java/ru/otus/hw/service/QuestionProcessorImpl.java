@@ -11,27 +11,6 @@ public class QuestionProcessorImpl implements QuestionProcessor {
 
     private final IOService ioService;
 
-    private void retreviewQuestionAnswers(Question question) {
-        ioService.printFormattedLine(question.text());
-        ioService.printLine("Possible answers:");
-        int i = 1;
-        for (var answer : question.answers()) {
-            ioService.printLine(i + ". " + answer.text());
-            i++;
-        }
-    }
-
-    private int getCorrectAnswers(Question question) {
-        int i = 1;
-        int trueN = 0;
-        for (var answer : question.answers()) {
-            if (answer.isCorrect())
-                return trueN = i;
-            i++;
-        }
-        throw new QuestionProcessException("There is no correct answer for this question: " + question.text());
-    }
-
     public boolean checkAnswer(Question question, int answerN) {
         boolean isAnswerValid = false;
         int trueN = getCorrectAnswers(question);
@@ -52,5 +31,26 @@ public class QuestionProcessorImpl implements QuestionProcessor {
         retreviewQuestionAnswers(question);
         int answerN = ioService.readIntForRangeWithPrompt(1, question.answers().size(), "Get number of the correct answer: ", "Wrong number!");
         return checkAnswer(question, answerN);
+    }
+
+    private void retreviewQuestionAnswers(Question question) {
+        ioService.printFormattedLine(question.text());
+        ioService.printLine("Possible answers:");
+        int i = 1;
+        for (var answer : question.answers()) {
+            ioService.printLine(i + ". " + answer.text());
+            i++;
+        }
+    }
+
+    private int getCorrectAnswers(Question question) {
+        int i = 1;
+        int trueN = 0;
+        for (var answer : question.answers()) {
+            if (answer.isCorrect())
+                return trueN = i;
+            i++;
+        }
+        throw new QuestionProcessException("There is no correct answer for this question: " + question.text());
     }
 }

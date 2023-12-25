@@ -1,11 +1,13 @@
 package ru.otus.hw.config;
 
+import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
 @Setter
+@Getter
 @Configuration
 @PropertySource("classpath:application.properties")
 public class AppProperties implements TestConfig, TestFileNameProvider {
@@ -18,13 +20,4 @@ public class AppProperties implements TestConfig, TestFileNameProvider {
     @Value("${test.fileName}")
     private String testFileName;
 
-    @Override
-    public int getRightAnswersCountToPass() {
-        return rightAnswersCountToPass;
-    }
-
-    @Override
-    public String getTestFileName() {
-        return testFileName;
-    }
 }

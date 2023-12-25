@@ -44,21 +44,12 @@
             </exclusions>
         </dependency>
 
-
-
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
             <scope>test</scope>
             <version>${junit.version}</version>
         </dependency>
-
-<!--        <dependency>-->
-<!--            <groupId>org.mockito</groupId>-->
-<!--            <artifactId>mockito-core</artifactId>-->
-<!--            <scope>test</scope>-->
-<!--            <version>${mockito.version}</version>-->
-<!--        </dependency>-->
 
         <dependency>
             <groupId>org.assertj</groupId>
@@ -106,19 +97,6 @@
                     </execution>
                 </executions>
             </plugin>
-<!--            <plugin>-->
-<!--                <groupId>org.apache.maven.plugins</groupId>-->
-<!--                <artifactId>maven-jar-plugin</artifactId>-->
-<!--                <version>3.3.0</version>-->
-<!--                <configuration>-->
-<!--                    <archive>-->
-<!--                        <manifest>-->
-<!--                            <addClasspath>true</addClasspath>-->
-<!--                            <mainClass>ru.otus.hw.Application</mainClass>-->
-<!--                        </manifest>-->
-<!--                    </archive>-->
-<!--                </configuration>-->
-<!--            </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -134,10 +112,6 @@
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <mainClass>ru.otus.hw.Application</mainClass>
                                 </transformer>
-<!--                                <transformer implementation="com.github.edwgiz.maven_shade_plugin.log4j2_cache_transformer.PluginsCacheFileTransformer" />-->
-<!--                                <transformer implementation="org.springframework.boot.maven.PropertiesMergingResourceTransformer">-->
-<!--                                    <resource>META-INF/spring.factories</resource>-->
-<!--                                </transformer>-->
                             </transformers>
                         </configuration>
                     </execution>
