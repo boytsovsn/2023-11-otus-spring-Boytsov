@@ -6,7 +6,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
-class Hw03SpringBootApplicationTests {
+class sdsHw03SpringBootApplicationTests {
 
 	@Test
 	void contextLoads() {
