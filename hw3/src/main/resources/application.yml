@@ -1,13 +1,27 @@
 spring:
+  main:
+    banner-mode: console
   messages:
     baseName: messages
     encoding: UTF-8
     # Не дает свалиться в системную локаль если не найден файл для переданной в MessageSource
     # Если false то будут браться сообщения из дефолтного файла, если true, то из файла соответствующего системной локали
     fallbackToSystemLocale: false
+  profiles:
+    active: engl_test
+---
+profile: rus_test
 test:
-  rightAnswersCountToPass: 3
-  locale: ru-RU
+    rightAnswersCountToPass: 3
+    locale: ru-RU
+    fileNameByLocaleTag:
+      ru-RU: questions_ru.csv
+      en-US: questions.csv
+---
+profile: engl_test
+test:
+  rightAnswersCountToPass: 2
+  locale: en-US
   fileNameByLocaleTag:
     ru-RU: questions_ru.csv
     en-US: questions.csv
