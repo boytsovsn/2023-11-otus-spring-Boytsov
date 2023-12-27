@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.bind.ConstructorBinding;
+import org.springframework.context.annotation.Profile;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 import java.util.Locale;
@@ -13,6 +15,7 @@ import java.util.Map;
 // Использовать @ConfigurationProperties.
 // Сейчас класс соответствует файлу настроек. Чтобы они сюда отобразились нужно только правильно разместить аннотации
 @ConfigurationProperties(prefix = "test")
+@ActiveProfiles
 public class AppProperties implements TestConfig, TestFileNameProvider, LocaleConfig {
 
     private int rightAnswersCountToPass;

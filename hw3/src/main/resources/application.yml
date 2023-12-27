@@ -8,20 +8,27 @@ spring:
     # Если false то будут браться сообщения из дефолтного файла, если true, то из файла соответствующего системной локали
     fallbackToSystemLocale: false
   profiles:
-    active: engl_test
+    active:
+      rus_test
 ---
-profile: rus_test
-test:
-    rightAnswersCountToPass: 3
-    locale: ru-RU
-    fileNameByLocaleTag:
-      ru-RU: questions_ru.csv
-      en-US: questions.csv
----
-profile: engl_test
+spring:
+  config:
+    activate:
+      on-profile: engl_test
 test:
   rightAnswersCountToPass: 2
-  locale: en-US
+  locale: en
   fileNameByLocaleTag:
-    ru-RU: questions_ru.csv
-    en-US: questions.csv
+    ru_RU: questions_ru.csv
+    en_US: questions.csv
+---
+spring:
+  config:
+    activate:
+      on-profile: rus_test
+test:
+  rightAnswersCountToPass: 3
+  locale: ru_RU
+  fileNameByLocaleTag:
+    ru_RU: questions_ru.csv
+    en_US: questions.csv
