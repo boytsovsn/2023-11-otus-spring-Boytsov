@@ -8,20 +8,10 @@ import org.springframework.context.ApplicationContext;
 import ru.otus.hw.service.TestRunnerService;
 
 @SpringBootApplication
-public class Application implements CommandLineRunner  {
-
-    @Autowired
-    private TestRunnerService testRunnerService;
+public class Application {
 
     public static void main(String[] args) {
-
         //Создать контекст Spring Boot приложения
-        SpringApplication.run(Application.class, args);
-
-    }
-
-    @Override
-    public void run(String... args) throws Exception {
-        testRunnerService.run();
+        var context = SpringApplication.run(Application.class, args);
     }
 }

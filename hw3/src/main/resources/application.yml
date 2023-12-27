@@ -19,8 +19,8 @@ test:
   rightAnswersCountToPass: 2
   locale: en
   fileNameByLocaleTag:
-    ru_RU: questions_ru.csv
-    en_US: questions.csv
+    ru-RU: questions_ru.csv
+    en: questions.csv
 ---
 spring:
   config:
@@ -30,5 +30,5 @@ test:
   rightAnswersCountToPass: 3
   locale: ru_RU
   fileNameByLocaleTag:
-    ru_RU: questions_ru.csv
-    en_US: questions.csv
+    ru-RU: questions_ru.csv
+    en: questions.csv
