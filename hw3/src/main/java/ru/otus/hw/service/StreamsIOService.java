@@ -15,11 +15,14 @@ public class StreamsIOService implements IOService {
 
     private final Scanner scanner;
 
+    private final  LocalizedMessagesService localizedMessagesService;
+
     public StreamsIOService(@Value("#{T(System).out}") PrintStream printStream,
-                            @Value("#{T(System).in}") InputStream inputStream) {
+                            @Value("#{T(System).in}") InputStream inputStream, LocalizedMessagesService localizedMessagesServiceImpl) {
 
         this.printStream = printStream;
         this.scanner = new Scanner(inputStream);
+        this.localizedMessagesService = localizedMessagesServiceImpl;
     }
 
     @Override
@@ -57,7 +60,7 @@ public class StreamsIOService implements IOService {
                 printLine(errorMessage);
             }
         }
-        throw new IllegalArgumentException("Error during reading int value");
+        throw new IllegalArgumentException(localizedMessagesService.getMessage("StreamsIOService.Error.during.reading.int.value"));
     }
 
     @Override

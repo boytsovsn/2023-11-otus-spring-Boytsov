@@ -1,15 +1,20 @@
 package ru.otus.hw.service;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.otus.hw.domain.Question;
 import ru.otus.hw.exceptions.QuestionProcessException;
 
 @Service
-@RequiredArgsConstructor
 public class QuestionProcessorImpl implements QuestionProcessor {
 
-    private final LocalizedIOService ioService;
+    private final LocalizedIOService localizedIOServiceImpl;
+
+
+    public QuestionProcessorImpl(LocalizedIOService localizedIOServiceImpl) {
+        this.localizedIOServiceImpl = localizedIOServiceImpl;
+    }
 
     public boolean checkAnswer(Question question, int answerN) {
         boolean isAnswerValid = false;
@@ -22,23 +27,23 @@ public class QuestionProcessorImpl implements QuestionProcessor {
     @Override
     public boolean checkAnswer(Question question) {
         if (question == null) {
-            throw new QuestionProcessException("Question is null!");
+            throw new QuestionProcessException(localizedIOServiceImpl.getMessage("QuestionProcessor.Question.is.null"));
         }
         if (question.answers() == null || question.answers().isEmpty()) {
-            throw new QuestionProcessException("Question has no answer!");
+            throw new QuestionProcessException(localizedIOServiceImpl.getMessage("QuestionProcessor.Question.has.no.answer"));
         }
          // Задать вопрос, получить ответ
         retreviewQuestionAnswers(question);
-        int answerN = ioService.readIntForRangeWithPrompt(1, question.answers().size(), "Get number of the correct answer: ", "Wrong number!");
+        int answerN = localizedIOServiceImpl.readIntForRangeWithPromptLocalized(1, question.answers().size(), "QuestionProcessor.Get.number.of.the.correct.answer", "QuestionProcessor.Wrong.number");
         return checkAnswer(question, answerN);
     }
 
     private void retreviewQuestionAnswers(Question question) {
-        ioService.printFormattedLine(question.text());
-        ioService.printLine("Possible answers:");
+        localizedIOServiceImpl.printFormattedLine(question.text());
+        localizedIOServiceImpl.printLineLocalized("QuestionProcessor.Possible.answers");
         int i = 1;
         for (var answer : question.answers()) {
-            ioService.printLine(i + ". " + answer.text());
+            localizedIOServiceImpl.printLine(i + ". " + answer.text());
             i++;
         }
     }
@@ -51,6 +56,6 @@ public class QuestionProcessorImpl implements QuestionProcessor {
                 return trueN = i;
             i++;
         }
-        throw new QuestionProcessException("There is no correct answer for this question: " + question.text());
+        throw new QuestionProcessException(localizedIOServiceImpl.getMessage("QuestionProcessor.There.is.no.correct.answer.for.this.question", question.text()));
     }
 }
