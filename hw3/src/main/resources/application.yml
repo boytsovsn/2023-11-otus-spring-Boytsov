@@ -9,7 +9,7 @@ spring:
     fallbackToSystemLocale: false
   profiles:
     active:
-      engl_test
+      rus_test
 ---
 spring:
   config:

@@ -34,7 +34,7 @@ public class QuestionProcessorImpl implements QuestionProcessor {
         }
          // Задать вопрос, получить ответ
         retreviewQuestionAnswers(question);
-        int answerN = localizedIOServiceImpl.readIntForRangeWithPromptLocalized(1, question.answers().size(), "QuestionProcessor.Get.number.of.the.correct.answer", "QuestionProcessor.Wrong.number");
+        int answerN = localizedIOServiceImpl.readIntForRangeWithPromptLocalized(1, question.answers().size(), "QuestionProcessor.Enter.number.of.the.correct.answer", "QuestionProcessor.Wrong.number");
         return checkAnswer(question, answerN);
     }
 
