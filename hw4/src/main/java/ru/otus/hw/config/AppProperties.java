@@ -16,7 +16,7 @@ import java.util.Map;
 // Сейчас класс соответствует файлу настроек. Чтобы они сюда отобразились нужно только правильно разместить аннотации
 @ConfigurationProperties(prefix = "test")
 @ActiveProfiles
-public class AppProperties implements TestConfig, TestFileNameProvider, LocaleConfig {
+public class AppProperties implements TestConfig, TestFileNameProvider, LocaleConfig, ChangeLocal {
 
     private int rightAnswersCountToPass;
 
@@ -26,6 +26,7 @@ public class AppProperties implements TestConfig, TestFileNameProvider, LocaleCo
     private Map<String, String> fileNameByLocaleTag;
 
     public void setLocale(String locale) {
+
         this.locale = Locale.forLanguageTag(locale);
     }
 
