@@ -13,10 +13,9 @@ import ru.otus.hw.config.LocaleConfig;
 import ru.otus.hw.domain.Student;
 import ru.otus.hw.domain.TestResult;
 
-@Service
 @RequiredArgsConstructor
 @ShellComponent
-public class TestRunnerServiceImpl implements TestRunnerService {
+public class TestRunnerServiceImpl {
 
     private final TestService testService;
 
@@ -32,10 +31,10 @@ public class TestRunnerServiceImpl implements TestRunnerService {
 
     private TestResult testResult;
 
-    @Override
-    public void run() {
-
-    }
+//    @Override
+//    public void run() {
+//
+//    }
 
     @ShellMethod(value = "Change language command", key = {"la", "lang"})
     public String lang() {
@@ -84,8 +83,10 @@ public class TestRunnerServiceImpl implements TestRunnerService {
         return student == null? Availability.unavailable(localizedIOServiceImpl.getMessage("Shell.First.register")): Availability.available();
     }
 
-    @Override
-    public void run(String... args) throws Exception {
-    }
+//    @Override
+//    public void run(String... args) throws Exception {
+//        if ((testResult != null)&&(student!=null))
+//            show();
+//    }
 
 }
