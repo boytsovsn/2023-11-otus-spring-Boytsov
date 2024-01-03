@@ -20,21 +20,25 @@ public class AppProperties implements TestConfig, TestFileNameProvider, LocaleCo
 
     private int rightAnswersCountToPass;
 
-    @Getter
     private Locale locale;
 
     private Map<String, String> fileNameByLocaleTag;
-
-    public void setLocale(String locale) {
-
-        this.locale = Locale.forLanguageTag(locale);
-    }
 
     @ConstructorBinding
     public AppProperties(int rightAnswersCountToPass, Locale locale, Map<String, String> fileNameByLocaleTag) {
         this.rightAnswersCountToPass = rightAnswersCountToPass;
         this.locale = locale;
         this.fileNameByLocaleTag = fileNameByLocaleTag;
+    }
+
+    @Override
+    public void setLocale(String locale) {
+        this.locale = Locale.forLanguageTag(locale);
+    }
+
+    @Override
+    public Locale getLocale() {
+        return locale;
     }
 
     @Override
