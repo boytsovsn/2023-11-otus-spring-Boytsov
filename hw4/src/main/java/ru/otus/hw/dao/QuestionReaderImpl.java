@@ -3,8 +3,6 @@ package ru.otus.hw.dao;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 import lombok.RequiredArgsConstructor;
-import org.mockito.internal.util.io.IOUtil;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 import ru.otus.hw.config.TestFileNameProvider;
 import ru.otus.hw.dao.dto.QuestionDto;
@@ -15,8 +13,6 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.Inflater;
-import java.util.zip.InflaterInputStream;
 
 @Component
 @RequiredArgsConstructor

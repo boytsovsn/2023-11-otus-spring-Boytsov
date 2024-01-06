@@ -1,15 +1,12 @@
 package ru.otus.hw.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.shell.Availability;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellMethodAvailability;
 import org.springframework.shell.standard.ShellOption;
-import org.springframework.stereotype.Service;
 import ru.otus.hw.config.ChangeLocal;
-import ru.otus.hw.config.LocaleConfig;
 import ru.otus.hw.domain.Student;
 import ru.otus.hw.domain.TestResult;
 
@@ -30,11 +27,6 @@ public class TestRunnerServiceImpl {
     private Student student;
 
     private TestResult testResult;
-
-//    @Override
-//    public void run() {
-//
-//    }
 
     @ShellMethod(value = "Change language command", key = {"la", "lang"})
     public String lang() {
@@ -82,11 +74,5 @@ public class TestRunnerServiceImpl {
     private Availability isTestCommandAvailable() {
         return student == null? Availability.unavailable(localizedIOServiceImpl.getMessage("Shell.First.register")): Availability.available();
     }
-
-//    @Override
-//    public void run(String... args) throws Exception {
-//        if ((testResult != null)&&(student!=null))
-//            show();
-//    }
 
 }

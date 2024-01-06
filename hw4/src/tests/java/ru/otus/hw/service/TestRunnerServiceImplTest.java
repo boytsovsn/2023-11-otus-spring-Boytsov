@@ -3,17 +3,12 @@ package ru.otus.hw.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.shell.CommandNotCurrentlyAvailable;
 import org.springframework.shell.InputProvider;
 import org.springframework.shell.Shell;
 import org.springframework.test.annotation.DirtiesContext;
-import ru.otus.hw.config.ApplicationConfig;
-import ru.otus.hw.dao.CsvQuestionDao;
-import ru.otus.hw.dao.QuestionReaderImpl;
-import ru.otus.hw.service.*;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.Mockito.mock;
