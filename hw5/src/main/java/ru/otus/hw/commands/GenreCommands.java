@@ -22,4 +22,11 @@ public class GenreCommands {
                 .map(genreConverter::genreToString)
                 .collect(Collectors.joining("," + System.lineSeparator()));
     }
+
+    @ShellMethod(value = "Find all genres", key = "g")
+    public String findGenre(long id) {
+        return genreService.findById(id).stream()
+                .map(genreConverter::genreToString)
+                .collect(Collectors.joining("," + System.lineSeparator()));
+    }
 }

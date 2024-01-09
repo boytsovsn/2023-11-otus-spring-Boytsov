@@ -22,4 +22,10 @@ public class AuthorCommands {
                 .map(authorConverter::authorToString)
                 .collect(Collectors.joining("," + System.lineSeparator()));
     }
+    @ShellMethod(value = "Find author", key = "a")
+    public String findAuthor(long id) {
+        return authorService.findById(id).stream()
+                .map(authorConverter::authorToString)
+                .collect(Collectors.joining("," + System.lineSeparator()));
+    }
 }

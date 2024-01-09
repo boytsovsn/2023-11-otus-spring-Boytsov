@@ -21,13 +21,13 @@ public class JdbcAuthorRepository implements AuthorRepository {
 
     @Override
     public List<Author> findAll() {
-        String sql = "SELECT A.ID, A.FULL_NAME FROM AUTHORS A";
+        String sql = "SELECT A.ID, A.FULL_NAME FROM GENRES A";
         return jdbcTemplate.query(sql, new AuthorRowMapper());
     }
 
     @Override
     public Optional<Author> findById(long id) {
-        String sql = "SELECT A.ID, A.FULL_NAME FROM AUTHORS A WHERE A.ID = ?";
+        String sql = "SELECT A.ID, A.FULL_NAME FROM GENRES A WHERE A.ID = ?";
         return Optional.of(jdbcTemplate.queryForObject(sql, new Object[]{id}, new AuthorRowMapper()));
     }
 
