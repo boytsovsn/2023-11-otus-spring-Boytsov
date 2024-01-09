@@ -48,16 +48,20 @@ public class JdbcBookRepository implements BookRepository {
     private Book insert(Book book) {
         var keyHolder = new GeneratedKeyHolder();
 
-        //...
+        Long id = keyHolder.getKeyAs(Long.class);
+        String sql ="INSERT INTO BOOKS VALUES (?, ?, ?, ?)";
+        jdbcTemplate.update(sql, book.getId(), book.getTitle(), book.getAuthor().getId(), book.getGenre().getId());
 
         //noinspection DataFlowIssue
-        book.setId(keyHolder.getKeyAs(Long.class));
+        book.setId(id);
         return book;
     }
 
     private Book update(Book book) {
         //...
         // Выбросить EntityNotFoundException если не обновлено ни одной записи в БД
+        String sql ="UPDATE BOOKS B SET B.TITLE=?, B.AUTHOR_ID=?, B.GENRE_ID=? WHERE B.ID=?";
+        jdbcTemplate.update(sql, book.getTitle(), book.getAuthor().getId(), book.getGenre().getId(), book.getId());
         return book;
     }
 
