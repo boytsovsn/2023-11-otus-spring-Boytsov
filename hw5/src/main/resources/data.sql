@@ -1,11 +1,11 @@
 insert into authors(full_name)
-values ('Author_1'), ('Author_2'), ('Author_3');
+values ('Конан Дойл'), ('Агата Кристи'), ('Пушкин А.С.');
 
 insert into genres(name)
-values ('Genre_1'), ('Genre_2'), ('Genre_3');
+values ('Детектив'), ('Роман'), ('Поэма');
 
 insert into books(title, author_id, genre_id)
-values ('BookTitle_1', 1, 1), ('BookTitle_2', 2, 2), ('BookTitle_3', 3, 3);
+values ('Шерлок Холмс', 1, 1), ('Восточный экспресс', 2, 1), ('Капитанская дочка', 3, 3);
 
 UPDATE BOOKS SET GENRE_ID=2 WHERE ID=3;
 UPDATE BOOKS SET AUTHOR_ID=3 WHERE ID=2;
