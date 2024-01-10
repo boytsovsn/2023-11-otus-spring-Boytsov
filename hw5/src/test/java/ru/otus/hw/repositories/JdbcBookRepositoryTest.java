@@ -1,5 +1,6 @@
 package ru.otus.hw.repositories;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -8,6 +9,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.dao.EmptyResultDataAccessException;
 import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Genre;
@@ -16,6 +18,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.util.AssertionErrors.assertEquals;
 
 @DisplayName("Репозиторий на основе Jdbc для работы с книгами ")
 @JdbcTest
@@ -99,7 +102,10 @@ class JdbcBookRepositoryTest {
     void shouldDeleteBook() {
         assertThat(bookRepositoryJdbc.findById(1L)).isPresent();
         bookRepositoryJdbc.deleteById(1L);
-        assertThat(bookRepositoryJdbc.findById(1L)).isEmpty();
+        Throwable exception = Assertions.assertThrows(EmptyResultDataAccessException.class, () -> {
+            bookRepositoryJdbc.findById(1L);});
+        assertEquals("findById error!", exception.getMessage(), "Incorrect result size: expected 1, actual 0");
+        //assertThat(bookRepositoryJdbc.findById(1L)).isEmpty();
     }
 
     private static List<Author> getDbAuthors() {

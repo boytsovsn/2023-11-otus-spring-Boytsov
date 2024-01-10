@@ -65,7 +65,6 @@ public class JdbcBookRepository implements BookRepository {
             ps.setLong(3, book.getGenre().getId());
             return ps;}, keyHolder);
         Long id = keyHolder.getKeyAs(Long.class);
-        //noinspection DataFlowIssue
         if (id != null && id > 0) {
             book.setId(id);
             return book;
