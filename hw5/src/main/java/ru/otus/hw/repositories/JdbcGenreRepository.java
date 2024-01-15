@@ -8,7 +8,6 @@ import ru.otus.hw.models.Genre;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,7 +25,7 @@ public class JdbcGenreRepository implements GenreRepository {
     @Override
     public Optional<Genre> findById(long id) {
         String sql = "SELECT A.ID, A.NAME FROM GENRES A WHERE A.ID = ?";
-        return Optional.of(jdbcTemplate.queryForObject(sql, new Object[]{id}, new GenreRowMapper()));
+        return Optional.of(jdbcTemplate.queryForObject(sql, new GenreRowMapper(), id));
     }
 
     private static class GenreRowMapper implements RowMapper<Genre> {
