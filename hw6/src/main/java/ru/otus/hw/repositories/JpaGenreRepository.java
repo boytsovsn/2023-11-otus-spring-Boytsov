@@ -3,6 +3,7 @@ package ru.otus.hw.repositories;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.AllArgsConstructor;
+import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-@Transactional
+@Primary
 public class JpaGenreRepository implements GenreRepository {
 
     @PersistenceContext
@@ -25,7 +26,7 @@ public class JpaGenreRepository implements GenreRepository {
 
     @Override
     public List<Genre> findAll() {
-        var query = em.createQuery("select c from Genre g", Genre.class);
+        var query = em.createQuery("select g from Genre g", Genre.class);
         return query.getResultList();
     }
 

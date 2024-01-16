@@ -11,6 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Table(name="books")
 public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,20 +19,15 @@ public class Book {
 
     private String title;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    // Задает поле, по которому происходит объединение с таблицей для хранения связанной сущности
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id")
     private Author author;
 
-//    @ManyToMany(fetch = FetchType.LAZY /*, cascade = CascadeType.PERSIST*/)
-//    @JoinTable(name = "book_genre", joinColumns = @JoinColumn(name = "book_id"),
-//            inverseJoinColumns = @JoinColumn(name = "genre_id"))
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    // Задает поле, по которому происходит объединение с таблицей для хранения связанной сущности
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "genre_id")
     private Genre genre;
 
-//    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-//    @JoinColumn(name = "student_id")
-//    private List<Remark> remarks;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(name = "book_id")
+    private List<Remark> remarks;
 }
