@@ -17,14 +17,14 @@ public class BookCommands {
 
     private final BookConverter bookConverter;
 
-    @ShellMethod(value = "Find all books", key = "ab")
+    @ShellMethod(value = "Find all books", key = "ba")
     public String findAllBooks() {
         return bookService.findAll().stream()
                 .map(bookConverter::bookToString)
                 .collect(Collectors.joining("," + System.lineSeparator()));
     }
 
-    @ShellMethod(value = "Find book by id", key = "bbid")
+    @ShellMethod(value = "Find book by id", key = "bid")
     public String findBookById(long id) {
         return bookService.findById(id)
                 .map(bookConverter::bookToString)

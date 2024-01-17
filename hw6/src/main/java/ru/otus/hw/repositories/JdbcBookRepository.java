@@ -11,6 +11,7 @@ import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Genre;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -100,11 +101,14 @@ public class JdbcBookRepository implements BookRepository {
             Author author = new Author();
             author.setId(rs.getLong("AID"));
             author.setFullName(rs.getString("FULL_NAME"));
+            book.setAuthorId(author.getId());
             book.setAuthor(author);
             Genre genre = new Genre();
             genre.setId(rs.getLong("GID"));
             genre.setName(rs.getString("NAME"));
+            book.setGenreId(genre.getId());
             book.setGenre(genre);
+            book.setRemarks(new ArrayList());
             return book;
         }
     }

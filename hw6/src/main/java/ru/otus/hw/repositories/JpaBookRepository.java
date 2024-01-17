@@ -23,13 +23,6 @@ public class JpaBookRepository implements BookRepository {
     @Override
     public Optional<Book> findById(long id) {
         var book = em.find(Book.class, id);
-        if (book!=null) {
-            var author = em.find(Author.class, book.getAuthorId());
-            book.setAuthor(author);
-            var genre = em.find(Genre.class, book.getGenreId());
-            book.setGenre(genre);
-            book.getRemarks().size();
-        }
         return Optional.ofNullable(book);
     }
 
