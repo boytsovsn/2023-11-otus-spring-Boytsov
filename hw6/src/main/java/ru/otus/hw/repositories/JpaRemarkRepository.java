@@ -3,15 +3,12 @@ package ru.otus.hw.repositories;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
-import ru.otus.hw.models.Author;
-import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Remark;
 
 import java.util.List;
 import java.util.Optional;
 
 @Repository
-
 public class JpaRemarkRepository implements RemarkRepository{
 
     @PersistenceContext
@@ -23,7 +20,7 @@ public class JpaRemarkRepository implements RemarkRepository{
 
     @Override
     public List<Remark> findByBookId(long id) {
-        var query = em.createQuery("select rems from Book r left join fetch r.remarks rems where r.id = :id", Remark.class);
+        var query = em.createQuery("select r from Remark r where r.bookId = :id", Remark.class);
         query.setParameter("id", id);
         return query.getResultList();
     }

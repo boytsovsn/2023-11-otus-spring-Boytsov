@@ -21,6 +21,6 @@ create table books (
 create table remarks (
     id bigserial,
     remark_text varchar(255),
-    book_id bigint references books(id) on delete cascade,
+    book_id bigint references books(id),
     primary key (id)
 );

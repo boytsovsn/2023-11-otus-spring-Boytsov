@@ -16,4 +16,7 @@ public class Remark {
     private long id;
 
     private String remarkText;
+
+    @Column(name = "book_id")
+    private long bookId;
 }

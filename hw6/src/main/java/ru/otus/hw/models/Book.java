@@ -19,15 +19,21 @@ public class Book {
 
     private String title;
 
+    @Column(name = "author_id", nullable = false, insertable = false, updatable = false)
+    private long authorId;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id")
     private Author author;
+
+    @Column(name = "genre_id", nullable = false, insertable = false, updatable = false)
+    private long genreId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "genre_id")
     private Genre genre;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(targetEntity = Remark.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "book_id")
     private List<Remark> remarks;
 }

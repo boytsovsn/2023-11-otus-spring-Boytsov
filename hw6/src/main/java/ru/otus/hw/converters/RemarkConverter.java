@@ -8,7 +8,11 @@ import java.util.stream.Collectors;
 
 @Component
 public class RemarkConverter {
-    public String remarkToString(List<Remark> remarks) {
-        return remarks.stream().map(x->{return "[Id: %d, Remark: %s]".formatted(x.getId(), x.getRemarkText()); }).collect(Collectors.joining(","));
+    public String remarksToString(List<Remark> remarks) {
+        return remarks.stream().map(this::remarkToString).collect(Collectors.joining(", "));
+    }
+
+    public String remarkToString(Remark remark) {
+        return "[Id: %d, Remark: %s, book: %s]".formatted(remark.getId(), remark.getRemarkText(), remark.getBookId());
     }
 }
