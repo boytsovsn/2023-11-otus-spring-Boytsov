@@ -27,7 +27,7 @@ public class BookServiceImpl implements BookService {
     private final RemarkRepository remarkRepository;
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public Optional<Book> findById(long id) {
         var book = bookRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Book with id %d not found".formatted(id)));
         var author = authorRepository.findById(book.getAuthorId()).orElseThrow(() -> new EntityNotFoundException("Author with id %d not found".formatted(book.getAuthorId())));;
@@ -36,7 +36,7 @@ public class BookServiceImpl implements BookService {
                 .orElseThrow(() -> new EntityNotFoundException("Genre with id %d not found".formatted(book.getGenreId())));
         book.setGenre(genre);
         var remarks = remarkRepository.findByBookId(book.getId());
-        book.setRemarks(remarks);
+        book.getRemarks().size();
         return Optional.of(book);
     }
 

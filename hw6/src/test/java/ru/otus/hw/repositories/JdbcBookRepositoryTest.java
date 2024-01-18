@@ -111,7 +111,6 @@ class JdbcBookRepositoryTest {
         Throwable exception = Assertions.assertThrows(EmptyResultDataAccessException.class, () -> {
             bookRepositoryJdbc.findById(1L);});
         assertEquals("findById error!", exception.getMessage(), "Incorrect result size: expected 1, actual 0");
-        //assertThat(bookRepositoryJdbc.findById(1L)).isEmpty();
     }
 
     private static List<Author> getDbAuthors() {
@@ -128,7 +127,7 @@ class JdbcBookRepositoryTest {
 
     private static List<List<Remark>> getDbRemarks() {
         return IntStream.range(1, 4).boxed()
-                .map(id -> Arrays.asList(new Remark(id, "Remark_" + id, id)))
+                .map(id -> (List<Remark>)new ArrayList<Remark>())
                 .toList();
     }
 

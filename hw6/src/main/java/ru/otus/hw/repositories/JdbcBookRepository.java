@@ -44,8 +44,12 @@ public class JdbcBookRepository implements BookRepository {
     public void deleteById(long id) {
         //...
         findById(id).orElseThrow(() -> new EntityNotFoundException("The book with id %d not found, it could not be deleted.".formatted(id)));;
-        String sql ="DELETE FROM BOOKS B WHERE B.ID=?";
+        String sql ="DELETE FROM REMARKS R WHERE R.BOOK_ID=?";
         int res=jdbcTemplate.update(sql, id);
+        if (res < 0)
+            throw new EntityNotFoundException("Failed to delete remarks for the book %d".formatted(id));
+        sql ="DELETE FROM BOOKS B WHERE B.ID=?";
+        res=jdbcTemplate.update(sql, id);
         if (res <= 0)
             throw new EntityNotFoundException("Failed to delete the book %d".formatted(id));
     }

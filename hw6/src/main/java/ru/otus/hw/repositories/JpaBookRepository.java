@@ -1,5 +1,6 @@
 package ru.otus.hw.repositories;
 
+import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.context.annotation.Primary;
@@ -10,6 +11,8 @@ import ru.otus.hw.models.Genre;
 
 import java.util.List;
 import java.util.Optional;
+
+import static org.springframework.data.jpa.repository.EntityGraph.EntityGraphType.FETCH;
 
 @Repository
 @Primary
@@ -28,7 +31,9 @@ public class JpaBookRepository implements BookRepository {
 
     @Override
     public List<Book> findAll() {
-        var query = em.createQuery("select distinct b from Book b left join fetch b.author left join fetch b.genre left join fetch b.remarks", Book.class);
+        EntityGraph<?> entityGraph = em.getEntityGraph("book-entity-graph");
+        var query = em.createQuery("select distinct b from Book b left join fetch b.remarks", Book.class);
+        query.setHint(FETCH.getKey(), entityGraph);
         return query.getResultList();
     }
 
