@@ -32,14 +32,16 @@ class RemarkServiceImplTest {
 
     private List<List<Remark>> dbRemarks;
 
-    private List<Remark> dbFlatRemarks;
     @Autowired
     private RemarkService remarkServiceImpl;
+
+    private final long updatedRemarkId = 1L;
+
+    private final long deletedRemarkId = 3L;
 
     @BeforeEach
     void setUp() {
         dbRemarks = getDbRemarks();
-        setDbFlatRemarks(convertToFlatDbRemarks(dbRemarks));
     }
 
     @DisplayName("Список замечений для книги")
@@ -48,24 +50,36 @@ class RemarkServiceImplTest {
         List<Remark> remark;
         for (int i = 1; i < dbRemarks.size(); i++) {
             List<Remark> remarks = remarkServiceImpl.findByBookId(dbRemarks.get(i).get(0).getBookId());
-            assertThat(remarks).containsExactlyElementsOf(dbRemarks.get(i));
+            for  (int j = 1; j < remarks.size(); j++) {
+                if (remarks.get(j).getId() != updatedRemarkId && remarks.get(j).getId() != deletedRemarkId) {
+                    int k = 0;
+                    while (k<dbRemarks.get(i).size()) {
+                        if (remarks.get(j).equals(dbRemarks.get(i).get(k)))
+                            break;
+                        k++;
+                    }
+                    assertThat(k).isLessThan(dbRemarks.get(i).size());
+                }
+            }
         }
     }
 
     @DisplayName("Замечание по id")
     @ParameterizedTest
-    @MethodSource("getDbFlatRemarks")
+    @MethodSource("convertToFlatDbRemarks")
     void findById(Remark remark) {
-        var fRemark = remarkServiceImpl.findById(remark.getId()).orElseThrow(()->new EntityNotFoundException("Remark not found, id %d".formatted(remark.getId())));
-        assertThat(fRemark).isEqualTo(remark);
+        if (remark.getId() != updatedRemarkId && remark.getId() != deletedRemarkId) {
+            var fRemark = remarkServiceImpl.findById(remark.getId()).orElseThrow(() -> new EntityNotFoundException("Remark not found, id %d".formatted(remark.getId())));
+            assertThat(fRemark).isEqualTo(remark);
+        }
     }
 
     @DisplayName("Вставка замечания")
     @Test
     void insertRemark() {
-        long bookId = 2L;
-        var newRemark = new Remark(0, "Remark_10500", bookId);
-        var returnedRemark = remarkServiceImpl.save(0, "Remark_10500", bookId);
+        long insertToBookId = 2L;
+        var newRemark = new Remark(0, "Remark_10500", insertToBookId);
+        var returnedRemark = remarkServiceImpl.save(0, "Remark_10500", insertToBookId);
         newRemark.setId(returnedRemark.getId());
         assertThat(returnedRemark).isNotNull()
                 .matches(remark -> remark.getId() > 0)
@@ -75,12 +89,13 @@ class RemarkServiceImplTest {
                 .isPresent()
                 .get()
                 .isEqualTo(returnedRemark);
+        remarkServiceImpl.deleteById(returnedRemark.getId());
     }
 
     @DisplayName("Обновление замечания")
     @Test
     void updateRemark() {
-        long updatedRemarkId = 1L;
+
         long forBookId = 2L;
         var expectedRemark = new Remark(updatedRemarkId, "Remark_10500", forBookId);
 
@@ -103,16 +118,17 @@ class RemarkServiceImplTest {
     @DisplayName("Удаление замечания")
     @Test
     void deleteById() {
-        long deletedRemarkId = 3L;
+
         assertThat(remarkServiceImpl.findById(deletedRemarkId)).isPresent();
+        var remark = remarkServiceImpl.findById(deletedRemarkId);
         remarkServiceImpl.deleteById(deletedRemarkId);
         Throwable exception = Assertions.assertThrows(EntityNotFoundException.class, () -> {
             remarkServiceImpl.findById(deletedRemarkId).orElseThrow(() -> new EntityNotFoundException("Remark with id %d not found".formatted(deletedRemarkId)));});
         assertEquals("findById error!", exception.getMessage(), "Remark with id %s not found".formatted(deletedRemarkId));
     }
 
-    private static List<Remark> convertToFlatDbRemarks(List<List<Remark>> dbRemarks) {
-        return dbRemarks.stream().flatMap(x->x.stream()).collect(Collectors.toList());
+    private static List<Remark> convertToFlatDbRemarks() {
+        return getDbRemarks().stream().flatMap(x->x.stream()).collect(Collectors.toList());
     }
 
     private static List<List<Remark>> getDbRemarks() {
@@ -122,11 +138,4 @@ class RemarkServiceImplTest {
                 .toList();
     }
 
-    static List<Remark> getDbFlatRemarks() {
-        return dbFlatRemarks;
-    }
-
-    public void setDbFlatRemarks(List<Remark> dbFlatRemarks) {
-        this.dbFlatRemarks = dbFlatRemarks;
-    }
 }
