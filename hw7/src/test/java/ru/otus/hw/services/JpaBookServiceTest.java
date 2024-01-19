@@ -9,7 +9,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -18,14 +17,10 @@ import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Genre;
 import ru.otus.hw.models.Remark;
-import ru.otus.hw.repositories.JpaAuthorRepository;
-import ru.otus.hw.repositories.JpaBookRepository;
-import ru.otus.hw.repositories.JpaGenreRepository;
-import ru.otus.hw.repositories.JpaRemarkRepository;
-import ru.otus.hw.services.BookService;
-import ru.otus.hw.services.BookServiceImpl;
-import ru.otus.hw.services.RemarkService;
-import ru.otus.hw.services.RemarkServiceImpl;
+import ru.otus.hw.repositories.AuthorRepositoryJpa;
+import ru.otus.hw.repositories.BookRepositoryJpa;
+import ru.otus.hw.repositories.GenreRepositoryJpa;
+import ru.otus.hw.repositories.RemarkRepositoryJpa;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,7 +33,7 @@ import static org.springframework.test.util.AssertionErrors.assertEquals;
 
 @DisplayName("JPA сервис для Book")
 @DataJpaTest
-@Import({BookServiceImpl.class, JpaBookRepository.class, JpaAuthorRepository.class, JpaGenreRepository.class, RemarkServiceImpl.class, JpaRemarkRepository.class})
+@Import({BookServiceImpl.class, BookRepositoryJpa.class, AuthorRepositoryJpa.class, GenreRepositoryJpa.class, RemarkServiceImpl.class, RemarkRepositoryJpa.class})
 @Transactional(propagation = Propagation.NEVER)
 class JpaBookServiceTest {
 

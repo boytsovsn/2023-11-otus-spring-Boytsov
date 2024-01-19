@@ -5,9 +5,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
-import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
-import ru.otus.hw.models.Genre;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,12 +14,12 @@ import static org.springframework.data.jpa.repository.EntityGraph.EntityGraphTyp
 
 @Repository
 @Primary
-public class JpaBookRepository implements BookRepository {
+public class BookRepositoryJpa implements BookRepository {
 
     @PersistenceContext
     private final EntityManager em;
 
-    public JpaBookRepository(EntityManager em) { this.em = em;}
+    public BookRepositoryJpa(EntityManager em) { this.em = em;}
 
     @Override
     public Optional<Book> findById(long id) {

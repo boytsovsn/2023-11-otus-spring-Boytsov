@@ -9,12 +9,12 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class JpaRemarkRepository implements RemarkRepository{
+public class RemarkRepositoryJpa implements RemarkRepository{
 
     @PersistenceContext
     private final EntityManager em;
 
-    public JpaRemarkRepository(EntityManager em) {
+    public RemarkRepositoryJpa(EntityManager em) {
         this.em = em;
     }
 

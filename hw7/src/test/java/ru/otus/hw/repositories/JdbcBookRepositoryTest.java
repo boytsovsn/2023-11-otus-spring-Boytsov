@@ -16,7 +16,6 @@ import ru.otus.hw.models.Genre;
 import ru.otus.hw.models.Remark;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -25,11 +24,11 @@ import static org.springframework.test.util.AssertionErrors.assertEquals;
 
 @DisplayName("Репозиторий на основе Jdbc для работы с книгами ")
 @JdbcTest
-@Import({JdbcBookRepository.class, JdbcGenreRepository.class})
+@Import({BookRepositoryJdbc.class, GenreRepositoryJdbc.class})
 class JdbcBookRepositoryTest {
 
     @Autowired
-    private JdbcBookRepository bookRepositoryJdbc;
+    private BookRepositoryJdbc bookRepositoryJdbc;
 
     private List<Author> dbAuthors;
 

@@ -1,6 +1,7 @@
 package ru.otus.hw.services;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.models.Author;
@@ -12,6 +13,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Service
 @Transactional
+@Primary
 public class AuthorServiceImpl implements AuthorService {
     private final AuthorRepository authorRepository;
 

@@ -16,8 +16,7 @@ import java.util.Optional;
 @Service
 @Transactional
 @RequiredArgsConstructor
-@Primary
-public class RemarkServiceImpl implements RemarkService {
+public class RemarkServiceData implements RemarkService {
 
     private final RemarkRepository remarkRepository;
 

@@ -13,8 +13,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.models.Remark;
-import ru.otus.hw.repositories.JpaBookRepository;
-import ru.otus.hw.repositories.JpaRemarkRepository;
+import ru.otus.hw.repositories.BookRepositoryJpa;
+import ru.otus.hw.repositories.RemarkRepositoryJpa;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,7 +26,7 @@ import static org.springframework.test.util.AssertionErrors.assertEquals;
 
 @DisplayName("JPA сервис для Remark")
 @DataJpaTest
-@Import({RemarkServiceImpl.class, JpaRemarkRepository.class, JpaBookRepository.class})
+@Import({RemarkServiceImpl.class, RemarkRepositoryJpa.class, BookRepositoryJpa.class})
 @Transactional(propagation = Propagation.NEVER)
 class RemarkServiceImplTest {
 

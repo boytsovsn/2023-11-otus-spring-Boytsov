@@ -17,7 +17,7 @@ import java.util.Optional;
 
 @Repository
 @AllArgsConstructor
-public class JdbcBookRepository implements BookRepository {
+public class BookRepositoryJdbc implements BookRepository {
     final private JdbcTemplate jdbcTemplate;
     @Override
     public Optional<Book> findById(long id) {
