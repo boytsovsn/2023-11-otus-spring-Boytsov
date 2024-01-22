@@ -1,10 +1,10 @@
 package ru.otus.hw.repositories;
 
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.NoRepositoryBean;
 import ru.otus.hw.models.Remark;
 
-@Repository
-public interface RemarkRepositoryData extends CrudRepository<Remark, Long> {
+@NoRepositoryBean
+public interface RemarkRepositoryData extends JpaRepository<Remark, Long> {
 
 }

@@ -3,8 +3,7 @@ package ru.otus.hw.repositories;
 import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import org.springframework.context.annotation.Primary;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 import ru.otus.hw.models.Book;
 
 import java.util.List;
@@ -12,22 +11,21 @@ import java.util.Optional;
 
 import static org.springframework.data.jpa.repository.EntityGraph.EntityGraphType.FETCH;
 
-@Repository
-@Primary
-public class BookRepositoryJpa implements BookRepository {
+@Component
+public class BookRepositoryImpl /*implements BookRepository*/ {
 
     @PersistenceContext
     private final EntityManager em;
 
-    public BookRepositoryJpa(EntityManager em) { this.em = em;}
+    public BookRepositoryImpl(EntityManager em) { this.em = em;}
 
-    @Override
+//    @Override
     public Optional<Book> findById(long id) {
         var book = em.find(Book.class, id);
         return Optional.ofNullable(book);
     }
 
-    @Override
+//    @Override
     public List<Book> findAll() {
         EntityGraph<?> entityGraph = em.getEntityGraph("book-entity-graph");
         var query = em.createQuery("select distinct b from Book b left join fetch b.remarks", Book.class);
@@ -35,7 +33,7 @@ public class BookRepositoryJpa implements BookRepository {
         return query.getResultList();
     }
 
-    @Override
+//    @Override
     public Book save(Book book) {
         if (book != null) {
             if (book.getId() == 0) {
@@ -47,7 +45,7 @@ public class BookRepositoryJpa implements BookRepository {
         return book;
     }
 
-    @Override
+//    @Override
     public void deleteById(long id) {
         Book book = em.find(Book.class, id);
         if (book != null) {

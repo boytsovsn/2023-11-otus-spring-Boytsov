@@ -1,10 +1,10 @@
 package ru.otus.hw.repositories;
 
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.NoRepositoryBean;
 import ru.otus.hw.models.Book;
 
-@Repository
-public interface BookRepositoryData extends CrudRepository<Book, Long> {
+@NoRepositoryBean
+public interface BookRepositoryData extends JpaRepository<Book, Long> {
 
 }
