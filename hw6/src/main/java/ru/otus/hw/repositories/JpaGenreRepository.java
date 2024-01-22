@@ -2,19 +2,13 @@ package ru.otus.hw.repositories;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import lombok.AllArgsConstructor;
-import org.springframework.context.annotation.Primary;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.stereotype.Component;
 import ru.otus.hw.models.Genre;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
-@Primary
+@Component
 public class JpaGenreRepository implements GenreRepository {
 
     @PersistenceContext

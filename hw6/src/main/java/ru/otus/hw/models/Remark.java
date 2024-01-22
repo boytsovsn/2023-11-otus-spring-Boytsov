@@ -17,6 +17,11 @@ public class Remark {
 
     private String remarkText;
 
-    @Column(name = "book_id")
-    private long bookId;
+    @ManyToOne
+    private Book book;
+
+    @Override
+    public String toString() {
+        return "Remark id = %d, remarkText = %s, book id = %d".formatted(id, remarkText, book.getId());
+    }
 }

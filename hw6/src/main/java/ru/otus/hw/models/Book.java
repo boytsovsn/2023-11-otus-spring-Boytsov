@@ -21,21 +21,12 @@ public class Book {
 
     private String title;
 
-    @Column(name = "author_id", nullable = false, insertable = false, updatable = false)
-    private long authorId;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "author_id")
+    @ManyToOne
     private Author author;
 
-    @Column(name = "genre_id", nullable = false, insertable = false, updatable = false)
-    private long genreId;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "genre_id")
+    @ManyToOne
     private Genre genre;
 
-    @OneToMany(targetEntity = Remark.class, fetch = FetchType.LAZY, orphanRemoval = true)
-    @JoinColumn(name = "book_id")
+    @OneToMany(mappedBy="book", targetEntity = Remark.class, orphanRemoval = true)
     private List<Remark> remarks;
 }

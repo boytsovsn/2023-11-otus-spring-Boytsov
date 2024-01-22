@@ -2,13 +2,13 @@ package ru.otus.hw.repositories;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import ru.otus.hw.models.Remark;
 
-import java.util.List;
 import java.util.Optional;
 
-@Repository
+@Component
 public class JpaRemarkRepository implements RemarkRepository{
 
     @PersistenceContext
@@ -17,14 +17,6 @@ public class JpaRemarkRepository implements RemarkRepository{
     public JpaRemarkRepository(EntityManager em) {
         this.em = em;
     }
-
-    @Override
-    public List<Remark> findByBookId(long id) {
-        var query = em.createQuery("select r from Remark r where r.bookId = :id", Remark.class);
-        query.setParameter("id", id);
-        return query.getResultList();
-    }
-
 
     @Override
     public Optional<Remark> findById(long id) {

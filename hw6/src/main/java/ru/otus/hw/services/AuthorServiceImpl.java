@@ -11,7 +11,6 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
-@Transactional
 public class AuthorServiceImpl implements AuthorService {
     private final AuthorRepository authorRepository;
 

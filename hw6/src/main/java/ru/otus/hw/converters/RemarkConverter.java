@@ -13,6 +13,6 @@ public class RemarkConverter {
     }
 
     public String remarkToString(Remark remark) {
-        return "[Id: %d, Remark: %s, book: %s]".formatted(remark.getId(), remark.getRemarkText(), remark.getBookId());
+        return "[Id: %d, Remark: %s, book: %s]".formatted(remark.getId(), remark.getRemarkText(), remark.getBook().getId());
     }
 }
