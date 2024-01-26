@@ -9,9 +9,4 @@ import java.util.Optional;
 
 public interface RemarkRepository extends CrudRepository<Remark, Long> {
 
-    Optional<Remark> findById(Long id);
-
-    Remark save(Remark remark);
-
-    void deleteById(Long id);
 }

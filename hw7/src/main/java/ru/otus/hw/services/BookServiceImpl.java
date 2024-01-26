@@ -53,7 +53,6 @@ public class BookServiceImpl implements BookService {
         return save(id, title, authorId, genreId);
     }
 
-    @Transactional
     @Override
     public void deleteById(long id) {
         bookRepository.deleteById(id);

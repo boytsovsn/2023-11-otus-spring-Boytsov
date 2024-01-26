@@ -10,7 +10,5 @@ import java.util.Optional;
 
 public interface AuthorRepository extends CrudRepository<Author, Long> {
 
-    Optional<Author> findById(Long id);
-
     List<Author> findAll();
 }
