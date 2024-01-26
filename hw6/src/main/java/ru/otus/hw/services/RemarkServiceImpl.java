@@ -2,9 +2,9 @@ package ru.otus.hw.services;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Remark;
@@ -26,10 +26,11 @@ public class RemarkServiceImpl implements RemarkService {
     private final EntityManager em;
 
     @Override
+    @Transactional(readOnly=true)
     public List<Remark> findByBookId(long id) {
-        var query = em.createQuery("select r from Remark r left join r.book b where b.id = :id", Remark.class);
-        query.setParameter("id", id);
-        return query.getResultList();
+        Book book = bookRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Book with id %d not found".formatted(id)));
+        book.getRemarks().size();
+        return book.getRemarks();
     }
 
     @Override
