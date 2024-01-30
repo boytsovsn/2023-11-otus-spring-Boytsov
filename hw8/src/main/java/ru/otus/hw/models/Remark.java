@@ -18,6 +18,10 @@ public class Remark {
 
     private Book book;
 
+    public Remark(String text) {
+        this.remarkText = text;
+    }
+
     @Override
     public String toString() {
         return "Remark id = %s, remarkText = %s, book id = %s".formatted(id, remarkText, book.getId());

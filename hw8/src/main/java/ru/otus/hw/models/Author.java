@@ -15,4 +15,8 @@ public class Author {
     private String id;
 
     private String fullName;
+
+    public Author(String name) {
+        fullName = name;
+    }
 }

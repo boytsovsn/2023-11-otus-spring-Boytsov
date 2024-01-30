@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Data
@@ -24,4 +25,11 @@ public class Book {
     private Genre genre;
 
     private List<Remark> remarks;
+
+    public Book(String title, Author author, Genre genre, Remark... remarks) {
+        this.title = title;
+        this.author = author;
+        this.genre = genre;
+        this.remarks = Arrays.asList(remarks);
+    }
 }
