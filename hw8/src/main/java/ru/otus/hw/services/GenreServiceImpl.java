@@ -20,7 +20,7 @@ public class GenreServiceImpl implements GenreService {
         return genreRepository.findAll();
     }
     @Override
-    public Optional<Genre> findById(long id) {
+    public Optional<Genre> findById(String id) {
         return genreRepository.findById(id);
     }
 }

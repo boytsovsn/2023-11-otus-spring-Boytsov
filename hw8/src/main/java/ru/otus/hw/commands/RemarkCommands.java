@@ -18,12 +18,12 @@ public class RemarkCommands {
     private final RemarkConverter remarkConverter;
 
     @ShellMethod(value = "Find all remarks by book id", key = "rbid")
-    public String findAllRemarks(long id) {
+    public String findAllRemarks(String id) {
         return remarkConverter.remarksToString(remarkService.findByBookId(id));
     }
 
     @ShellMethod(value = "Find remark by id", key = "rid")
-    public String findRemarkById(long id) {
+    public String findRemarkById(String id) {
         return remarkService.findById(id)
                 .map(remarkConverter::remarkToString)
                 .orElse("Remark with id %d not found".formatted(id));
@@ -31,21 +31,21 @@ public class RemarkCommands {
 
     // bins newRemark 1 1
     @ShellMethod(value = "Insert remark", key = "rins")
-    public String insertRemark(String remarkText, long bookId) {
-        Remark savedRemark = remarkService.save(0, remarkText, bookId);
+    public String insertRemark(String remarkText, String bookId) {
+        Remark savedRemark = remarkService.save("0", remarkText, bookId);
         return remarkConverter.remarksToString(Arrays.asList(savedRemark));
     }
 
     // bupd 4 editedRemark 3 2
     @ShellMethod(value = "Update remark", key = "rupd")
-    public String updateRemark(long id, String remarkText, long bookId) {
+    public String updateRemark(String id, String remarkText, String bookId) {
         Remark savedRemark = remarkService.save(id, remarkText, bookId);
         return remarkConverter.remarksToString(Arrays.asList(savedRemark));
     }
 
     // bdel 4
     @ShellMethod(value = "Delete remark by id", key = "rdel")
-    public void deleteRemark(long id) {
+    public void deleteRemark(String id) {
         remarkService.deleteById(id);
     }
 }

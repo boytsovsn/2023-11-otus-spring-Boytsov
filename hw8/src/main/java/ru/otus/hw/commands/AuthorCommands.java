@@ -23,7 +23,7 @@ public class AuthorCommands {
                 .collect(Collectors.joining("," + System.lineSeparator()));
     }
     @ShellMethod(value = "Find author", key = "aid")
-    public String findAuthor(long id) {
+    public String findAuthor(String id) {
         return authorService.findById(id).stream()
                 .map(authorConverter::authorToString)
                 .collect(Collectors.joining("," + System.lineSeparator()));

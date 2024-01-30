@@ -1,7 +1,5 @@
 package ru.otus.hw.services;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,30 +20,30 @@ public class RemarkServiceImpl implements RemarkService {
 
     private final BookRepository bookRepository;
 
-    @PersistenceContext
-    private final EntityManager em;
+//    @PersistenceContext
+//    private final EntityManager em;
 
     @Override
     @Transactional(readOnly=true)
-    public List<Remark> findByBookId(long id) {
+    public List<Remark> findByBookId(String id) {
         Book book = bookRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Book with id %d not found".formatted(id)));
         book.getRemarks().size();
         return book.getRemarks();
     }
 
     @Override
-    public Optional<Remark> findById(long id) {
+    public Optional<Remark> findById(String id) {
 
         return remarkRepository.findById(id);
     }
 
     @Transactional
     @Override
-    public Remark save(long id, String remarkText, long bookId) {
+    public Remark save(String id, String remarkText, String bookId) {
         Remark remark;
         Book book = bookRepository.findById(bookId).orElseThrow(() -> new EntityNotFoundException("Book with id %d not found".formatted(bookId)));
-        if (id==0)
-            remark = new Remark(0, remarkText, book);
+        if (id==null || id.isEmpty() || id=="0")
+            remark = new Remark("0", remarkText, book);
         else {
             remark = remarkRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Book with id %d not found".formatted(id)));
             remark.setRemarkText(remarkText);
@@ -56,7 +54,7 @@ public class RemarkServiceImpl implements RemarkService {
 
     @Override
     @Transactional
-    public void deleteById(long id) {
+    public void deleteById(String id) {
         remarkRepository.deleteById(id);
     }
 }

@@ -1,27 +1,25 @@
 package ru.otus.hw.models;
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
-@Table(name="remarks")
+@Document
 public class Remark {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private String id;
 
     private String remarkText;
 
-    @ManyToOne
     private Book book;
 
     @Override
     public String toString() {
-        return "Remark id = %d, remarkText = %s, book id = %d".formatted(id, remarkText, book.getId());
+        return "Remark id = %s, remarkText = %s, book id = %s".formatted(id, remarkText, book.getId());
     }
 }

@@ -1,19 +1,36 @@
 spring:
-  datasource:
-    url: jdbc:h2:mem:maindb
-  sql:
-    init:
-      mode: always
-      data-locations: classpath:data.sql
+  data:
+    mongodb:
+      port: 0
+      database: test
+      host: localhost
+      #port: 27017
+      #database: awesomeMongo
 
-  jpa:
-    generate-ddl: false
-    #generate-ddl: true
-    hibernate:
-      ddl-auto: none
-      #ddl-auto: create-drop
+  shell:
+    interactive:
+      enabled: true
+    noninteractive:
+      enabled: false
 
-    #show-sql: true
+    command:
+      version:
+        enabled: false
+de:
+  flapdoodle:
+    mongodb:
+      embedded:
+        version: 4.0.2
+
+mongock:
+  runner-type: "ApplicationRunner" # default
+  #runner-type: "InitializingBean"
+  change-logs-scan-package:
+    - ru.otus.hw.changelogs
+  mongo-db:
+    write-concern:
+      journal: false
+    read-concern: local
 
 logging:
   level:

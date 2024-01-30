@@ -1,25 +1,29 @@
 spring:
-  devtools:
-    add-properties: false
-  h2:
-    console:
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: mainDB
+
+  shell:
+    interactive:
       enabled: true
-  datasource:
-    url: jdbc:h2:mem:maindb
-  sql:
-    init:
-      mode: always
-      data-locations: classpath:data.sql
-      schema-locations: classpath:schema.sql
+    noninteractive:
+      enabled: false
 
-  jpa:
-    generate-ddl: false
-#    generate-ddl: true
-    hibernate:
-      ddl-auto: none
-#      ddl-auto: create-drop
+    command:
+      version:
+        enabled: false
 
-#    show-sql: true
+mongock:
+  #runner-type: "ApplicationRunner" # default
+  runner-type: "InitializingBean"
+  change-logs-scan-package:
+    - ru.otus.hw.changelogs
+  mongo-db:
+    write-concern:
+      journal: false
+    read-concern: local
 
 logging:
   level:
