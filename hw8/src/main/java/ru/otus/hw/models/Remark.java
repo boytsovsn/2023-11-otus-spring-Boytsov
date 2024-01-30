@@ -16,7 +16,7 @@ public class Remark {
 
     private String remarkText;
 
-    private Book book;
+//    private Book book;
 
     public Remark(String text) {
         this.remarkText = text;
@@ -24,6 +24,6 @@ public class Remark {
 
     @Override
     public String toString() {
-        return "Remark id = %s, remarkText = %s, book id = %s".formatted(id, remarkText, book.getId());
+        return "Remark id = %s, remarkText = %s".formatted(id, remarkText);
     }
 }

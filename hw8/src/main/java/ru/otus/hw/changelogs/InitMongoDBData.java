@@ -55,7 +55,6 @@ public class InitMongoDBData {
 
     @ChangeSet(order = "004", id = "initBooks", author = "boytsov", runAlways = true)
     public void initBooks(BookRepository repository) {
-        remarks = new ArrayList<>();
         var book = repository.save(new Book("Шерлок Холмс", authors.get(0), genres.get(0), remarks.get(0), remarks.get(2)));
         book = repository.save(new Book("9 негритят", authors.get(1), genres.get(0), remarks.get(0), remarks.get(1)));
         book = repository.save(new Book("Капитанская дочка", authors.get(2), genres.get(1), remarks.get(0)));

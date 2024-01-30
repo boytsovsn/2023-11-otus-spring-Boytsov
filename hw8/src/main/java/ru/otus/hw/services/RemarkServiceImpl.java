@@ -43,11 +43,10 @@ public class RemarkServiceImpl implements RemarkService {
         Remark remark;
         Book book = bookRepository.findById(bookId).orElseThrow(() -> new EntityNotFoundException("Book with id %d not found".formatted(bookId)));
         if (id==null || id.isEmpty() || id=="0")
-            remark = new Remark("0", remarkText, book);
+            remark = new Remark("0", remarkText);
         else {
             remark = remarkRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Book with id %d not found".formatted(id)));
             remark.setRemarkText(remarkText);
-            remark.setBook(book);
         }
         return remarkRepository.save(remark);
     }
