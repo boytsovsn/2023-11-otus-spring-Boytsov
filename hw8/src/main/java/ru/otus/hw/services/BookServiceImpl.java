@@ -25,11 +25,11 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Optional<Book> findById(String id) {
-        var book = bookRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Book with id %d not found".formatted(id)));
-        var author = authorRepository.findById(book.getAuthor().getId()).orElseThrow(() -> new EntityNotFoundException("Author with id %d not found".formatted(book.getAuthor().getId())));;
+        var book = bookRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Book with id %s not found".formatted(id)));
+        var author = authorRepository.findById(book.getAuthor().getId()).orElseThrow(() -> new EntityNotFoundException("Author with id %s not found".formatted(book.getAuthor().getId())));;
         book.setAuthor(author);
         var genre = genreRepository.findById(book.getGenre().getId())
-                .orElseThrow(() -> new EntityNotFoundException("Genre with id %d not found".formatted(book.getGenre().getId())));
+                .orElseThrow(() -> new EntityNotFoundException("Genre with id %s not found".formatted(book.getGenre().getId())));
         book.setGenre(genre);
         var remarks = remarkServiceImpl.findByBookId(id);
         book.setRemarks(remarks);
@@ -44,7 +44,7 @@ public class BookServiceImpl implements BookService {
     @Transactional
     @Override
     public Book insert(String title, String authorId, String genreId) {
-        return save("0", title, authorId, genreId);
+        return save(null, title, authorId, genreId);
     }
 
     @Transactional
@@ -60,11 +60,16 @@ public class BookServiceImpl implements BookService {
 
     private Book save(String id, String title, String authorId, String genreId) {
         var author = authorRepository.findById(authorId)
-                .orElseThrow(() -> new EntityNotFoundException("Author with id %d not found".formatted(authorId)));
+                .orElseThrow(() -> new EntityNotFoundException("Author with id %s not found".formatted(authorId)));
         var genre = genreRepository.findById(genreId)
-                .orElseThrow(() -> new EntityNotFoundException("Genre with id %d not found".formatted(genreId)));
-        var remarks = remarkServiceImpl.findByBookId(id);
-        var book = new Book(id, title, author, genre, remarks);
+                .orElseThrow(() -> new EntityNotFoundException("Genre with id %s not found".formatted(genreId)));
+        Book book;
+        if (id!=null && !id.isEmpty() && !id.equalsIgnoreCase("0")) {
+            var remarks = remarkServiceImpl.findByBookId(id);
+            book = new Book(id, title, author, genre, remarks);
+        } else {
+           book = new Book(title, author, genre);
+        }
         return bookRepository.save(book);
     }
 }

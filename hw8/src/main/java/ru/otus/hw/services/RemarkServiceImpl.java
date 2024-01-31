@@ -26,7 +26,7 @@ public class RemarkServiceImpl implements RemarkService {
     @Override
     @Transactional(readOnly=true)
     public List<Remark> findByBookId(String id) {
-        Book book = bookRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Book with id %d not found".formatted(id)));
+        Book book = bookRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Book with id %s not found".formatted(id)));
         book.getRemarks().size();
         return book.getRemarks();
     }
@@ -41,11 +41,11 @@ public class RemarkServiceImpl implements RemarkService {
     @Override
     public Remark save(String id, String remarkText, String bookId) {
         Remark remark;
-        Book book = bookRepository.findById(bookId).orElseThrow(() -> new EntityNotFoundException("Book with id %d not found".formatted(bookId)));
+        Book book = bookRepository.findById(bookId).orElseThrow(() -> new EntityNotFoundException("Book with id %s not found".formatted(bookId)));
         if (id==null || id.isEmpty() || id=="0")
-            remark = new Remark("0", remarkText);
+            remark = new Remark(remarkText, bookId);
         else {
-            remark = remarkRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Book with id %d not found".formatted(id)));
+            remark = remarkRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Book with id %s not found".formatted(id)));
             remark.setRemarkText(remarkText);
         }
         return remarkRepository.save(remark);

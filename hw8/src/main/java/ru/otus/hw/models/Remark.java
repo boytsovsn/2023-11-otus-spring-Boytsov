@@ -16,14 +16,15 @@ public class Remark {
 
     private String remarkText;
 
-//    private Book book;
+    private String bookId;
 
-    public Remark(String text) {
+    public Remark(String text, String bookId) {
         this.remarkText = text;
+        this.setBookId(bookId);
     }
 
     @Override
     public String toString() {
-        return "Remark id = %s, remarkText = %s".formatted(id, remarkText);
+        return "Remark id = %s, remarkText = %s, book id = %s".formatted(id, remarkText, bookId);
     }
 }
