@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.models.Book;
+import ru.otus.hw.models.Remark;
 import ru.otus.hw.repositories.AuthorRepository;
 import ru.otus.hw.repositories.BookRepository;
 import ru.otus.hw.repositories.GenreRepository;
@@ -55,6 +56,8 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public void deleteById(String id) {
+        for (Remark remark: remarkServiceImpl.findByBookId(id))
+            remarkServiceImpl.deleteById(remark.getId());
         bookRepository.deleteById(id);
     }
 
