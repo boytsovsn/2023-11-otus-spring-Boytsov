@@ -7,7 +7,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.ComponentScan;
 import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Remark;
@@ -20,19 +23,22 @@ import java.util.stream.IntStream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.util.AssertionErrors.assertEquals;
 
-@DisplayName("JPA репозиторий для Remark")
+@DataMongoTest
+@EnableConfigurationProperties
+@ComponentScan({"ru.otus.hw.repositories"})
+@DisplayName("Mongo репозиторий для Remark")
 class RemarkRepositortyTest {
-//
-//    @Autowired
-//    private RemarkRepository remarkRepository;
-//
-//    private final long updatedRemarkId = 1L;
-//
-//    private final long deletedRemarkId = 3L;
-//
-//    @BeforeEach
-//    void setUp() {
-//    }
+
+    @Autowired
+    private RemarkRepository remarkRepository;
+
+    private final String updatedRemarkId = "65bb622bd4e0735ea8c52fe2";
+
+    private final String deletedRemarkId = "65bb622bd4e0735ea8c52fe3";
+
+    @BeforeEach
+    void setUp() {
+    }
 //
 //    @DisplayName("Замечание по id")
 //    @ParameterizedTest
@@ -92,28 +98,28 @@ class RemarkRepositortyTest {
 //        assertThat(bdReamrk.getBook().getId())
 //                .isEqualTo(returnedRemark.getBook().getId());
 //    }
-//
-//    @DisplayName("Удаление замечания")
-//    @Test
-//    void deleteById() {
-//        assertThat(remarkRepository.findById(deletedRemarkId)).isPresent();
-//        var remark = remarkRepository.findById(deletedRemarkId);
-//        remarkRepository.deleteById(deletedRemarkId);
-//        Throwable exception = Assertions.assertThrows(EntityNotFoundException.class, () -> {
-//            remarkRepository.findById(deletedRemarkId).orElseThrow(() -> new EntityNotFoundException("Remark with id %d not found".formatted(deletedRemarkId)));});
-//        assertEquals("findById error!", exception.getMessage(), "Remark with id %s not found".formatted(deletedRemarkId));
-//    }
-//
-//    private static List<Remark> convertToFlatDbRemarks() {
-//        return getDbRemarks().stream().flatMap(x->x.stream()).collect(Collectors.toList());
-//    }
-//
-//    private static List<List<Remark>> getDbRemarks() {
-//        return IntStream.range(1, 4).boxed()
-//                .map(id -> IntStream.range(1, id+1).boxed()
-//                        .map(id1 ->{ Book book = new Book(id, null, null, null, null);
-//                            return new Remark(id*(id-1)/2+id1,"Remark_"+id+id1, book);}).toList())
-//                .toList();
-//    }
+
+    @DisplayName("Удаление замечания")
+    @Test
+    void deleteById() {
+        assertThat(remarkRepository.findById(deletedRemarkId)).isPresent();
+        var remark = remarkRepository.findById(deletedRemarkId);
+        remarkRepository.deleteById(deletedRemarkId);
+        Throwable exception = Assertions.assertThrows(EntityNotFoundException.class, () -> {
+            remarkRepository.findById(deletedRemarkId).orElseThrow(() -> new EntityNotFoundException("Remark with id %d not found".formatted(deletedRemarkId)));});
+        assertEquals("findById error!", exception.getMessage(), "Remark with id %s not found".formatted(deletedRemarkId));
+    }
+
+    private static List<Remark> convertToFlatDbRemarks() {
+        return getDbRemarks().stream().flatMap(x->x.stream()).collect(Collectors.toList());
+    }
+
+    private static List<List<Remark>> getDbRemarks() {
+        return IntStream.range(1, 4).boxed()
+                .map(id -> IntStream.range(1, id+1).boxed()
+                        .map(id1 ->{ Book book = new Book( id.toString(), null, null, null, null);
+                            return new Remark(id1.toString(), "Remark_"+id+id1, id.toString());}).toList())
+                .toList();
+    }
 
 }

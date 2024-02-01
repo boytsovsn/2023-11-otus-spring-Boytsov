@@ -21,9 +21,6 @@ public class RemarkServiceImpl implements RemarkService {
 
     private final BookRepository bookRepository;
 
-//    @PersistenceContext
-//    private final EntityManager em;
-
     @Override
     @Transactional(readOnly=true)
     public List<Remark> findByBookId(String id) {
