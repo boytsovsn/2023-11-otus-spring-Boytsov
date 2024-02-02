@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import ru.otus.hw.converters.RemarkConverter;
-import ru.otus.hw.models.Remark;
+import ru.otus.hw.models.entities.Remark;
 import ru.otus.hw.services.RemarkService;
 
 import java.util.Arrays;

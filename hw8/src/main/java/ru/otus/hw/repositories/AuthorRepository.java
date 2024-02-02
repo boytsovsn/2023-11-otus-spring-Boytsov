@@ -1,7 +1,7 @@
 package ru.otus.hw.repositories;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
-import ru.otus.hw.models.Author;
+import ru.otus.hw.models.entities.Author;
 
 import java.util.List;
 

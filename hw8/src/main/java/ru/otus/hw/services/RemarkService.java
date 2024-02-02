@@ -1,6 +1,6 @@
 package ru.otus.hw.services;
 
-import ru.otus.hw.models.Remark;
+import ru.otus.hw.models.entities.Remark;
 
 import java.util.List;
 import java.util.Optional;
