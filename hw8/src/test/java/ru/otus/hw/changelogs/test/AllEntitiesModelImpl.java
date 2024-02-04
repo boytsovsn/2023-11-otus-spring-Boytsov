@@ -1,7 +1,6 @@
-package ru.otus.hw.models.test;
+package ru.otus.hw.changelogs.test;
 
 import lombok.*;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import ru.otus.hw.models.entities.Author;
 import ru.otus.hw.models.entities.Book;

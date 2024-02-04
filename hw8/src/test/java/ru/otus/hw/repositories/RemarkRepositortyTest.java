@@ -1,11 +1,9 @@
 package ru.otus.hw.repositories;
 
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
@@ -13,17 +11,19 @@ import org.springframework.context.annotation.ComponentScan;
 import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.models.entities.Book;
 import ru.otus.hw.models.entities.Remark;
-import ru.otus.hw.models.test.AllEntitiesModel;
+import ru.otus.hw.changelogs.test.AllEntitiesModel;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataMongoTest
 @EnableConfigurationProperties
-@ComponentScan({"ru.otus.hw.changelogs.test", "ru.otus.hw.repositories", "ru.otus.hw.models.test"})
+@ComponentScan({"ru.otus.hw.changelogs.test", "ru.otus.hw.repositories"})
 @DisplayName("Mongo репозиторий для Remark")
 class RemarkRepositortyTest {
 
@@ -33,9 +33,9 @@ class RemarkRepositortyTest {
     @Autowired
     private AllEntitiesModel allEntitiesModelImpl;
 
-    private final String updatedRemarkId = "65bb622bd4e0735ea8c52fe2";
+    private final int updatedRemarkN = 1;
 
-    private final String deletedRemarkId = "65bb622bd4e0735ea8c52fe3";
+    private final int deletedRemarkN = 2;
     private List<List<Remark>> remarks;
 
     @BeforeEach
@@ -47,9 +47,11 @@ class RemarkRepositortyTest {
     @Test
     void findById() {
         List<Remark> remarksList = convertToFlatDbRemarks();
+        String updatedRemarkId = remarksList.get(updatedRemarkN-1).getId();
+        String deletedRemarkId = remarksList.get(deletedRemarkN-1).getId();
         for (Remark remark: remarksList) {
             if (remark.getId() != updatedRemarkId && remark.getId() != deletedRemarkId) {
-                var fRemark = remarkRepository.findById(remark.getId()).orElseThrow(() -> new EntityNotFoundException("Remark not found, id %d".formatted(remark.getId())));
+                var fRemark = remarkRepository.findById(remark.getId()).orElseThrow(() -> new EntityNotFoundException("Remark not found, id %s".formatted(remark.getId())));
                 assertThat(fRemark.getId()).isEqualTo(remark.getId());
                 assertThat(fRemark.getRemarkText()).isEqualTo(remark.getRemarkText());
                 assertThat(fRemark.getBookId()).isEqualTo(remark.getBookId());
@@ -57,63 +59,66 @@ class RemarkRepositortyTest {
         }
     }
 
-//    @DisplayName("Вставка замечания")
-//    @Test
-//    void insertRemark() {
-//        long insertToBookId = 2L;
-//        Book insertToBook = new Book(insertToBookId, null, null, null, null);
-//        var newRemark = new Remark(0, "Remark_10500", insertToBook);
-//        var returnedRemark = remarkRepository.save(newRemark);
-//        newRemark.setId(returnedRemark.getId());
-//        assertThat(returnedRemark).isNotNull()
-//                .matches(remark -> remark.getId() > 0)
-//                .isEqualTo(newRemark);
-//        Optional<Remark> checkRemark = remarkRepository.findById(returnedRemark.getId());
-//        assertThat(checkRemark)
-//                .isPresent()
-//                .get()
-//                .isEqualTo(returnedRemark);
-//        remarkRepository.deleteById(returnedRemark.getId());
-//    }
-//
-//    @DisplayName("Обновление замечания")
-//    @Test
-//    void updateRemark() {
-//
-//        long forBookId = 2L;
-//        Book updateForBook = new Book(forBookId, null, null, null, null);
-//        var expectedRemark = new Remark(updatedRemarkId, "Remark_10500", updateForBook);
-//
-//        assertThat(remarkRepository.findById(expectedRemark.getId()))
-//                .isPresent()
-//                .get()
-//                .isNotEqualTo(expectedRemark);
-//
-//        var returnedRemark = remarkRepository.save(expectedRemark);
-//        assertThat(returnedRemark).isNotNull()
-//                .matches(remark -> remark.getId() > 0)
-//                .usingRecursiveComparison().ignoringExpectedNullFields()
-//                .isEqualTo(expectedRemark);
-//
-//        Remark bdReamrk = remarkRepository.findById(returnedRemark.getId()).get();
-//        assertThat(bdReamrk.getId())
-//                .isEqualTo(returnedRemark.getId());
-//        assertThat(bdReamrk.getRemarkText())
-//                .isEqualTo(returnedRemark.getRemarkText());
-//        assertThat(bdReamrk.getBook().getId())
-//                .isEqualTo(returnedRemark.getBook().getId());
-//    }
+    @DisplayName("Вставка замечания")
+    @Test
+    void insertRemark() {
+        int insertToBookN = 2;
+        String insertToBookId = allEntitiesModelImpl.getBooks().get(insertToBookN-1).getId();
+        Book insertToBook = new Book(insertToBookId, null, null, null, null);
+        var newRemark = new Remark("Remark_10500", insertToBookId);
+        var returnedRemark = remarkRepository.save(newRemark);
+        newRemark.setId(returnedRemark.getId());
+        assertThat(returnedRemark).isNotNull()
+                .matches(remark -> remark.getId() != null && remark.getId().length() > 0)
+                .isEqualTo(newRemark);
+        Optional<Remark> checkRemark = remarkRepository.findById(returnedRemark.getId());
+        assertThat(checkRemark)
+                .isPresent()
+                .get()
+                .isEqualTo(returnedRemark);
+        remarkRepository.deleteById(returnedRemark.getId());
+    }
 
-//    @DisplayName("Удаление замечания")
-//    @Test
-//    void deleteById() {
-//        assertThat(remarkRepository.findById(deletedRemarkId)).isPresent();
-//        var remark = remarkRepository.findById(deletedRemarkId);
-//        remarkRepository.deleteById(deletedRemarkId);
-//        Throwable exception = Assertions.assertThrows(EntityNotFoundException.class, () -> {
-//            remarkRepository.findById(deletedRemarkId).orElseThrow(() -> new EntityNotFoundException("Remark with id %d not found".formatted(deletedRemarkId)));});
-//        assertEquals("findById error!", exception.getMessage(), "Remark with id %s not found".formatted(deletedRemarkId));
-//    }
+    @DisplayName("Обновление замечания")
+    @Test
+    void updateRemark() {
+
+        int forBookN = 2;
+        String forBookId = allEntitiesModelImpl.getBooks().get(forBookN-1).getId();
+        String updatedRemarkId = allEntitiesModelImpl.getRemarks().get(updatedRemarkN-1).getId();
+        var expectedRemark = new Remark(updatedRemarkId, "Remark_10500", forBookId);
+
+        assertThat(remarkRepository.findById(expectedRemark.getId()))
+                .isPresent()
+                .get()
+                .isNotEqualTo(expectedRemark);
+
+        var returnedRemark = remarkRepository.save(expectedRemark);
+        assertThat(returnedRemark).isNotNull()
+                .matches(remark -> remark.getId() != null && remark.getId().length() > 0)
+                .usingRecursiveComparison().ignoringExpectedNullFields()
+                .isEqualTo(expectedRemark);
+
+        Remark bdReamrk = remarkRepository.findById(returnedRemark.getId()).get();
+        assertThat(bdReamrk.getId())
+                .isEqualTo(returnedRemark.getId());
+        assertThat(bdReamrk.getRemarkText())
+                .isEqualTo(returnedRemark.getRemarkText());
+        assertThat(bdReamrk.getBookId())
+                .isEqualTo(returnedRemark.getBookId());
+    }
+
+    @DisplayName("Удаление замечания")
+    @Test
+    void deleteById() {
+        String deletedRemarkId = allEntitiesModelImpl.getRemarks().get(deletedRemarkN-1).getId();
+        assertThat(remarkRepository.findById(deletedRemarkId)).isPresent();
+        var remark = remarkRepository.findById(deletedRemarkId);
+        remarkRepository.deleteById(deletedRemarkId);
+        Throwable exception = Assertions.assertThrows(EntityNotFoundException.class, () -> {
+            remarkRepository.findById(deletedRemarkId).orElseThrow(() -> new EntityNotFoundException("Remark with id %s not found".formatted(deletedRemarkId)));});
+        assertEquals("Remark with id %s not found".formatted(deletedRemarkId), exception.getMessage());
+    }
 
     private List<Remark> convertToFlatDbRemarks() {
         return remarks.stream().flatMap(x->x.stream()).collect(Collectors.toList());

@@ -8,8 +8,6 @@ import ru.otus.hw.models.entities.Author;
 import ru.otus.hw.models.entities.Book;
 import ru.otus.hw.models.entities.Genre;
 import ru.otus.hw.models.entities.Remark;
-import ru.otus.hw.models.test.AllEntitiesModel;
-import ru.otus.hw.models.test.AllEntitiesModelImpl;
 import ru.otus.hw.repositories.AuthorRepository;
 import ru.otus.hw.repositories.BookRepository;
 import ru.otus.hw.repositories.GenreRepository;
@@ -21,24 +19,13 @@ import java.util.List;
 @ChangeLog(order = "001")
 public class InitTestMongoDBData {
 
-    @Autowired
-    private final AllEntitiesModel allEntitiesModelImpl;
-
-    public InitTestMongoDBData() {
-        this.allEntitiesModelImpl = new AllEntitiesModelImpl();
-    }
-
-    public InitTestMongoDBData(AllEntitiesModel allEntitiesModelImpl) {
-        this.allEntitiesModelImpl = allEntitiesModelImpl;
-    }
-
     @ChangeSet(order = "000", id = "dropDB", author = "boytsov", runAlways = true)
     public void dropDB(MongoDatabase db) {
         db.drop();
     }
 
     @ChangeSet(order = "001", id = "initAuthor", author = "boytsov", runAlways = true)
-    public void initAuthor(AuthorRepository repository) {
+    public void initAuthor(AuthorRepository repository, @Autowired  AllEntitiesModel allEntitiesModelImpl) {
         List<Author> authors = new ArrayList<>();
         authors.add(repository.save(new Author("Author_1")));
         authors.add(repository.save(new Author("Author_2")));
@@ -47,7 +34,7 @@ public class InitTestMongoDBData {
     }
 
     @ChangeSet(order = "002", id = "initGenre", author = "boytsov", runAlways = true)
-    public void initGenre(GenreRepository repository) {
+    public void initGenre(GenreRepository repository, @Autowired  AllEntitiesModel allEntitiesModelImpl) {
         List<Genre> genres = new ArrayList<>();
         genres.add(repository.save(new Genre("Genre_1")));
         genres.add(repository.save(new Genre("Genre_2")));
@@ -56,7 +43,7 @@ public class InitTestMongoDBData {
     }
 
     @ChangeSet(order = "003", id = "initBooks", author = "boytsov", runAlways = true)
-    public void initBooks(BookRepository repository) {
+    public void initBooks(BookRepository repository, @Autowired  AllEntitiesModel allEntitiesModelImpl) {
         List<Book> books = new ArrayList<>();
         List<Author> authors = allEntitiesModelImpl.getAuthors();
         List<Genre> genres = allEntitiesModelImpl.getGenres();
@@ -67,7 +54,7 @@ public class InitTestMongoDBData {
     }
 
     @ChangeSet(order = "004", id = "initRemarks", author = "boytsov", runAlways = true)
-    public void initRemarks(RemarkRepository repository) {
+    public void initRemarks(RemarkRepository repository, @Autowired  AllEntitiesModel allEntitiesModelImpl) {
         List<Remark> remarks = new ArrayList<>();
         List<Book> books = allEntitiesModelImpl.getBooks();
         remarks.add(repository.save(new Remark("Remark_11", books.get(0).getId())));
@@ -80,7 +67,7 @@ public class InitTestMongoDBData {
     }
 
     @ChangeSet(order = "005", id = "initBookRemark", author = "boytsov", runAlways = true)
-    public void initBookRemark(BookRepository repository) {
+    public void initBookRemark(BookRepository repository, @Autowired  AllEntitiesModel allEntitiesModelImpl) {
         List<Book> books = allEntitiesModelImpl.getBooks();
         List<Remark> remarks = allEntitiesModelImpl.getRemarks();
         for (Book book : books) {
