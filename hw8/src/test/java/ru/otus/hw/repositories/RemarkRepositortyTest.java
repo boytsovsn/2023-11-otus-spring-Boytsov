@@ -127,8 +127,7 @@ class RemarkRepositortyTest {
     private List<List<Remark>> getDbRemarks() {
         return IntStream.range(1, 4).boxed()
                 .map(id -> IntStream.range(1, id+1).boxed()
-                        .map(id1 ->{ Book book = new Book( allEntitiesModelImpl.getBooks().get(id-1).getId(), null, null, null, null);
-                            return new Remark(allEntitiesModelImpl.getRemarks().get(id*(id-1)/2+id1-1).getId(), "Remark_"+id+id1, allEntitiesModelImpl.getBooks().get(id-1).getId());}).toList())
+                        .map(id1 ->{return new Remark(allEntitiesModelImpl.getRemarks().get(id*(id-1)/2+id1-1).getId(), "Remark_"+id+id1, allEntitiesModelImpl.getBooks().get(id-1).getId());}).toList())
                 .toList();
     }
 
