@@ -42,21 +42,36 @@ public class RemarkServiceImpl implements RemarkService {
         Remark savedRemark;
         Book book = bookRepository.findById(bookId).orElseThrow(() -> new EntityNotFoundException("Book with id %s not found".formatted(bookId)));
         if (id==null || id.isEmpty() || id.equals("0")) {
-            remark = new Remark(remarkText, bookId);
+            remark = new Remark(remarkText, book);
             savedRemark = remarkRepository.save(remark);
             book.getRemarks().add(savedRemark);
         } else {
             remark = remarkRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Remark with id %s not found".formatted(id)));
             remark.setRemarkText(remarkText);
+            Book oldBook  = remark.getBook();
+            remark.setBook(book);
             savedRemark = remarkRepository.save(remark);
             List<Remark> newRemarks = new ArrayList<>();
-            for (Remark bRemark: book.getRemarks()) {
-                if (!bRemark.getId().equals(savedRemark.getId()))
-                    newRemarks.add(bRemark);
-                else
-                    newRemarks.add(savedRemark);
+            if (oldBook.getId().equals(book.getId())) {              // Книга в комментарии не изменилась
+                //Заменить remark в book
+                for (Remark bRemark : book.getRemarks()) {
+                    if (!bRemark.getId().equals(savedRemark.getId()))
+                        newRemarks.add(bRemark);
+                    else
+                        newRemarks.add(savedRemark);
+                }
+                book.setRemarks(newRemarks);
+            } else {                                                  // Книга в комментарии изменилась
+                //Удалить remark в oldBook
+                for (Remark bRemark : oldBook.getRemarks()) {
+                    if (!bRemark.getId().equals(savedRemark.getId()))
+                        newRemarks.add(bRemark);
+                }
+                oldBook.setRemarks(newRemarks);
+                bookRepository.save(oldBook);
+                //Добавить remark в book
+                book.getRemarks().add(savedRemark);
             }
-            book.setRemarks(newRemarks);
         }
 
         bookRepository.save(book);
@@ -67,8 +82,8 @@ public class RemarkServiceImpl implements RemarkService {
     @Transactional
     public void deleteById(String id) {
         var remark = remarkRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Remark with id %s not found".formatted(id)));
-        String bookId = remark.getBookId();
-        Book book = bookRepository.findById(bookId).orElseThrow(() -> new EntityNotFoundException("Book with id %s not found".formatted(bookId)));
+        Book rbook = remark.getBook();
+        Book book = bookRepository.findById(rbook.getId()).orElseThrow(() -> new EntityNotFoundException("Book with id %s not found".formatted(rbook.getId())));
         List<Remark> newRemarks = new ArrayList<>();
         for (Remark bRemark: book.getRemarks()) {
             if (!bRemark.getId().equals(id)) {

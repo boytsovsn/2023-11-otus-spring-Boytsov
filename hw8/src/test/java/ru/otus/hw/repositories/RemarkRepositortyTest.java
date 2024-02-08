@@ -1,22 +1,20 @@
 package ru.otus.hw.repositories;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.context.annotation.ComponentScan;
+import ru.otus.hw.BaseTest;
+import ru.otus.hw.changelogs.test.AllEntitiesModel;
 import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.models.entities.Book;
 import ru.otus.hw.models.entities.Remark;
-import ru.otus.hw.changelogs.test.AllEntitiesModel;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -25,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @EnableConfigurationProperties
 @ComponentScan({"ru.otus.hw.changelogs.test", "ru.otus.hw.repositories"})
 @DisplayName("Mongo репозиторий для Remark")
-class RemarkRepositortyTest {
+class RemarkRepositortyTest extends BaseTest {
 
     @Autowired
     private RemarkRepository remarkRepository;
@@ -36,12 +34,6 @@ class RemarkRepositortyTest {
     private final int updatedRemarkN = 1;
 
     private final int deletedRemarkN = 2;
-    private List<List<Remark>> remarks;
-
-    @BeforeEach
-    void setUp() {
-        remarks = getDbRemarks();
-    }
 
     @DisplayName("Замечание по id")
     @Test
@@ -54,7 +46,7 @@ class RemarkRepositortyTest {
                 var fRemark = remarkRepository.findById(remark.getId()).orElseThrow(() -> new EntityNotFoundException("Remark not found, id %s".formatted(remark.getId())));
                 assertThat(fRemark.getId()).isEqualTo(remark.getId());
                 assertThat(fRemark.getRemarkText()).isEqualTo(remark.getRemarkText());
-                assertThat(fRemark.getBookId()).isEqualTo(remark.getBookId());
+                assertThat(fRemark.getBook()).isEqualTo(remark.getBook());
             }
         }
     }
@@ -63,9 +55,8 @@ class RemarkRepositortyTest {
     @Test
     void insertRemark() {
         int insertToBookN = 2;
-        String insertToBookId = allEntitiesModelImpl.getBooks().get(insertToBookN-1).getId();
-        Book insertToBook = new Book(insertToBookId, null, null, null, null);
-        var newRemark = new Remark("Remark_10500", insertToBookId);
+        Book insertToBook = allEntitiesModelImpl.getBooks().get(insertToBookN-1);
+        var newRemark = new Remark("Remark_10500", insertToBook);
         var returnedRemark = remarkRepository.save(newRemark);
         newRemark.setId(returnedRemark.getId());
         assertThat(returnedRemark).isNotNull()
@@ -84,9 +75,9 @@ class RemarkRepositortyTest {
     void updateRemark() {
 
         int forBookN = 2;
-        String forBookId = allEntitiesModelImpl.getBooks().get(forBookN-1).getId();
+        Book forBook = allEntitiesModelImpl.getBooks().get(forBookN-1);
         String updatedRemarkId = allEntitiesModelImpl.getRemarks().get(updatedRemarkN-1).getId();
-        var expectedRemark = new Remark(updatedRemarkId, "Remark_10500", forBookId);
+        var expectedRemark = new Remark(updatedRemarkId, "Remark_10500", forBook);
 
         assertThat(remarkRepository.findById(expectedRemark.getId()))
                 .isPresent()
@@ -104,8 +95,8 @@ class RemarkRepositortyTest {
                 .isEqualTo(returnedRemark.getId());
         assertThat(bdReamrk.getRemarkText())
                 .isEqualTo(returnedRemark.getRemarkText());
-        assertThat(bdReamrk.getBookId())
-                .isEqualTo(returnedRemark.getBookId());
+        assertThat(bdReamrk.getBook())
+                .isEqualTo(returnedRemark.getBook());
     }
 
     @DisplayName("Удаление замечания")
@@ -118,17 +109,6 @@ class RemarkRepositortyTest {
         Throwable exception = Assertions.assertThrows(EntityNotFoundException.class, () -> {
             remarkRepository.findById(deletedRemarkId).orElseThrow(() -> new EntityNotFoundException("Remark with id %s not found".formatted(deletedRemarkId)));});
         assertEquals("Remark with id %s not found".formatted(deletedRemarkId), exception.getMessage());
-    }
-
-    private List<Remark> convertToFlatDbRemarks() {
-        return remarks.stream().flatMap(x->x.stream()).collect(Collectors.toList());
-    }
-
-    private List<List<Remark>> getDbRemarks() {
-        return IntStream.range(1, 4).boxed()
-                .map(id -> IntStream.range(1, id+1).boxed()
-                        .map(id1 ->{return new Remark(allEntitiesModelImpl.getRemarks().get(id*(id-1)/2+id1-1).getId(), "Remark_"+id+id1, allEntitiesModelImpl.getBooks().get(id-1).getId());}).toList())
-                .toList();
     }
 
 }

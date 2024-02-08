@@ -1,26 +1,19 @@
 package ru.otus.hw.repositories;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.util.Assert;
-import ru.otus.hw.changelogs.test.AllEntitiesModel;
-import ru.otus.hw.models.entities.Author;
+import ru.otus.hw.BaseTest;
 import ru.otus.hw.models.entities.Book;
-import ru.otus.hw.models.entities.Genre;
 import ru.otus.hw.models.entities.Remark;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -28,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @EnableConfigurationProperties
 @ComponentScan({"ru.otus.hw.changelogs.test", "ru.otus.hw.repositories"})
 @DisplayName("Mongo репозиторий для Book")
-class BookRepositoryTest {
+class BookRepositoryTest extends BaseTest {
 
     @Autowired
     private BookRepository bookRepository;
@@ -36,24 +29,7 @@ class BookRepositoryTest {
     @Autowired
     private RemarkRepository RemarkRepository;
 
-    @Autowired
-    private AllEntitiesModel allEntitiesModelImpl;
 
-    private List<Author> dbAuthors;
-
-    private List<Genre> dbGenres;
-
-    private List<List<Remark>> dbRemarks;
-
-    private List<Book> dbBooks;
-
-    @BeforeEach
-    void setUp() {
-        dbAuthors = getDbAuthors();
-        dbGenres = getDbGenres();
-        dbRemarks = getDbRemarks();
-        dbBooks = getDbBooks(dbAuthors, dbGenres, dbRemarks);
-    }
 
     @DisplayName("Список всех книг")
     @Test
@@ -102,7 +78,7 @@ class BookRepositoryTest {
         assertThat(returnedBook).isNotNull()
                 .matches(book -> book.getId() != null && book.getId().length() > 0)
                 .usingRecursiveComparison().ignoringExpectedNullFields().isEqualTo(newBook);
-        Remark newRemark = new Remark( "Это особое мнение", returnedBook.getId());
+        Remark newRemark = new Remark( "Это особое мнение", returnedBook);
         var returnedRemark = RemarkRepository.save(newRemark);
         returnedBook.setRemarks(Arrays.asList(returnedRemark));
         bookRepository.save(returnedBook);
@@ -145,7 +121,7 @@ class BookRepositoryTest {
         assertThat(bookRepository.findById(returnedBook.getId()))
                 .isPresent()
                 .get()
-                .usingRecursiveComparison().ignoringExpectedNullFields().isEqualTo(returnedBook);
+                .isEqualTo(returnedBook);
     }
 
     @DisplayName("Удаление книги по id")
@@ -156,37 +132,5 @@ class BookRepositoryTest {
         List<Remark> expectedRemarks = bookRepository.findById(deletedBookId).get().getRemarks();
         bookRepository.deleteById(deletedBookId);
         Assert.isTrue(bookRepository.findById(deletedBookId).isEmpty(), "Book with id = %s is not deleted".formatted(deletedBookId));
-    }
-
-    private List<Author> getDbAuthors() {
-        return IntStream.range(1, 4).boxed()
-                .map(id -> new Author(allEntitiesModelImpl.getAuthors().get(id-1).getId(), "Author_" + id))
-                .toList();
-    }
-
-    private List<Genre> getDbGenres() {
-        return IntStream.range(1, 4).boxed()
-                .map(id -> new Genre(allEntitiesModelImpl.getGenres().get(id-1).getId(), "Genre_" + id))
-                .toList();
-    }
-
-    private List<List<Remark>> getDbRemarks() {
-        return IntStream.range(1, 4).boxed()
-                .map(id -> IntStream.range(1, id+1).boxed()
-                        .map(id1 ->{return new Remark(allEntitiesModelImpl.getRemarks().get(id*(id - 1)/2 + id1 - 1).getId(), "Remark_"+id+id1, allEntitiesModelImpl.getBooks().get(id - 1).getId());}).toList())
-                .toList();
-    }
-
-    private List<Book> getDbBooks(List<Author> _dbAuthors, List<Genre> _dbGenres, List<List<Remark>> _dbRemarks) {
-        return IntStream.range(1, 4).boxed()
-                .map(id -> new Book(allEntitiesModelImpl.getBooks().get(id-1).getId(), "BookTitle_" + id, _dbAuthors.get(id - 1), _dbGenres.get(id - 1), _dbRemarks.get(id - 1)))
-                .toList();
-    }
-
-    private List<Book> getDbBooks() {
-        var authors = getDbAuthors();
-        var genres = getDbGenres();
-        var remarks = getDbRemarks();
-        return getDbBooks(authors, genres, remarks);
     }
 }

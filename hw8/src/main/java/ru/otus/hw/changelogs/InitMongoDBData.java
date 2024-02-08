@@ -58,12 +58,12 @@ public class InitMongoDBData {
     @ChangeSet(order = "004", id = "initRemarks", author = "boytsov", runAlways = true)
     public void initRemarks(RemarkRepository repository) {
         remarks = new ArrayList<>();
-        remarks.add(repository.save(new Remark("Круто!!!", books.get(0).getId())));
-        remarks.add(repository.save(new Remark("Не очень.", books.get(0).getId())));
-        remarks.add(repository.save(new Remark("Скучно.", books.get(1).getId())));
-        remarks.add(repository.save(new Remark("Интересно", books.get(2).getId())));
-        remarks.add(repository.save(new Remark("Классика", books.get(2).getId())));
-        remarks.add(repository.save(new Remark("Долго", books.get(2).getId())));
+        remarks.add(repository.save(new Remark("Круто!!!", books.get(0))));
+        remarks.add(repository.save(new Remark("Не очень.", books.get(0))));
+        remarks.add(repository.save(new Remark("Скучно.", books.get(1))));
+        remarks.add(repository.save(new Remark("Интересно", books.get(2))));
+        remarks.add(repository.save(new Remark("Классика", books.get(2))));
+        remarks.add(repository.save(new Remark("Долго", books.get(2))));
     }
 
     @ChangeSet(order = "005", id = "initBookRemark", author = "boytsov", runAlways = true)

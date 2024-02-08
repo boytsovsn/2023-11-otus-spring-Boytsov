@@ -57,12 +57,12 @@ public class InitTestMongoDBData {
     public void initRemarks(RemarkRepository repository, @Autowired  AllEntitiesModel allEntitiesModelImpl) {
         List<Remark> remarks = new ArrayList<>();
         List<Book> books = allEntitiesModelImpl.getBooks();
-        remarks.add(repository.save(new Remark("Remark_11", books.get(0).getId())));
-        remarks.add(repository.save(new Remark("Remark_21", books.get(1).getId())));
-        remarks.add(repository.save(new Remark("Remark_22", books.get(1).getId())));
-        remarks.add(repository.save(new Remark("Remark_31", books.get(2).getId())));
-        remarks.add(repository.save(new Remark("Remark_32", books.get(2).getId())));
-        remarks.add(repository.save(new Remark("Remark_33", books.get(2).getId())));
+        remarks.add(repository.save(new Remark("Remark_11", books.get(0))));
+        remarks.add(repository.save(new Remark("Remark_21", books.get(1))));
+        remarks.add(repository.save(new Remark("Remark_22", books.get(1))));
+        remarks.add(repository.save(new Remark("Remark_31", books.get(2))));
+        remarks.add(repository.save(new Remark("Remark_32", books.get(2))));
+        remarks.add(repository.save(new Remark("Remark_33", books.get(2))));
         allEntitiesModelImpl.setRemarks(remarks);
     }
 
