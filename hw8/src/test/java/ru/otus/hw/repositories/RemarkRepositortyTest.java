@@ -35,6 +35,8 @@ class RemarkRepositortyTest extends BaseTest {
 
     private final int deletedRemarkN = 2;
 
+    private final int insertToBookN = 2;
+
     @DisplayName("Замечание по id")
     @Test
     void findById() {
@@ -42,19 +44,18 @@ class RemarkRepositortyTest extends BaseTest {
         String updatedRemarkId = remarksList.get(updatedRemarkN-1).getId();
         String deletedRemarkId = remarksList.get(deletedRemarkN-1).getId();
         for (Remark remark: remarksList) {
-            if (remark.getId() != updatedRemarkId && remark.getId() != deletedRemarkId) {
+//            if (remark.getId() != updatedRemarkId && remark.getId() != deletedRemarkId) {
                 var fRemark = remarkRepository.findById(remark.getId()).orElseThrow(() -> new EntityNotFoundException("Remark not found, id %s".formatted(remark.getId())));
                 assertThat(fRemark.getId()).isEqualTo(remark.getId());
                 assertThat(fRemark.getRemarkText()).isEqualTo(remark.getRemarkText());
                 assertThat(fRemark.getBook()).isEqualTo(remark.getBook());
-            }
+//            }
         }
     }
 
     @DisplayName("Вставка замечания")
     @Test
     void insertRemark() {
-        int insertToBookN = 2;
         Book insertToBook = allEntitiesModelImpl.getBooks().get(insertToBookN-1);
         var newRemark = new Remark("Remark_10500", insertToBook);
         var returnedRemark = remarkRepository.save(newRemark);
@@ -73,13 +74,12 @@ class RemarkRepositortyTest extends BaseTest {
     @DisplayName("Обновление замечания")
     @Test
     void updateRemark() {
-
         int forBookN = 2;
         Book forBook = allEntitiesModelImpl.getBooks().get(forBookN-1);
         String updatedRemarkId = allEntitiesModelImpl.getRemarks().get(updatedRemarkN-1).getId();
         var expectedRemark = new Remark(updatedRemarkId, "Remark_10500", forBook);
-
-        assertThat(remarkRepository.findById(expectedRemark.getId()))
+        var fromBDRemark = remarkRepository.findById(expectedRemark.getId());
+        assertThat(fromBDRemark)
                 .isPresent()
                 .get()
                 .isNotEqualTo(expectedRemark);
@@ -97,12 +97,15 @@ class RemarkRepositortyTest extends BaseTest {
                 .isEqualTo(returnedRemark.getRemarkText());
         assertThat(bdReamrk.getBook())
                 .isEqualTo(returnedRemark.getBook());
+        Remark restoreRemark = remarkRepository.save(fromBDRemark.get());
     }
 
     @DisplayName("Удаление замечания")
     @Test
     void deleteById() {
-        String deletedRemarkId = allEntitiesModelImpl.getRemarks().get(deletedRemarkN-1).getId();
+        Book insertToBook = allEntitiesModelImpl.getBooks().get(insertToBookN-1);
+        var returnedRemark = remarkRepository.save(new Remark("Remark_100500", insertToBook));
+        String deletedRemarkId = returnedRemark.getId();
         assertThat(remarkRepository.findById(deletedRemarkId)).isPresent();
         var remark = remarkRepository.findById(deletedRemarkId);
         remarkRepository.deleteById(deletedRemarkId);

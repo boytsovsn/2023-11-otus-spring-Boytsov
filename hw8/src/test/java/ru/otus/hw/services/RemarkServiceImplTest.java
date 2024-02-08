@@ -35,8 +35,6 @@ class RemarkServiceImplTest extends BaseTest {
 
     private final int insertToBookN = 2;
 
-    private final int deletedRemarkN = 2;
-
     private final int updatedRemarkN = 1;
 
     @DisplayName("Замечания по id книги")
@@ -45,7 +43,7 @@ class RemarkServiceImplTest extends BaseTest {
         for (int i = 0; i < dbRemarks.size(); i++) {
             List<Remark> actualRemarks = remarkServiceImpl.findByBookId(dbRemarks.get(i).get(0).getBook().getId());
             List<Remark> expectedRemarks = dbRemarks.get(i);
-            if (i != insertToBookN-1 || i != deletedRemarkN-1)
+//            if (i != insertToBookN-1 || i != deletedRemarkN-1)
                 assertThat(actualRemarks).isEqualTo(expectedRemarks);
         }
     }
@@ -56,8 +54,8 @@ class RemarkServiceImplTest extends BaseTest {
         List<Remark> remarks = convertToFlatDbRemarks();
         for (Remark expectedRemark: remarks) {
             var actualRemark = remarkServiceImpl.findById(expectedRemark.getId()).orElseThrow(() -> new EntityNotFoundException("Remark not found, id %s".formatted(expectedRemark.getId())));
-            if (!actualRemark.getId().equals(insertedRemarkId) || !actualRemark.getId().equals(updatedRemarkId)
-                    || !actualRemark.getId().equals(deletedRemarkId))
+//            if (!actualRemark.getId().equals(insertedRemarkId) || !actualRemark.getId().equals(updatedRemarkId)
+//                    || !actualRemark.getId().equals(deletedRemarkId))
                 assertThat(actualRemark).isEqualTo(expectedRemark);
         }
     }
@@ -78,6 +76,7 @@ class RemarkServiceImplTest extends BaseTest {
                 .isPresent()
                 .get()
                 .isEqualTo(returnedRemark);
+        remarkServiceImpl.deleteById(insertedRemarkId);
     }
 
     @DisplayName("Обновление замечания")
@@ -106,12 +105,15 @@ class RemarkServiceImplTest extends BaseTest {
                 .isEqualTo(returnedRemark.getRemarkText());
         assertThat(expectedRemark.getBook())
                 .isEqualTo(returnedRemark.getBook());
+        var restoreRemark = remarkServiceImpl.save(updatedRemarkId, fromBDRemark.get().getRemarkText(), fromBDRemark.get().getBook().getId());
     }
 
     @DisplayName("Удаление замечания")
     @Test
     void deleteById() {
-        deletedRemarkId = allEntitiesModelImpl.getRemarks().get(deletedRemarkN-1).getId();
+        Book insertToBook = allEntitiesModelImpl.getBooks().get(insertToBookN-1);
+        var returnedRemark = remarkServiceImpl.save(null, "Remark_100500", insertToBook.getId());
+        String deletedRemarkId = returnedRemark.getId();
         assertThat(remarkServiceImpl.findById(deletedRemarkId)).isPresent();
         var remark = remarkServiceImpl.findById(deletedRemarkId);
         remarkServiceImpl.deleteById(deletedRemarkId);
