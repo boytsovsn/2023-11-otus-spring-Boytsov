@@ -1,8 +1,6 @@
 package ru.otus.hw.repositories;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
@@ -28,14 +26,17 @@ class RemarkRepositortyTest extends BaseTest {
     @Autowired
     private RemarkRepository remarkRepository;
 
-    @Autowired
-    private AllEntitiesModel allEntitiesModelImpl;
-
     private final int updatedRemarkN = 1;
 
     private final int deletedRemarkN = 2;
 
     private final int insertToBookN = 2;
+
+    @BeforeEach
+    public void setUp() {
+        testN = 0;
+        super.setUp(testN);
+    }
 
     @DisplayName("Замечание по id")
     @Test
@@ -44,19 +45,17 @@ class RemarkRepositortyTest extends BaseTest {
         String updatedRemarkId = remarksList.get(updatedRemarkN-1).getId();
         String deletedRemarkId = remarksList.get(deletedRemarkN-1).getId();
         for (Remark remark: remarksList) {
-//            if (remark.getId() != updatedRemarkId && remark.getId() != deletedRemarkId) {
                 var fRemark = remarkRepository.findById(remark.getId()).orElseThrow(() -> new EntityNotFoundException("Remark not found, id %s".formatted(remark.getId())));
                 assertThat(fRemark.getId()).isEqualTo(remark.getId());
                 assertThat(fRemark.getRemarkText()).isEqualTo(remark.getRemarkText());
                 assertThat(fRemark.getBook()).isEqualTo(remark.getBook());
-//            }
         }
     }
 
     @DisplayName("Вставка замечания")
     @Test
     void insertRemark() {
-        Book insertToBook = allEntitiesModelImpl.getBooks().get(insertToBookN-1);
+        Book insertToBook = dbBooks.get(insertToBookN-1);
         var newRemark = new Remark("Remark_10500", insertToBook);
         var returnedRemark = remarkRepository.save(newRemark);
         newRemark.setId(returnedRemark.getId());
@@ -75,8 +74,8 @@ class RemarkRepositortyTest extends BaseTest {
     @Test
     void updateRemark() {
         int forBookN = 2;
-        Book forBook = allEntitiesModelImpl.getBooks().get(forBookN-1);
-        String updatedRemarkId = allEntitiesModelImpl.getRemarks().get(updatedRemarkN-1).getId();
+        Book forBook = dbBooks.get(forBookN-1);
+        String updatedRemarkId = convertToFlatDbRemarks().get(updatedRemarkN-1).getId();
         var expectedRemark = new Remark(updatedRemarkId, "Remark_10500", forBook);
         var fromBDRemark = remarkRepository.findById(expectedRemark.getId());
         assertThat(fromBDRemark)
@@ -97,13 +96,13 @@ class RemarkRepositortyTest extends BaseTest {
                 .isEqualTo(returnedRemark.getRemarkText());
         assertThat(bdReamrk.getBook())
                 .isEqualTo(returnedRemark.getBook());
-        Remark restoreRemark = remarkRepository.save(fromBDRemark.get());
+        remarkRepository.save(fromBDRemark.get());
     }
 
     @DisplayName("Удаление замечания")
     @Test
     void deleteById() {
-        Book insertToBook = allEntitiesModelImpl.getBooks().get(insertToBookN-1);
+        Book insertToBook = dbBooks.get(insertToBookN-1);
         var returnedRemark = remarkRepository.save(new Remark("Remark_100500", insertToBook));
         String deletedRemarkId = returnedRemark.getId();
         assertThat(remarkRepository.findById(deletedRemarkId)).isPresent();

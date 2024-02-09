@@ -6,21 +6,22 @@ import ru.otus.hw.models.entities.Genre;
 import ru.otus.hw.models.entities.Remark;
 
 import java.util.List;
+import java.util.Map;
 
 public interface AllEntitiesModel {
-    void setAuthors(List<Author> authors);
+    void setAuthors(Map<Integer, List<Author>> authors);
 
-    void setGenres(List<Genre> genres);
+    void setGenres (Map<Integer, List<Genre>> genres);
 
-    void setRemarks(List<Remark> remarks);
+    void setRemarks(Map<Integer, List<Remark>> remarks);
 
-    void setBooks(List<Book> books);
+    void setBooks  (Map<Integer, List<Book>> books);
 
-    List<Author> getAuthors();
+    Map<Integer, List<Author>> getAuthors();
 
-    List<Genre> getGenres();
+    Map<Integer, List<Genre>>  getGenres();
 
-    List<Remark> getRemarks();
+    Map<Integer, List<Remark>> getRemarks();
 
-    List<Book> getBooks();
+    Map<Integer, List<Book>>   getBooks();
 }

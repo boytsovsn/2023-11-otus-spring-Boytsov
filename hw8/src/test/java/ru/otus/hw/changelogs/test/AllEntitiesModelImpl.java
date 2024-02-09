@@ -8,55 +8,56 @@ import ru.otus.hw.models.entities.Genre;
 import ru.otus.hw.models.entities.Remark;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class AllEntitiesModelImpl implements AllEntitiesModel {
-    private List<Author> authors;
+    private Map<Integer, List<Author>> authors;
 
-    private List<Genre> genres;
+    private Map<Integer, List<Genre>> genres;
 
-    private List<Remark> remarks;
+    private Map<Integer, List<Remark>> remarks;
 
-    private List<Book> books;
+    private Map<Integer, List<Book>> books;
 
     @Override
-    public void setAuthors(List<Author> authors) {
+    public void setAuthors(Map<Integer, List<Author>> authors) {
         this.authors = authors;
     }
 
     @Override
-    public void setGenres(List<Genre> genres) {
+    public void setGenres(Map<Integer, List<Genre>> genres) {
         this.genres = genres;
     }
 
     @Override
-    public void setRemarks(List<Remark> remarks) {
+    public void setRemarks(Map<Integer, List<Remark>> remarks) {
         this.remarks = remarks;
     }
 
     @Override
-    public void setBooks(List<Book> books) {
+    public void setBooks(Map<Integer, List<Book>> books) {
         this.books = books;
     }
 
     @Override
-    public List<Author> getAuthors() {
+    public Map<Integer, List<Author>> getAuthors() {
         return authors;
     }
 
     @Override
-    public List<Genre> getGenres() {
+    public Map<Integer, List<Genre>> getGenres() {
         return genres;
     }
 
     @Override
-    public List<Remark> getRemarks() {
+    public Map<Integer, List<Remark>> getRemarks() {
         return remarks;
     }
 
     @Override
-    public List<Book> getBooks() {
+    public Map<Integer, List<Book>> getBooks() {
         return books;
     }
 }
