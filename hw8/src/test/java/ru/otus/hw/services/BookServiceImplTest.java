@@ -122,7 +122,8 @@ class BookServiceImplTest extends BaseTest {
         assertThat(book).isPresent();
         List<Remark> expectedRemarks = book.get().getRemarks();
         bookServiceImpl.deleteById(deletedBookId);
-        Throwable exception = Assertions.assertThrows(EntityNotFoundException.class, () -> {bookServiceImpl.findById(deletedBookId);});
+        Throwable exception = Assertions.assertThrows(EntityNotFoundException.class, () -> {bookServiceImpl.findById(deletedBookId)
+                .orElseThrow(()->new EntityNotFoundException("Book with id %s not found".formatted(deletedBookId)));});
         assertEquals("Book with id %s not found".formatted(deletedBookId), exception.getMessage());
         for (Remark expectedRemark: expectedRemarks) {
             var remark = remarkRepository.findById(expectedRemark.getId());
