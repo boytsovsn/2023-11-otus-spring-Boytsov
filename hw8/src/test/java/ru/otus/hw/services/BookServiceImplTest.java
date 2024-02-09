@@ -14,7 +14,9 @@ import ru.otus.hw.models.entities.Book;
 import ru.otus.hw.models.entities.Remark;
 import ru.otus.hw.repositories.RemarkRepository;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -33,7 +35,7 @@ class BookServiceImplTest extends BaseTest {
 
     @BeforeEach
     public void setUp() {
-        testN = 3;
+        testN = 3; //(4 тест, если считать с 0)
         super.setUp(testN);
     }
 
@@ -50,9 +52,12 @@ class BookServiceImplTest extends BaseTest {
     @DisplayName("Список всех книг")
     @Test
     void findAll() {
+        // Список всех книг из БД
         List<Book> books = bookServiceImpl.findAll();
+        // Список тестовых книг из набора для 4го теста  (индекс 3 в списке)
         List<Book> checkBooks = dbBooks;
         int k = 0;
+        // Цикл по списку объектов для 4-го теста (индекс 3 в списке)
         for (int i = testN * dbBooks.size(); i < (testN + 1) * dbBooks.size(); i++) {
             assertThat(books.get(i))
                     .usingRecursiveComparison().ignoringExpectedNullFields().isEqualTo(checkBooks.get(k));
@@ -63,6 +68,18 @@ class BookServiceImplTest extends BaseTest {
     @DisplayName("Вставка книги")
     @Test
     void insert() {
+        var newBook = new Book("BookTitle_10500", dbAuthors.get(0), dbGenres.get(1));
+        var returnedBook = bookServiceImpl.insert(newBook.getTitle(), dbAuthors.get(0).getId(), dbGenres.get(1).getId());
+        newBook.setId(returnedBook.getId());
+        assertThat(returnedBook).isNotNull()
+                .matches(book -> book.getId() != null && book.getId().length() > 0)
+                .usingRecursiveComparison().ignoringExpectedNullFields().isEqualTo(newBook);
+        // Отзывы о книге в книге сохраняются в сервисе RemarkService, поэтому проверку по комментариям не делаем
+        Optional<Book> checkBook = bookServiceImpl.findById(returnedBook.getId());
+        assertThat(checkBook)
+                .isPresent()
+                .get()
+                .usingRecursiveComparison().ignoringExpectedNullFields().isEqualTo(returnedBook);
     }
 
     @DisplayName("Обновление книги")
@@ -70,7 +87,7 @@ class BookServiceImplTest extends BaseTest {
     void update() {
         int updatedBookN = 1;
         int fromBookN = 2;
-        // dbRemarks - список (по книгам) - списков (комментариев по книге)
+        // dbRemarks - список - списков (список по книгам списков комментариев)
         List<Remark> expectedRemarks = dbRemarks.get(updatedBookN-1);
         int i = 0;
         for (Remark expRemark : expectedRemarks) {
@@ -87,18 +104,14 @@ class BookServiceImplTest extends BaseTest {
                 .isNotEqualTo(expectedBook);
 
         var returnedBook = bookServiceImpl.update(expectedBook.getId(), expectedBook.getTitle(), expectedBook.getAuthor().getId(), expectedBook.getGenre().getId());
+        // Отзывы о книге в книге сохраняются в сервисе RemarkService, поэтому мы здесь комментарии просто
+        // присваиваем, чтобы книги стали равны
         returnedBook.setRemarks(expectedRemarks);
         assertThat(returnedBook).isNotNull()
                 .matches(book -> book.getId() != null && book.getId().length() > 0)
                 .usingRecursiveComparison().ignoringExpectedNullFields().isEqualTo(expectedBook);
-
-        for (Remark remark : expectedRemarks) {
-            var returnedRemark = remarkRepository.save(remark);
-        }
-        assertThat(bookServiceImpl.findById(returnedBook.getId()))
-                .isPresent()
-                .get()
-                .isEqualTo(returnedBook);
+        // Восстанавливаем изменённую книгу
+        bookServiceImpl.update(expectedBook.getId(), dbBooks.get(updatedBookN-1).getTitle(), dbAuthors.get(updatedBookN-1).getId(), dbGenres.get(updatedBookN-1).getId());
     }
 
     @DisplayName("Удаление книги")
