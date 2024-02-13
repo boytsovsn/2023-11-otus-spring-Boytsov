@@ -45,7 +45,7 @@ public class Remark {
             return true;
         } else
             return false;
-    };
+    }
 
     @Override
     public int hashCode() {
