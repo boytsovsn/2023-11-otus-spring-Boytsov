@@ -1,19 +1,21 @@
 spring:
+  messages:
+    encoding: UTF-8
   data:
     mongodb:
       host: localhost
       port: 27017
       database: mainDB
 
-  shell:
-    interactive:
-      enabled: true
-    noninteractive:
-      enabled: false
-
-    command:
-      version:
-        enabled: false
+#  shell:
+#    interactive:
+#      enabled: true
+#    noninteractive:
+#      enabled: false
+#
+#    command:
+#      version:
+#        enabled: false
 
 mongock:
   #runner-type: "ApplicationRunner" # default
