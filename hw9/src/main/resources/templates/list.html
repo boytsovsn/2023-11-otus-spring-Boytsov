@@ -57,13 +57,17 @@
     <tr>
         <th th:text="#{book-field-id}">ID</th>
         <th th:text="#{book-field-title}">Title</th>
+        <th th:text="#{book-field-author}">Author</th>
+        <th th:text="#{book-field-genre}">Genre</th>
         <th th:text="#{books-table-column-action}">Action</th>
     </tr>
     </thead>
     <tbody>
     <tr th:each="book : ${books}">
         <td th:text="${book.id}">1</td>
-        <td th:text="${book.title}">John Doe</td>
+        <td th:text="${book.title}">Evgeniy Onegin</td>
+        <td th:text="${book.author.fullName}">Pushkin</td>
+        <td th:text="${book.genre.name}">Poem</td>
         <td>
             <a th:href="@{/edit(id=${book.id})}" href="edit.html" th:text="#{edit-button-caption}">Edit</a>
         </td>

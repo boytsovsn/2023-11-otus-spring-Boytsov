@@ -30,7 +30,7 @@ public class InitTestMongoDBData {
     }
 
     @ChangeSet(order = "001", id = "initAuthor", author = "boytsov", runAlways = true)
-    public void initAuthor(AuthorRepository repository, @Autowired  AllEntitiesModel allEntitiesModelImpl) {
+    public void initAuthor(AuthorRepository repository, @Autowired AllEntitiesModel allEntitiesModelImpl) {
         Map<Integer, List<Author>> authorsMap = new HashMap<Integer, List<Author>>();
         allEntitiesModelImpl.setAuthors(authorsMap);
         for (Integer i = 0; i < testsCount; i++) {

@@ -52,12 +52,29 @@
         <label for="id-input" th:text="#{book-field-id} + ':'">ID:</label>
         <input id="id-input" type="text" readonly="readonly" name="id" th:value="*{id}" value="1"/>
     </div>
-
     <div class="row">
         <label for="book-title-input" th:text="#{book-field-title} + ':'">Title:</label>
-        <input id="book-title-input" name="title" type="text" th:value="*{title}" value="Pushkin"/>
+        <input id="book-title-input" name="title" type="text" th:value="*{title}" value="Evgeniy Onegin"/>
         <div class="errors" th:if="${#fields.hasErrors('title')}" th:errors="*{title}">Wrong book title error</div>
     </div>
+    <div class="row">
+        <label for="dropAuthor" th:text="#{book-field-author} + ':'">Author:</label>
+<!--        <input id="book-author-input" name="author" type="text" th:value="*{author.fullName}" value="Pushkin"/>-->
+<!--        <div class="errors" th:if="${#fields.hasErrors('author')}" th:errors="*{author.id}">Wrong author error</div>-->
+<!--        <div class="form-group blu-margin">-->
+            <select class="form-control" th:value="${book.author.id}" id="dropAuthor">
+                <option value="0">Select author</option>
+                <option th:each="author : ${authors}" th:value="${author.id}" th:text="${author.fullName}"></option>
+            </select>
+<!--        </div>-->
+    </div>
+
+    <div class="row">
+        <label for="book-genre-input" th:text="#{book-field-genre} + ':'">Genre:</label>
+        <input id="book-genre-input" name="genre" type="text" th:value="*{genre.name}" value="Poem"/>
+        <div class="errors" th:if="${#fields.hasErrors('genre')}" th:errors="*{genre.id}">Wrong genre error</div>
+    </div>
+
 
     <div class="row">
         <button type="submit" th:text="#{save-button-caption}">Save</button>

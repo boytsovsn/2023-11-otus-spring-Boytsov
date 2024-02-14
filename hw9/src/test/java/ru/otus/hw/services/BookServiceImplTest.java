@@ -14,7 +14,6 @@ import ru.otus.hw.models.entities.Book;
 import ru.otus.hw.models.entities.Remark;
 import ru.otus.hw.repositories.RemarkRepository;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 

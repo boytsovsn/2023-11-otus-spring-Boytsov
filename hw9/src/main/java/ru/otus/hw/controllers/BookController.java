@@ -11,8 +11,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.otus.hw.exceptions.NotFoundException;
 import ru.otus.hw.models.dto.BookDto;
+import ru.otus.hw.models.entities.Author;
 import ru.otus.hw.models.entities.Book;
+import ru.otus.hw.services.AuthorService;
 import ru.otus.hw.services.BookService;
+import ru.otus.hw.services.GenreService;
 
 import java.util.List;
 
@@ -21,6 +24,10 @@ import java.util.List;
 public class BookController {
 
     private final BookService bookService;
+
+    private final AuthorService authorService;
+
+    private final GenreService genreService;
 
     @GetMapping("/")
     public String listPage(Model model) {
@@ -33,6 +40,8 @@ public class BookController {
     public String editPage(@RequestParam("id") String id, Model model) {
         Book book = bookService.findById(id).orElseThrow(NotFoundException::new);
         model.addAttribute("book", book);
+        List<Author> authors = authorService.findAll();
+        model.addAttribute("authors", authors);
         return "edit";
     }
 

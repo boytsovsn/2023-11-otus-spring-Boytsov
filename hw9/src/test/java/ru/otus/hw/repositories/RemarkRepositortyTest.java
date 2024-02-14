@@ -6,7 +6,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.context.annotation.ComponentScan;
 import ru.otus.hw.BaseTest;
-import ru.otus.hw.changelogs.test.AllEntitiesModel;
 import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.models.entities.Book;
 import ru.otus.hw.models.entities.Remark;
