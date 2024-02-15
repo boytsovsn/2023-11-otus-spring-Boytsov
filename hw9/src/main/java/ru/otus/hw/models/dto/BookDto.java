@@ -14,12 +14,16 @@ public class BookDto {
 
     private String id;
 
-    @NotBlank(message = "{name-field-should-not-be-blank}")
-    @Size(min = 2, max = 50, message = "{name-field-should-has-expected-size}")
+    @NotBlank(message = "{field-should-not-be-blank}")
+    @Size(min = 2, max = 50, message = "{string-field-should-has-expected-size}")
     private String title;
 
+    @NotBlank(message = "{field-should-not-be-blank}")
+    @Size(min = 24, max = 24, message = "{id-field-should-has-expected-size}")
     private String authorId;
 
+    @NotBlank(message = "{field-should-not-be-blank}")
+    @Size(min = 24, max = 24, message = "{id-field-should-has-expected-size}")
     private String genreId;
 
     public Book toDomainObject(){

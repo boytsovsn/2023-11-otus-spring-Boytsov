@@ -72,6 +72,11 @@
             <a th:href="@{/edit(id=${book.id})}" href="edit.html" th:text="#{edit-button-caption}">Edit</a>
         </td>
     </tr>
+    <tr>
+        <td colspan="5" >
+            <a th:href="@{/edit(id=0)}" href="edit.html" th:text="#{create-button-caption}">Create</a>
+        </td>
+    </tr>
     </tbody>
 </table>
 </body>
