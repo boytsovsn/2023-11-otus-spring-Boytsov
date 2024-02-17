@@ -32,12 +32,15 @@
         <td th:text="${book.author.fullName}">Pushkin</td>
         <td th:text="${book.genre.name}">Poem</td>
         <td>
-            <a th:href="@{/edit(id=${book.id})}" href="edit.html" th:text="#{edit-button-caption}">Edit</a>
+            <a th:href="@{/book(id=${book.id})}" href="edit.html" th:text="#{edit-button-caption}">Edit</a>
+        </td>
+        <td>
+            <a th:href="@{/book/{id}(id=${book.id})}" href="edit.html" th:text="#{delete-button-caption}">Delete</a>
         </td>
     </tr>
     <tr>
         <td colspan="5" >
-            <a th:href="@{/edit(id=0)}" href="edit.html" th:text="#{create-button-caption}">Create</a>
+            <a th:href="@{/book(id=0)}" href="create.html" th:text="#{create-button-caption}">Create</a>
         </td>
     </tr>
     </tbody>
