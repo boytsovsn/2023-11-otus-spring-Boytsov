@@ -8,7 +8,7 @@
 <body>
 
 <!-- Person edition -->
-<form id="edit-form" th:action="@{/book/{id}(id=${bookDto.id})}" method="post" th:method="put" th:object="${bookDto}">
+<form id="edit-form" th:action="@{/book/{id}(id=${bookDto.id})}" th:method="put" th:object="${bookDto}">
     <h3 th:text = "#{book-form-header}">Book Info:</h3>
 
     <div class="row">

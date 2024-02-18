@@ -6,6 +6,10 @@ spring:
       host: localhost
       port: 27017
       database: mainDB
+  mvc:
+    hidden-method:
+      filter:
+        enabled: true
 
 mongock:
   #runner-type: "ApplicationRunner" # default

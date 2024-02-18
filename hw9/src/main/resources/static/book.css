@@ -3,6 +3,24 @@ body {
      color: cornflowerblue;
 }
 
+.langs {
+    width: 600px;
+}
+
+.langs td, th {
+    padding: 0px;
+    width: 300px;
+}
+
+.langs1 {
+    width: 250px;
+}
+
+.langs1 td, th {
+    padding: 0px;
+    width: 125px;
+}
+
 .books {
     border: 1px solid steelblue;
     width: 300px;
@@ -12,10 +30,6 @@ body {
 .books tr td, th {
     padding: 5px;
     border: 1px solid steelblue;
-}
-
-.books td:last-child, td:first-child {
-    width: 50px;
 }
 
 h3 {
@@ -28,4 +42,9 @@ h3 {
 a:hover, a:visited, a:link, a:active
 {
     text-decoration: none;
+}
+
+button {
+    color: cornflowerblue;
+    border: 1px solid steelblue;
 }

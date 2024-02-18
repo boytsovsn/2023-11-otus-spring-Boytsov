@@ -53,9 +53,7 @@ public class BookController {
         return sReturn;
     }
 
-    //@DeleteMapping не работает, потому что из формы delete-метод в браузерах не посылается
-    //@DeleteMapping("/book/{id}")
-    @GetMapping("/book/{id}")
+    @DeleteMapping("/book/{id}")
     public String deleteBook(@PathVariable("id") String id, Model model) {
         if (id != null && !id.isEmpty() && !id.equals("0")) {
             bookService.deleteById(id);
@@ -63,9 +61,7 @@ public class BookController {
         return "redirect:/";
     }
 
-    //@PutMapping не работает, потому что из формы put-метод в браузерах не посылается
-    //@PutMapping("/book")
-    @PostMapping("/book/{id}")
+    @PutMapping("/book/{id}")
     public String editBook(@PathVariable("id") String id, @Valid @ModelAttribute("bookDto") BookDto bookDto,
                            BindingResult bindingResult, Model model) {
         if (!bindingResult.hasErrors()) {
@@ -98,12 +94,7 @@ public class BookController {
             model.addAttribute("authors", authors);
             List<Genre> genres = genreService.findAll();
             model.addAttribute("genres", genres);
-            //Cо страницы edit попадаем сюда, поэтому в этом случае перенаправляем обратно на edit
-//            if (bookDto.getId()!=null && !bookDto.getId().isEmpty() && !bookDto.getId().equals("0")) {
-//                return "edit";
-//            } else {
-                return "create";
-//            }
+           return "create";
         }
     }
 }

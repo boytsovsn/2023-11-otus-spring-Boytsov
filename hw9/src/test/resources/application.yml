@@ -9,8 +9,8 @@ spring:
       port: 27017
 
 mongock:
-  runner-type: "ApplicationRunner"
-  #runner-type: "InitializingBean"
+  #runner-type: "ApplicationRunner"
+  runner-type: "InitializingBean"
   change-logs-scan-package:
     - ru.otus.hw.changelogs.test
   mongo-db:

@@ -7,11 +7,19 @@
 </head>
 <body>
 
-<h3 th:text="#{lang-switcher-header}">Select language</h3>
-<div>
-    <div><a href="#" th:href="@{/(lang=en)}" th:text="#{en-lang-switch-button-caption}">Language - EN</a></div>
-    <div><a href="#" th:href="@{/(lang=ru)}" th:text="#{ru-lang-switch-button-caption}">Language - RU</a></div>
-</div>
+<table class="langs">
+    <tr>
+        <td><h3 th:text="#{lang-switcher-header}">Select language</h3></td>
+        <td>
+            <table class="langs1">
+               <tr>
+                  <td><a href="#" th:href="@{/(lang=en)}" th:text="#{en-lang-switch-button-caption}">Language-EN</a></td>
+                  <td><a href="#" th:href="@{/(lang=ru)}" th:text="#{ru-lang-switch-button-caption}">Language-RU</a></td>
+               </tr>
+            </table>
+        </td>
+    </tr>
+</table>
 
 <h3 th:text="#{books-table-header}">Persons:</h3>
 
@@ -22,6 +30,7 @@
         <th th:text="#{book-field-title}">Title</th>
         <th th:text="#{book-field-author}">Author</th>
         <th th:text="#{book-field-genre}">Genre</th>
+        <th th:text="#{books-table-column-action}">Action</th>
         <th th:text="#{books-table-column-action}">Action</th>
     </tr>
     </thead>
@@ -35,11 +44,14 @@
             <a th:href="@{/book(id=${book.id})}" href="edit.html" th:text="#{edit-button-caption}">Edit</a>
         </td>
         <td>
-            <a th:href="@{/book/{id}(id=${book.id})}" href="edit.html" th:text="#{delete-button-caption}">Delete</a>
+            <form id="edit-form" th:action="@{/book/{id}(id=${book.id})}" th:method="delete">
+                <button type="submit" th:text="#{delete-button-caption}">Delete
+                </button>
+            </form>
         </td>
     </tr>
     <tr>
-        <td colspan="5" >
+        <td colspan="6">
             <a th:href="@{/book(id=0)}" href="create.html" th:text="#{create-button-caption}">Create</a>
         </td>
     </tr>
