@@ -1,37 +1,30 @@
 package ru.otus.hw.controllers;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.RequestBuilder;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
-import ru.otus.hw.models.entities.Author;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import ru.otus.hw.models.dto.BookDto;
 import ru.otus.hw.models.entities.Book;
-import ru.otus.hw.models.entities.Genre;
 import ru.otus.hw.services.AuthorService;
 import ru.otus.hw.services.BookService;
 import ru.otus.hw.services.GenreService;
-import ru.otus.hw.services.RemarkService;
 
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(BookController.class)
-@EnableMongoRepositories("ru.otus.hw.repositories")
-@ComponentScan({"ru.otus.hw.changelogs.test"})
-class BookControllerTest {
+public class BookControllerTest {
     @MockBean
     private BookService bookService;
 
@@ -41,29 +34,49 @@ class BookControllerTest {
     @MockBean
     private GenreService genreService;
 
-    @MockBean
-    private RemarkService remarkService;
-
+    @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
-    WebApplicationContext webApplicationContext;
 
-    @BeforeEach
-    public void setUp() {
-//        testN = 3; //(4 тест, если считать с 0)
-//        super.setUp(testN);
-        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+    @Test
+    public void listBookGet() throws Exception {
+        List<Book> books = new ArrayList<>();
+        books.add(new BookDto("0515e04eeead46478298faa1", "Test title1", "65ce2a68d4437132eb18a431", "65ce2a68d4437132eb18a43e").toDomainObject());
+        books.add(new BookDto("0515e04eeead46478298faa2", "Test title2", "65ce2a68d4437132eb18a432", "65ce2a68d4437132eb18a43e").toDomainObject());
+        books.add(new BookDto("0515e04eeead46478298faa3", "Test title3", "65ce2a68d4437132eb18a433", "65ce2a68d4437132eb18a43f").toDomainObject());
+        given(bookService.findAll()).willReturn(books);
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/")
+                        )
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andReturn();
+        String actualResponseBody = mvcResult.getResponse().getContentAsString();
+        assertThat(actualResponseBody).contains("0515e04eeead46478298faa1", "0515e04eeead46478298faa2", "0515e04eeead46478298faa3");
     }
 
     @Test
-    public void testReturn200() throws Exception {
-
-        given(bookService.findById(any())).willReturn(Optional.ofNullable(new Book("Test title", new Author("65ce2a68d4437132eb18a431", "Pushkin"), new Genre("65ce2a68d4437132eb18a43e", "Skazka"))));
-        mockMvc.perform((RequestBuilder) post("/book"))
-                .andExpect(status().isOk())
-                .andExpect(content()
-                        .contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
-
+    public void deleteBookDelete() throws Exception {
+        mockMvc.perform(delete("/book/0515e04eeead46478298faa1"))
+                .andExpect(status().isMovedTemporarily()).andDo(print());
     }
+
+    @Test
+    public void editBookPut() throws Exception {
+        BookDto bookDto = new BookDto("0515e04eeead46478298faa1", "Test title", "65ce2a68d4437132eb18a431", "65ce2a68d4437132eb18a43e");
+        mockMvc.perform(put("/book/0515e04eeead46478298faa1")
+                .param("id", bookDto.getId())
+                .param("title", bookDto.getTitle())
+                .param("authorId", bookDto.getAuthorId())
+                .param("genreId", bookDto.getGenreId()))
+            .andExpect(status().isMovedTemporarily()).andDo(print());
+    }
+
+    @Test
+    public void createBookPost() throws Exception {
+        BookDto bookDto = new BookDto("0", "Test title", "65ce2a68d4437132eb18a431", "65ce2a68d4437132eb18a43e");
+        mockMvc.perform(MockMvcRequestBuilders.post("/book").
+                        param("title", bookDto.getTitle()).param("authorId", bookDto.getAuthorId()).param("genreId", bookDto.getGenreId()))
+                .andExpect(status().isMovedTemporarily()).andDo(print());
+    }
+
 }
