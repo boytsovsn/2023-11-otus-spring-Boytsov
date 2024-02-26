@@ -1,7 +1,7 @@
 <script>
 import apploader from './components/apploader.vue'
-//import books from './components/books.vue'
-import book from './components/book.vue'
+import books from './components/books.vue'
+//import book from './components/book.vue'
 
 export default {
   data() {
@@ -15,14 +15,14 @@ export default {
 
   },
 
-  components: {book, apploader}
+  components: {books, apploader}
 }
 </script>
 
 <template>
     <apploader v-if="loading" />
     <!-- <books v-else :BookTitle="title" /> -->
-    <book v-else :BookTitle="title1" />
+    <books v-else :BookTitle="title" />
 </template>
 
 <style scoped>
