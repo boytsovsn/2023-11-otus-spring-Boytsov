@@ -1,5 +1,6 @@
 package ru.otus.hw.controllers;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,7 +9,9 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import ru.otus.hw.exceptions.NotFoundException;
+import ru.otus.hw.models.dto.AuthorDto;
 import ru.otus.hw.models.dto.BookDto;
+import ru.otus.hw.models.dto.GenreDto;
 import ru.otus.hw.models.entities.Author;
 import ru.otus.hw.models.entities.Book;
 import ru.otus.hw.models.entities.Genre;
@@ -17,6 +20,7 @@ import ru.otus.hw.services.BookService;
 import ru.otus.hw.services.GenreService;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequiredArgsConstructor
@@ -39,60 +43,66 @@ public class BookController {
         return header;
     }
 
-    @GetMapping("/api/books")
-    public ResponseEntity<List<BookDto>> listPage(Model model) {
-        List<Book> books = bookService.findAll();
-        model.addAttribute("books", books);
-        return new ResponseEntity<List<BookDto>>(books.stream().map(BookDto::fromDomainObject).toList(), getHeader(), HttpStatus.OK);
+    @GetMapping("/api/book")
+    public ResponseEntity<List<BookDto>> bookList() {
+        List<BookDto> books = bookService.findAll().stream().map(BookDto::fromDomainObject).toList();
+        if (books != null && !books.isEmpty()) {
+            List<AuthorDto> authorsDto = authorService.findAll().stream().map(AuthorDto::fromDomainObject).toList();
+            List<GenreDto> genresDto = genreService.findAll().stream().map(GenreDto::fromDomainObject).toList();
+            books.get(0).setAuthors(authorsDto);
+            books.get(0).setGenres(genresDto);
+        } else
+            return new ResponseEntity<List<BookDto>>(null, getHeader(), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<List<BookDto>>(books, getHeader(), HttpStatus.OK);
     }
 
-    @GetMapping("/api/book")
-    public String editPage(@RequestParam("id") String id, Model model) {
+    @GetMapping("/api/book/{id}")
+    public ResponseEntity<BookDto> getBook(@PathVariable("id") String id) {
         BookDto bookDto;
-        String sReturn = "edit";
+        List<AuthorDto> authors = authorService.findAll().stream().map(AuthorDto::fromDomainObject).toList();
+        List<GenreDto> genres = genreService.findAll().stream().map(GenreDto::fromDomainObject).toList();
         if (id != null && !id.isEmpty() && !id.equals("0")) {
-            Book book = bookService.findById(id).orElseThrow(NotFoundException::new);
-            bookDto = new BookDto(book.getId(), book.getTitle(), book.getAuthor().getId(), book.getGenre().getId());
+            try {
+                Book book = bookService.findById(id).get();
+                bookDto = new BookDto(book.getId(), book.getTitle(), book.getAuthor().getId(), book.getGenre().getId(), authors, genres);
+            } catch (NoSuchElementException e) {
+                return new ResponseEntity<BookDto>(null, getHeader(), HttpStatus.NOT_FOUND);
+            }
         } else {
-            bookDto = new BookDto("0", "", null, null);
-            sReturn = "create";
+            bookDto = new BookDto("0", "", null, null, authors, genres);
         }
-        model.addAttribute("bookDto", bookDto);
-        List<Author> authors = authorService.findAll();
-        model.addAttribute("authors", authors);
-        List<Genre> genres = genreService.findAll();
-        model.addAttribute("genres", genres);
-        return sReturn;
+        return new ResponseEntity<BookDto>(bookDto, getHeader(), HttpStatus.OK);
     }
 
     @DeleteMapping("/api/book/{id}")
-    public ResponseEntity<?> deleteBook(@RequestParam("id") String id) {
+    public ResponseEntity<?> deleteBook(@PathVariable("id") String id) {
         if (id != null && !id.isEmpty() && !id.equals("0")) {
             bookService.deleteById(id);
-            return new ResponseEntity<>(HttpStatus.OK);
+            return new ResponseEntity<>(null, getHeader(), HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(null, getHeader(), HttpStatus.BAD_REQUEST);
         }
     }
 
     @PutMapping("/api/book/{id}")
-    public ResponseEntity<BookDto> editBook(@RequestParam("id") String id, @RequestBody BookDto bookDto) {
+    public ResponseEntity<BookDto> editBook(@PathVariable("id") String id, @Valid @ModelAttribute("bookDto") BookDto bookDto) {
+        Book editBook;
         if (bookDto.getId()!=null && !bookDto.getId().isEmpty() && !bookDto.getId().equals("0") &&
             id != null && !id.isEmpty() && id.equals(bookDto.getId())) {
-            Book editBook = bookService.update(bookDto.getId(), bookDto.getTitle(), bookDto.getAuthorId(), bookDto.getGenreId());
-            return new ResponseEntity<BookDto>(BookDto.fromDomainObject(editBook), HttpStatus.OK);
+            editBook = bookService.update(id, bookDto.getTitle(), bookDto.getAuthorId(), bookDto.getGenreId());
+            return new ResponseEntity<BookDto>(BookDto.fromDomainObject(editBook), getHeader(), HttpStatus.OK);
         } else {
-            return new ResponseEntity<BookDto>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<BookDto>(null, getHeader(), HttpStatus.BAD_REQUEST);
         }
     }
 
     @PostMapping("/api/book")
-    public ResponseEntity<BookDto> createBook(@RequestBody BookDto bookDto) {
+    public ResponseEntity<BookDto> createBook(@Valid @ModelAttribute("bookDto") BookDto bookDto) {
        if (bookDto.getId()==null || bookDto.getId().isEmpty() || bookDto.getId().equals("0")) {
            Book newBook = bookService.insert(bookDto.getTitle(), bookDto.getAuthorId(), bookDto.getGenreId());
-           return new ResponseEntity<BookDto>(BookDto.fromDomainObject(newBook), HttpStatus.CREATED);
+           return new ResponseEntity<BookDto>(BookDto.fromDomainObject(newBook), getHeader(), HttpStatus.CREATED);
        } else {
-           return new ResponseEntity<BookDto>(HttpStatus.BAD_REQUEST);
+           return new ResponseEntity<BookDto>(null, getHeader(),HttpStatus.BAD_REQUEST);
        }
     }
 }

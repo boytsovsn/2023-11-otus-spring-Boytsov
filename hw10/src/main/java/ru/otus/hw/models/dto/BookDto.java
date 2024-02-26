@@ -8,6 +8,8 @@ import ru.otus.hw.models.entities.Author;
 import ru.otus.hw.models.entities.Book;
 import ru.otus.hw.models.entities.Genre;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 public class BookDto {
@@ -26,11 +28,15 @@ public class BookDto {
     @Size(min = 24, max = 24, message = "{id-field-should-has-expected-size}")
     private String genreId;
 
+    private List<AuthorDto> authors;
+
+    private List<GenreDto> genres;
+
     public Book toDomainObject(){
         return new Book(id, title, new Author(authorId, null), new Genre(genreId, null), null);
     }
 
     public static BookDto fromDomainObject(Book book) {
-        return new BookDto(book.getId(), book.getTitle(), book.getAuthor().getId(), book.getGenre().getId());
+        return new BookDto(book.getId(), book.getTitle(), book.getAuthor().getId(), book.getGenre().getId(), null, null);
     }
 }
