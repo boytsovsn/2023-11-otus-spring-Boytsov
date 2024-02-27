@@ -3,38 +3,47 @@
      <h3>{{ BookTitle }}</h3>
   </p>
   <p>
-    <DataTable :value="bookstable" tableStyle="min-width: 50rem">
-      <Column field="id" header="Id"></Column>
-      <Column field="title" header="Title"></Column>
-      <Column field="authorName" header="Author"></Column>
-      <Column field="gengreName" header="Genre"></Column>
-    </DataTable>
+    <table >
+      <th>Id</th>
+      <th>Title</th>
+      <th>Author</th>
+      <th>Genre</th>
+      <th>Edit</th>
+      <th>Delete</th>
+      <tr v-for="book in bookstable">
+        <td>{{ book.id }}</td>
+        <td>{{ book.title }}</td>
+        <td>{{ book.authorName }}</td>
+        <td>{{ book.gengreName }}</td>
+        <td>
+          <Button label="Edit" icon="pi pi-check"  @click="dtEditClick(book);"/>
+        </td>
+        <td>
+          <Button label="Delete" icon="pi pi-trash"  @click="dtDeleteClick(book);"/>
+        </td>
+      </tr>
+    </table>
   </p>
-  <!-- <p>
-    <DataTable :value="authors" tableStyle="min-width: 50rem">
-      <Column field="id" header="Id">{{ id }}</Column>
-      <Column field="fullName" header="FullName">{{ title }}</Column>
-    </DataTable>
-  </p>
-  <p>
-    <DataTable :value="genres" tableStyle="min-width: 50rem">
-      <Column field="id" header="Id">{{ id }}</Column>
-      <Column field="name" header="Name">{{ title }}</Column>
-    </DataTable>
-  </p> -->
+  
+  <book v-if="editing" :book="book" :BookTitle = "title"/>
 
 </template>
 
 <script>
+import book from './book.vue'
+
 export default {
-  props: ['BookTitle'],
-    data(){
-        return{
+    name: 'books',
+    props: ['BookTitle'],
+    data() {
+        return {
+            title: 'Book Edit',
             books:[],
+            book: [],
             bookstable:[],
             authors: new Map(),
             genres: new Map(),
-            loading: false
+            editing: false
         }
     },
     async created () {
@@ -58,11 +67,19 @@ export default {
         this.loading = false
         //console.log(JSON.parse(JSON.stringify(this.books)))  
         //console.log(this.books)
-        console.log(this.bookstable)
-      }
-    }
+        //console.log(this.bookstable)
+      },
+      dtEditClick(book) {
+        //alert("Edit book:" + JSON.stringify(book))
+        this.editing = true
+        this.book = book
+      },
+      dtDeleteClick(book) {
+        alert("Delete book:" + JSON.stringify(book))
+      }  
+    },
+    components: {book}
 }  
-
 </script>
 
 <style scoped>
