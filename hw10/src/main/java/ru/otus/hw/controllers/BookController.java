@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
+import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.exceptions.NotFoundException;
 import ru.otus.hw.models.dto.AuthorDto;
 import ru.otus.hw.models.dto.BookDto;
@@ -78,10 +79,14 @@ public class BookController {
     @DeleteMapping("/api/book/{id}")
     public ResponseEntity<?> deleteBook(@PathVariable("id") String id) {
         if (id != null && !id.isEmpty() && !id.equals("0")) {
-            bookService.deleteById(id);
-            return new ResponseEntity<>(null, getHeader(), HttpStatus.OK);
+            try {
+                bookService.deleteById(id);
+                return new ResponseEntity<>(null, HttpStatus.OK);
+            } catch (EntityNotFoundException e) {
+                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            }
         } else {
-            return new ResponseEntity<>(null, getHeader(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
     }
 

@@ -32,13 +32,4 @@ public class LocalizeConfig  implements WebMvcConfigurer {
         registry.addInterceptor(localeChangeInterceptor());
     }
 
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("http://localhost:8080/**")
-                .allowedOrigins("http://localhost:5173")
-                .allowedMethods("PUT","DELETE","GET","POST")
-                .allowedHeaders("header1", "header2", "header3")
-                .exposedHeaders("header1", "header2")
-                .allowCredentials(false).maxAge(3600);;
-    }
 }
