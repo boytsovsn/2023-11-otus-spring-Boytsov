@@ -11,15 +11,15 @@
 //         }
 //     }
 // }
-// module.exports = {
-//     // options...
-//     devServer: {
-//           port: 8080, 
-//           proxy: 'http://localhost/api',
-//           secure: false,
-//           changeOrigin: true
-//       }
-//   }
+module.exports = {
+    // options...
+    devServer: {
+          port: 8080, 
+          proxy: 'http://localhost/api',
+          secure: false,
+          changeOrigin: true
+      }
+  }
 
 // module.exports = {
 //     devServer: {

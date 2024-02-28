@@ -4,28 +4,28 @@
   </p>
   <p>
     <table >
-      <th>Id</th>
+      <!-- <th>Id</th> -->
       <th>Title</th>
       <th>Author</th>
       <th>Genre</th>
       <th>Edit</th>
       <th>Delete</th>
-      <tr v-for="book in bookstable">
-        <td>{{ book.id }}</td>
-        <td>{{ book.title }}</td>
-        <td>{{ book.authorName }}</td>
-        <td>{{ book.gengreName }}</td>
+      <tr v-for="bookTable in booksTable">
+        <!-- <td>{{ bookTable.id }}</td> -->
+        <td>{{ bookTable.title }}</td>
+        <td>{{ bookTable.authorName }}</td>
+        <td>{{ bookTable.genreName }}</td>
         <td>
-          <Button label="Edit" icon="pi pi-check"  @click="dtEditClick(book);"/>
+          <Button label="Edit" icon="pi pi-check"  @click="dtEditClick(bookTable);"/>
         </td>
         <td>
-          <Button label="Delete" icon="pi pi-trash"  @click="dtDeleteClick(book);"/>
+          <Button label="Delete" icon="pi pi-trash"  @click="dtDeleteClick(bookTable);"/>
         </td>
       </tr>
     </table>
   </p>
   
-  <book v-if="editing" :book="book" :BookTitle = "title"/>
+  <book v-if="editing" :book="book" :BookTitle="title"  :authorsMap="authors" :genresMap="genres"  @edtitingOff="editing=false"/>
 
 </template>
 
@@ -40,7 +40,7 @@ export default {
             title: 'Book Edit',
             books:[],
             book: [],
-            bookstable:[],
+            booksTable:[],
             authors: new Map(),
             genres: new Map(),
             editing: false
@@ -61,21 +61,34 @@ export default {
            this.genres.set(genre.id, genre.name);
         }
         for (let book of this.books) {
-          let booktable = {id: book.id, title: book.title, authorName: this.authors.get(book.authorId), gengreName: this.genres.get(book.genreId)}
-          this.bookstable.push(booktable);
+          let booktable = {id: book.id, title: book.title, authorName: this.authors.get(book.authorId), genreName: this.genres.get(book.genreId)}
+          this.booksTable.push(booktable);
         }
         this.loading = false
         //console.log(JSON.parse(JSON.stringify(this.books)))  
         //console.log(this.books)
         //console.log(this.bookstable)
       },
-      dtEditClick(book) {
-        //alert("Edit book:" + JSON.stringify(book))
-        this.editing = true
-        this.book = book
+      findBookEntity(bookTable) {
+        let foundOriginBook
+        for (let originBook of this.books) {
+          if (bookTable.id == originBook.id) {
+            foundOriginBook = originBook
+          }    
+        }
+        return foundOriginBook
       },
-      dtDeleteClick(book) {
-        alert("Delete book:" + JSON.stringify(book))
+      dtEditClick(bookTable) {
+        //alert("Edit book:" + JSON.stringify(bookTable))
+        this.book=this.findBookEntity(bookTable)
+        this.editing = true
+      },
+      async dtDeleteClick(bookTable) {
+        //  this.book=this.findBookEntity(bookTable)
+        //  alert("Delete book:" + JSON.stringify(this.book))
+        const res = await fetch('http://localhost:8080/api/book/'+bookTable.id, {method: 'DELETE',  mode: "no-cors", //*cors, same-origin
+                                            credentials: "omit"})
+        await this.loadBooks()
       }  
     },
     components: {book}

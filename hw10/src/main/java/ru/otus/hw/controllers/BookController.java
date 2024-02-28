@@ -74,6 +74,7 @@ public class BookController {
         return new ResponseEntity<BookDto>(bookDto, getHeader(), HttpStatus.OK);
     }
 
+    @CrossOrigin(origins = "http://localhost:5173")
     @DeleteMapping("/api/book/{id}")
     public ResponseEntity<?> deleteBook(@PathVariable("id") String id) {
         if (id != null && !id.isEmpty() && !id.equals("0")) {
