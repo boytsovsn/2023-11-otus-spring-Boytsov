@@ -35,7 +35,7 @@
   <div class="div-table">
     <div class="div-table-row">
       <div class="div-table-col">   
-          <Button label="Save" icon="pi pi-check" @click="dtSaveClick(book);$emit('edtitingOff');"/>
+          <Button label="Save" icon="pi pi-check" @click="dtSaveClick(book);$emit('edtitingOff');$emit('reloadBooks');"/>
       </div>    
       <div class="div-table-col">   
           <Button label="Cancel" icon="pi pi-times" @click="$emit('edtitingOff');"/>
@@ -50,9 +50,28 @@ export default {
     name: 'book',
   props: ['BookTitle', 'book', 'authorsMap', 'genresMap'],
   methods: {
-    dtSaveClick(book) {
-      alert("Edit book:" + JSON.stringify(book))
-    }
+    async dtSaveClick(book) {
+        //alert("Edit book:" + JSON.stringify(book))
+        if (book.id.length == 24) {
+          const res = await fetch('http://localhost:8080/api/book/' + book.id, {
+                        method: 'PUT', 
+                        headers: {
+                          'Accept': 'application/json',
+                          'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(book)});
+        } else {
+          book.id = "";
+          const res = await fetch('http://localhost:8080/api/book', {
+                        method: 'POST', 
+                        headers: {
+                          'Accept': 'application/json',
+                          'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(book)});
+        }               
+        location.reload();                
+      }
     },
     computed: {
     getAuthors() {
@@ -70,7 +89,7 @@ export default {
       return ret;
     }
     },
-  emits: ["edtitingOff"]
+  emits: ["edtitingOff", "reloadBooks"]
 }  
 </script>
 

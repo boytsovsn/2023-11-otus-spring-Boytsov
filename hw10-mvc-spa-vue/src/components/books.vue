@@ -3,6 +3,7 @@
      <h3>{{ BookTitle }}</h3>
   </p>
   <p>
+    <Button label="Create" icon="pi pi-check"  @click="dtAddClick();"/>
     <table >
       <!-- <th>Id</th> -->
       <th>Title</th>
@@ -25,7 +26,7 @@
     </table>
   </p>
   
-  <book v-if="editing" :book="book" :BookTitle="title"  :authorsMap="authors" :genresMap="genres"  @edtitingOff="editing=false"/>
+  <book v-if="editing" :book="book" :BookTitle="title"  :authorsMap="authors" :genresMap="genres" @reloadBooks="loadBooks();" @edtitingOff="editing=false"/>
 
 </template>
 
@@ -51,7 +52,7 @@ export default {
     },
     methods: {
       async loadBooks() {
-        this.loading = true;
+        this.$emit('notloaded');
         this.books = [];
         this.authors.clear();
         this.genres.clear();
@@ -69,7 +70,7 @@ export default {
           let booktable = {id: book.id, title: book.title, authorName: this.authors.get(book.authorId), genreName: this.genres.get(book.genreId)};
           this.booksTable.push(booktable);
         }
-        this.loading = false;
+        this.$emit('loaded');
         //console.log(JSON.parse(JSON.stringify(this.books)))  
         //console.log(this.books)
         //console.log(this.bookstable)
@@ -88,6 +89,11 @@ export default {
         this.book=this.findBookEntity(bookTable);
         this.editing = true;
       },
+      dtAddClick(bookTable) {
+        //alert("Edit book:" + JSON.stringify(bookTable))
+        this.book={id: [], title: [], authorId: [], genreId: [], authors: [], genres: []};
+        this.editing = true;
+      },
       async dtDeleteClick(bookTable) {
         //  this.book=this.findBookEntity(bookTable);
         //  alert("Delete book:" + JSON.stringify(this.book));
@@ -95,6 +101,7 @@ export default {
         await this.loadBooks();
       }  
     },
+    emits: ['loaded', 'notloaded'],
     components: {book}
 }  
 </script>

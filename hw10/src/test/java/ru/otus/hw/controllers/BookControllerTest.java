@@ -1,8 +1,10 @@
 package ru.otus.hw.controllers;
 
+import com.google.gson.Gson;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.json.JsonContent;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
@@ -89,11 +91,10 @@ public class BookControllerTest {
         BookDto bookDto = new BookDto("0515e04eeead46478298faa1", "Test title", "65ce2a68d4437132eb18a431", "65ce2a68d4437132eb18a43e", null, null);
         Book book = bookDto.toDomainObject();
         given(bookService.update(bookDto.getId(), bookDto.getTitle(), bookDto.getAuthorId(), bookDto.getGenreId())).willReturn(book);
+        Gson gson = new Gson();
+        String json = gson.toJson(bookDto);
         MvcResult mvcResult = mockMvc.perform(put("/api/book/0515e04eeead46478298faa1")
-                .param("id", bookDto.getId())
-                .param("title", bookDto.getTitle())
-                .param("authorId", bookDto.getAuthorId())
-                .param("genreId", bookDto.getGenreId()))
+                  .contentType(MediaType.APPLICATION_JSON).content(json))
             .andExpect(status().isOk()).andDo(print()).andReturn();
         assertThat(mvcResult.getResponse().getContentAsString()).contains("0515e04eeead46478298faa1", "65ce2a68d4437132eb18a431", "65ce2a68d4437132eb18a43e");
     }
@@ -104,10 +105,10 @@ public class BookControllerTest {
         Book book = bookDto.toDomainObject();
         book.setId("0515e04eeead46478298faa1");
         given(bookService.insert(bookDto.getTitle(), bookDto.getAuthorId(), bookDto.getGenreId())).willReturn(book);
+        Gson gson = new Gson();
+        String json = gson.toJson(bookDto);
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/api/book")
-                    .param("title", bookDto.getTitle())
-                    .param("authorId", bookDto.getAuthorId())
-                    .param("genreId", bookDto.getGenreId()))
+                        .contentType(MediaType.APPLICATION_JSON).content(json))
                 .andExpect(status().isCreated())
                 .andDo(print()).andReturn();
         assertThat(mvcResult.getResponse().getContentAsString()).contains("0515e04eeead46478298faa1", "65ce2a68d4437132eb18a431", "65ce2a68d4437132eb18a43e");

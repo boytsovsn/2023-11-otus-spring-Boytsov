@@ -1,21 +1,16 @@
 package ru.otus.hw.controllers;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import ru.otus.hw.exceptions.EntityNotFoundException;
-import ru.otus.hw.exceptions.NotFoundException;
 import ru.otus.hw.models.dto.AuthorDto;
 import ru.otus.hw.models.dto.BookDto;
 import ru.otus.hw.models.dto.GenreDto;
-import ru.otus.hw.models.entities.Author;
 import ru.otus.hw.models.entities.Book;
-import ru.otus.hw.models.entities.Genre;
 import ru.otus.hw.services.AuthorService;
 import ru.otus.hw.services.BookService;
 import ru.otus.hw.services.GenreService;
@@ -90,25 +85,35 @@ public class BookController {
         }
     }
 
+    @CrossOrigin(origins = "${cross-origin}")
     @PutMapping("/api/book/{id}")
-    public ResponseEntity<BookDto> editBook(@PathVariable("id") String id, @Valid @ModelAttribute("bookDto") BookDto bookDto) {
+    public ResponseEntity<BookDto> editBook(@PathVariable("id") String id, @RequestBody BookDto bookDto) {
         Book editBook;
         if (bookDto.getId()!=null && !bookDto.getId().isEmpty() && !bookDto.getId().equals("0") &&
             id != null && !id.isEmpty() && id.equals(bookDto.getId())) {
-            editBook = bookService.update(id, bookDto.getTitle(), bookDto.getAuthorId(), bookDto.getGenreId());
-            return new ResponseEntity<BookDto>(BookDto.fromDomainObject(editBook), getHeader(), HttpStatus.OK);
+            try {
+                editBook = bookService.update(id, bookDto.getTitle(), bookDto.getAuthorId(), bookDto.getGenreId());
+                return new ResponseEntity<BookDto>(BookDto.fromDomainObject(editBook), HttpStatus.OK);
+            } catch (IllegalArgumentException e) {
+                return new ResponseEntity<BookDto>(HttpStatus.BAD_REQUEST);
+            }
         } else {
-            return new ResponseEntity<BookDto>(null, getHeader(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<BookDto>(HttpStatus.BAD_REQUEST);
         }
     }
 
+    @CrossOrigin(origins = "http://localhost:5173")
     @PostMapping("/api/book")
-    public ResponseEntity<BookDto> createBook(@Valid @ModelAttribute("bookDto") BookDto bookDto) {
+    public ResponseEntity<BookDto> createBook(@RequestBody BookDto bookDto) {
        if (bookDto.getId()==null || bookDto.getId().isEmpty() || bookDto.getId().equals("0")) {
-           Book newBook = bookService.insert(bookDto.getTitle(), bookDto.getAuthorId(), bookDto.getGenreId());
-           return new ResponseEntity<BookDto>(BookDto.fromDomainObject(newBook), getHeader(), HttpStatus.CREATED);
+           try {
+               Book newBook = bookService.insert(bookDto.getTitle(), bookDto.getAuthorId(), bookDto.getGenreId());
+               return new ResponseEntity<BookDto>(BookDto.fromDomainObject(newBook), HttpStatus.CREATED);
+           }  catch (IllegalArgumentException e) {
+               return new ResponseEntity<BookDto>(HttpStatus.BAD_REQUEST);
+           }
        } else {
-           return new ResponseEntity<BookDto>(null, getHeader(),HttpStatus.BAD_REQUEST);
+           return new ResponseEntity<BookDto>(HttpStatus.BAD_REQUEST);
        }
     }
 }

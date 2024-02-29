@@ -10,7 +10,7 @@ spring:
     hidden-method:
       filter:
         enabled: true
-
+cross-origin: http://localhost:5173
 mongock:
   runner-type: "InitializingBean"
   change-logs-scan-package:

@@ -14,8 +14,8 @@ export default {
 </script>
 
 <template>
-    <apploader v-if="loading" />
-    <books v-else :BookTitle="title" /> 
+    <apploader v-if="loading" @notloaded="loading=true"/>
+    <books v-else :BookTitle="title" @loaded="loading=false"/> 
 </template>
 
 <style scoped>
