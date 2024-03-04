@@ -1,12 +1,11 @@
 package ru.otus.spring.services;
 
-import ru.otus.hw.models.Genre;
-
-import java.util.List;
-import java.util.Optional;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import ru.otus.spring.domain.entities.Genre;
 
 public interface GenreService {
-    List<Genre> findAll();
+    Flux<Genre> findAll();
 
-    Optional<Genre> findById(long id);
+    Mono<Genre> findById(String id);
 }

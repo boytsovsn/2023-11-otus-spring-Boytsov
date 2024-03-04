@@ -1,7 +1,7 @@
 package ru.otus.spring.converters;
 
 import org.springframework.stereotype.Component;
-import ru.otus.hw.models.Remark;
+import ru.otus.spring.domain.entities.Remark;
 
 import java.util.List;
 import java.util.stream.Collectors;

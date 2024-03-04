@@ -3,9 +3,9 @@ package ru.otus.spring.domain;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceCreator;
-import org.springframework.data.relational.core.mapping.Table;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@Table("person")
+@Document
 public class Person {
 
     @Id

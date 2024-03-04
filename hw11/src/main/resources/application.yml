@@ -2,15 +2,20 @@ server:
   port: 8080
 
 spring:
-  r2dbc:
-    url: r2dbc:postgresql://localhost:5432/demoDB
-    username: usr
-    password: pwd
-  flyway:
-    url: jdbc:postgresql://localhost:5432/demoDB
-    user: usr
-    password: pwd
-
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: mainDB
+cross-origin: http://localhost:5173
+mongock:
+  runner-type: "InitializingBean"
+  change-logs-scan-package:
+    - ru.otus.hw.changelogs
+  mongo-db:
+    write-concern:
+      journal: false
+    read-concern: local
 
 logging:
   level:

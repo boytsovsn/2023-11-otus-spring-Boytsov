@@ -45,8 +45,8 @@ public class DataFiller implements ApplicationRunner {
                             .subscribe(savedNotes -> logger.info("saved notes:{}", savedNotes));
                 });
 
-        personRepositoryCustom.findAll()
-                .publishOn(workerPool)
-                .subscribe(personDto -> logger.info("personDto:{}", personDto));
+//        personRepositoryCustom.findAll()
+//                .publishOn(workerPool)
+//                .subscribe(personDto -> logger.info("personDto:{}", personDto));
     }
 }

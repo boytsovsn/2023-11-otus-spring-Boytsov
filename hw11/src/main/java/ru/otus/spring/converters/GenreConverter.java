@@ -1,7 +1,7 @@
 package ru.otus.spring.converters;
 
 import org.springframework.stereotype.Component;
-import ru.otus.hw.models.Genre;
+import ru.otus.spring.domain.entities.Genre;
 
 @Component
 public class GenreConverter {

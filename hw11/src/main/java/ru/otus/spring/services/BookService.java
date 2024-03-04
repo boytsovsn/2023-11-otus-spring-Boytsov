@@ -1,18 +1,20 @@
 package ru.otus.spring.services;
 
-import ru.otus.hw.models.Book;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import ru.otus.spring.domain.entities.Book;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface BookService {
-    Optional<Book> findById(long id);
+    Mono<Book> findById(String id);
 
-    List<Book> findAll();
+    Flux<Book> findAll();
 
-    Book insert(String title, long authorId, long genreId);
+    Mono<Book> insert(String title, String authorId, String genreId);
 
-    Book update(long id, String title, long authorId, long genreId);
+    Mono<Book> update(String id, String title, String authorId, String genreId);
 
-    void deleteById(long id);
+    void deleteById(String id);
 }

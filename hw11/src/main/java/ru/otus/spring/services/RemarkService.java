@@ -1,17 +1,19 @@
 package ru.otus.spring.services;
 
-import ru.otus.hw.models.Remark;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import ru.otus.spring.domain.entities.Remark;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface RemarkService {
 
-    List<Remark> findByBookId(long id);
+//    Flux<Remark> findByBookId(String id);
 
-    Optional<Remark> findById(long id);
+    Mono<Remark> findById(String id);
 
-    Remark save(long id, String remarkText, long bookId);
+    Mono<Remark> save(String id, String remarkText, String bookId);
 
-    void deleteById(long id);
+    void deleteById(String id);
 }

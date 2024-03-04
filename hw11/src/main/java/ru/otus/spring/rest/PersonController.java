@@ -27,10 +27,10 @@ public class PersonController {
         this.personRepositoryCustom = personRepositoryCustom;
     }
 
-    @GetMapping("/person")
-    public Flux<PersonDto> all() {
-        return personRepositoryCustom.findAll();
-    }
+//    @GetMapping("/person")
+//    public Flux<PersonDto> all() {
+//        return personRepositoryCustom.findAll();
+//    }
 
     @GetMapping("/person/{id}")
     public Mono<ResponseEntity<PersonDto>> byId(@PathVariable("id") Long id) {

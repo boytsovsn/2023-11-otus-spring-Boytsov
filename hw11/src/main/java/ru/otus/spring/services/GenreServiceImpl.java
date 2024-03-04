@@ -2,11 +2,10 @@ package ru.otus.spring.services;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.otus.hw.models.Genre;
-import ru.otus.hw.repositories.GenreRepository;
-
-import java.util.List;
-import java.util.Optional;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import ru.otus.spring.domain.entities.Genre;
+import ru.otus.spring.repository.GenreRepository;
 
 @RequiredArgsConstructor
 @Service
@@ -14,11 +13,11 @@ public class GenreServiceImpl implements GenreService {
     private final GenreRepository genreRepository;
 
     @Override
-    public List<Genre> findAll() {
+    public Flux<Genre> findAll() {
         return genreRepository.findAll();
     }
     @Override
-    public Optional<Genre> findById(long id) {
+    public Mono<Genre> findById(String id) {
         return genreRepository.findById(id);
     }
 }

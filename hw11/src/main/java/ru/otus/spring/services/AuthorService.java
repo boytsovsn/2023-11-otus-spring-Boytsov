@@ -1,12 +1,11 @@
 package ru.otus.spring.services;
 
-import ru.otus.hw.models.Author;
-
-import java.util.List;
-import java.util.Optional;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import ru.otus.spring.domain.entities.Author;
 
 public interface AuthorService {
-    List<Author> findAll();
+    Flux<Author> findAll();
 
-    Optional<Author> findById(long id);
+    Mono<Author> findById(String id);
 }
