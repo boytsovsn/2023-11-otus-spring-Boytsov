@@ -1,0 +1,22 @@
+spring:
+  messages:
+    encoding: UTF-8
+  data:
+    mongodb:
+#      port: 0
+      database: test
+      host: localhost
+      port: 27017
+
+mongock:
+  runner-type: "InitializingBean"
+  change-logs-scan-package:
+    - ru.otus.hw.changelogs.test
+  mongo-db:
+    write-concern:
+      journal: false
+    read-concern: local
+
+logging:
+  level:
+    ROOT: ERROR
