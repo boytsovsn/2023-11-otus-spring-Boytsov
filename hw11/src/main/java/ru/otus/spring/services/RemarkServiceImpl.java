@@ -2,7 +2,6 @@ package ru.otus.spring.services;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import ru.otus.spring.domain.entities.Book;
@@ -14,7 +13,6 @@ import ru.otus.spring.repository.RemarkRepository;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -24,37 +22,28 @@ public class RemarkServiceImpl implements RemarkService {
 
     private final BookRepository bookRepository;
 
-//    @Override
-//    @Transactional(readOnly=true)
-//    public Flux<Remark> findByBookId(String id) {
-////        Mono<Book> book = bookRepository.findById(id);//.orElseThrow(() -> new EntityNotFoundException("Book with id %s not found".formatted(id)));
-////        book.getRemarks().size();
-//        return bookRepository.findById(id).map(Optional::of).defaultIfEmpty(Optional.empty())
-//                .flatMap(x -> {
-//                    if (x.isPresent()) {
-//                        return Flux.from(x.get().getRemarks()).flatMap();}
-//                    else {
-//                        return Flux.empty();}
-//                });
-//    }
+    @Override
+    public Flux<Remark> findByBookId(String id) {
+        return bookRepository.findById(id).map(x->x.getRemarks())
+                .flatMapMany(Flux::fromIterable);
+    }
 
     @Override
     public Mono<Remark> findById(String id) {
         return remarkRepository.findById(id);
     }
 
-    @Transactional
     @Override
     public Mono<Remark> save(String id, String remarkText, String bookId) {
         Remark remark;
         Mono<Remark> savedRemark;
-        Book book = bookRepository.findById(bookId).blockOptional().orElseThrow(() -> new EntityNotFoundException("Book with id %s not found".formatted(bookId)));
+        Book book = bookRepository.findById(bookId).blockOptional(Duration.ofSeconds(1L)).orElseThrow(() -> new EntityNotFoundException("Book with id %s not found".formatted(bookId)));
         if (id==null || id.isEmpty() || id.equals("0")) {
             remark = new Remark(remarkText, book);
             savedRemark = remarkRepository.save(remark);
             book.getRemarks().add(savedRemark.block(Duration.ofSeconds(1L)));
         } else {
-            remark = remarkRepository.findById(id).blockOptional().orElseThrow(() -> new EntityNotFoundException("Remark with id %s not found".formatted(id)));
+            remark = remarkRepository.findById(id).blockOptional(Duration.ofSeconds(1L)).orElseThrow(() -> new EntityNotFoundException("Remark with id %s not found".formatted(id)));
             remark.setRemarkText(remarkText);
             Book oldBook  = remark.getBook();
             remark.setBook(book);
@@ -87,11 +76,10 @@ public class RemarkServiceImpl implements RemarkService {
     }
 
     @Override
-    @Transactional
-    public void deleteById(String id) {
-        var remark = remarkRepository.findById(id).blockOptional().orElseThrow(() -> new EntityNotFoundException("Remark with id %s not found".formatted(id)));
+    public Mono<Void> deleteById(String id) {
+        var remark = remarkRepository.findById(id).blockOptional(Duration.ofSeconds(1L)).orElseThrow(() -> new EntityNotFoundException("Remark with id %s not found".formatted(id)));
         var rbook = remark.getBook();
-        var book = bookRepository.findById(rbook.getId()).blockOptional().orElseThrow(() -> new EntityNotFoundException("Book with id %s not found".formatted(rbook.getId())));
+        var book = bookRepository.findById(rbook.getId()).blockOptional(Duration.ofSeconds(1L)).orElseThrow(() -> new EntityNotFoundException("Book with id %s not found".formatted(rbook.getId())));
         List<Remark> newRemarks = new ArrayList<>();
         for (Remark bRemark: book.getRemarks()) {
             if (!bRemark.getId().equals(id)) {
@@ -101,5 +89,6 @@ public class RemarkServiceImpl implements RemarkService {
         book.setRemarks(newRemarks);
         bookRepository.save(book);
         remarkRepository.deleteById(id);
+        return null;
     }
 }
