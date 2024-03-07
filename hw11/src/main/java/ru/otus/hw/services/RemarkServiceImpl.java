@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
+import ru.otus.hw.domain.entities.Book;
 import ru.otus.hw.domain.entities.Remark;
 import ru.otus.hw.repository.BookRepository;
 import ru.otus.hw.repository.RemarkRepository;
@@ -29,12 +31,15 @@ public class RemarkServiceImpl implements RemarkService {
 
     @Override
     public Mono<Void> deleteById(String id) {
-        return remarkRepository.findById(id).flatMap((x)->{
-            bookRepository.findById(x.getBook().getId()).subscribe(result->{
-                result.getRemarks().remove(x);
-                bookRepository.save(result);
-            });
-            return remarkRepository.deleteById(id);
-        });
+        return remarkRepository.findById(id)
+            .map(res -> {
+                Mono<Book> book = bookRepository.findById(res.getBook().getId())
+                    .flatMap(res1 -> {
+                        res1.getRemarks().remove(res);
+                        return bookRepository.save(res1);
+                   });
+                return res;
+            })
+            .flatMap(res2 -> remarkRepository.deleteById(res2.getId()));
     }
 }

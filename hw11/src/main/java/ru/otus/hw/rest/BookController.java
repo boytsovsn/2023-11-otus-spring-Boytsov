@@ -20,6 +20,8 @@ import ru.otus.hw.services.GenreService;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import static reactor.core.publisher.Mono.just;
+
 @RestController
 @RequiredArgsConstructor
 public class BookController {
@@ -50,8 +52,8 @@ public class BookController {
                 genreService.findAll().map(GenreDto::fromDomainObject).collectList().subscribe(result->x.setGenres(result));
                 first[0] =false;
             }
-            return null;
-        });
+            return Mono.just(x);
+        }).switchIfEmpty(Flux.empty());
     }
 
     @GetMapping("/api/book/{id}")
