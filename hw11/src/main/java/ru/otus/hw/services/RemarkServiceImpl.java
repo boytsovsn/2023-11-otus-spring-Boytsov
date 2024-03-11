@@ -7,6 +7,7 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import ru.otus.hw.domain.entities.Book;
 import ru.otus.hw.domain.entities.Remark;
+import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.repository.BookRepository;
 import ru.otus.hw.repository.RemarkRepository;
 
@@ -20,8 +21,8 @@ public class RemarkServiceImpl implements RemarkService {
 
     @Override
     public Flux<Remark> findByBookId(String id) {
-        return bookRepository.findById(id).map(x->x.getRemarks())
-                .flatMapMany(Flux::fromIterable);
+        return bookRepository.findById(id).switchIfEmpty(Mono.error(new EntityNotFoundException("Book not found " + id)))
+                .thenMany(remarkRepository.findAll()).filter(remark -> remark.getBookId().equals(id));
     }
 
     @Override
@@ -32,14 +33,13 @@ public class RemarkServiceImpl implements RemarkService {
     @Override
     public Mono<Void> deleteById(String id) {
         return remarkRepository.findById(id)
-            .map(res -> {
-                Mono<Book> book = bookRepository.findById(res.getBook().getId())
-                    .flatMap(res1 -> {
-                        res1.getRemarks().remove(res);
-                        return bookRepository.save(res1);
-                   });
-                return res;
-            })
-            .flatMap(res2 -> remarkRepository.deleteById(res2.getId()));
+            .flatMap(res -> {
+                Mono<Book> book = bookRepository.findById(res.getBookId())
+                        .flatMap(res1 -> {
+                            res1.getRemarks().remove(res);
+                            return bookRepository.save(res1);
+                        });
+                return remarkRepository.deleteById(res.getId());
+            });
     }
 }

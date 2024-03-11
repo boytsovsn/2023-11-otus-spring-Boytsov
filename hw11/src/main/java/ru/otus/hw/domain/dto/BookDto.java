@@ -25,10 +25,10 @@ public class BookDto {
     private List<GenreDto> genres;
 
     public Book toDomainObject(){
-        return new Book(id, title, new Author(authorId, null), new Genre(genreId, null), null);
+        return new Book(id, title, authorId, genreId, null);
     }
 
     public static BookDto fromDomainObject(Book book) {
-        return new BookDto(book.getId(), book.getTitle(), book.getAuthor().getId(), book.getGenre().getId(), null, null);
+        return new BookDto(book.getId(), book.getTitle(), book.getAuthorId(), book.getGenreId(), null, null);
     }
 }

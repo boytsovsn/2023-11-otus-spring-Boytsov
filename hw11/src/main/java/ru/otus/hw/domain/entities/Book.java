@@ -5,7 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
 import java.util.List;
 
@@ -19,19 +21,16 @@ public class Book {
 
     private String title;
 
-//    @DBRef
-    private Author author;
+    private String authorId;
 
-//    @DBRef
-    private Genre genre;
+    private String genreId;
 
-//    @DBRef
     private List<Remark> remarks;
 
     public Book(String title, Author author, Genre genre/*, Remark... remarks*/) {
         this.title = title;
-        this.author = author;
-        this.genre = genre;
+        this.authorId = author.getId();
+        this.genreId = genre.getId();
 //        this.remarks = Arrays.asList(remarks);
     }
 }

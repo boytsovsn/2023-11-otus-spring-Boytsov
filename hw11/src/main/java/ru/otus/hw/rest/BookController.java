@@ -64,7 +64,7 @@ public class BookController {
         if (id != null && !id.isEmpty() && !id.equals("0")) {
             try {
                 Book book = bookService.findById(id).block();
-                bookDto = new BookDto(book.getId(), book.getTitle(), book.getAuthor().getId(), book.getGenre().getId(), authors, genres);
+                bookDto = new BookDto(book.getId(), book.getTitle(), book.getAuthorId(), book.getGenreId(), authors, genres);
             } catch (NoSuchElementException e) {
                 return new ResponseEntity<BookDto>(null, getHeader(), HttpStatus.NOT_FOUND);
             }

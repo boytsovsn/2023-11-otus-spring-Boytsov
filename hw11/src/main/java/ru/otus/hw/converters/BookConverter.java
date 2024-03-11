@@ -17,8 +17,8 @@ public class BookConverter {
         return "Id: %d, title: %s, author: {%s}, genres: [%s], remarks: [%s]".formatted(
                 book.getId(),
                 book.getTitle(),
-                authorConverter.authorToString(book.getAuthor()),
-                genreConverter.genreToString(book.getGenre()),
+                book.getAuthorId(),
+                book.getGenreId(),
                 remarkConverter.remarksToString(book.getRemarks()));
     }
 }

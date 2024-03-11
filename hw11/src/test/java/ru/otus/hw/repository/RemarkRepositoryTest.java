@@ -10,6 +10,8 @@ import reactor.test.StepVerifier;
 import ru.otus.hw.domain.entities.Book;
 import ru.otus.hw.domain.entities.Remark;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @DataMongoTest
@@ -21,12 +23,19 @@ class RemarkRepositoryTest {
     private RemarkRepository repository;
 
     @Test
-    void shouldSetIdOnSave() {
-        Mono<Remark> remarkMono = repository.save(new Remark("Круто! Легко читается!", new Book("65e018a2b543be609ff166c3", null, null, null, null)));
+    void shouldSetIdOnSaveAndDeleted() {
+        Book book = new Book("65e018a2b543be609ff166c3", null, null, null, null);
+        Mono<Remark> remarkMono = repository.save(new Remark("Круто! Легко читается!", book.getId()));
+        AtomicReference<String> id = new AtomicReference<>("");
         StepVerifier
                 .create(remarkMono)
-                .assertNext(remark -> assertNotNull(remark.getId()))
+                .assertNext(remark -> {
+                    id.set(remark.getId()); assertNotNull(remark.getId());})
                 .expectComplete()
                 .verify();
+        Mono<Void> res =  repository.deleteById(id.get());
+        StepVerifier.create(res)
+                .verifyComplete();
     }
+
 }

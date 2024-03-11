@@ -4,9 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import ru.otus.hw.domain.entities.Author;
+import reactor.core.scheduler.Scheduler;
 import ru.otus.hw.domain.entities.Book;
 import ru.otus.hw.domain.entities.Remark;
+import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.repository.AuthorRepository;
 import ru.otus.hw.repository.BookRepository;
 import ru.otus.hw.repository.GenreRepository;
@@ -22,10 +23,16 @@ public class BookServiceImpl implements BookService {
 
     private final RemarkService remarkServiceImpl;
 
+    private final Scheduler workerPool;
+
     @Override
     public Mono<Book> findById(String id) {
-        var book = bookRepository.findById(id);
-        return book;
+        return bookRepository.findById(id).switchIfEmpty(Mono.error(new EntityNotFoundException("Book not found " + id)))
+            .flatMap(book->
+                remarkServiceImpl.findByBookId(id).collectList().flatMap(remarks->{
+                    book.setRemarks(remarks);
+                    return Mono.just(book);
+                }));
     }
 
     @Override
@@ -46,34 +53,39 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Mono<Void> deleteById(String id) {
-        remarkServiceImpl.findByBookId(id).flatMap(x->{deleteRemarkById(x);
-            return Mono.empty();
-        });
-        return bookRepository.deleteById(id);
+        return bookRepository.findById(id).switchIfEmpty(Mono.error(new EntityNotFoundException("Book not found " + id)))
+           .flatMap(book->{
+               remarkServiceImpl.findByBookId(id).flatMap(x->deleteRemark(x));
+               return bookRepository.deleteById(id);
+           });
     }
 
-    public Mono<Void> deleteRemarkById(Remark remark) {
+    public Mono<Void> deleteRemark(Remark remark) {
         return remarkServiceImpl.deleteById(remark.getId());
 
     }
 
     private Mono<Book> save(String id, String title, String authorId, String genreId) {
         if (id!=null && !id.isEmpty() && !id.equalsIgnoreCase("0")) {
-            return bookRepository.findById(id).flatMap((x)->{
-                authorRepository.findById(authorId).subscribe(result->x.setAuthor(result));
-                genreRepository.findById(genreId).subscribe(result->x.setGenre(result));
-                remarkServiceImpl.findByBookId(id).collectList().subscribe(result->x.setRemarks(result));
-                x.setTitle(title);
-                return bookRepository.save(x);
-            });
+            return bookRepository.findById(id).switchIfEmpty(Mono.error(new EntityNotFoundException("Book not found " + id)))
+                .flatMap((x)->{
+                    x.setAuthorId(authorId);
+                    x.setGenreId(genreId);
+                    x.setTitle(title);
+                    remarkServiceImpl.findByBookId(id).collectList().flatMap(remarks->{
+                        x.setRemarks(remarks);
+                        return Mono.just(x);
+                    });
+                    return bookRepository.save(x);
+                });
         } else {
-           Mono<Author> author = authorRepository.findById(authorId);
-           return Mono.just(new Book()).flatMap((x)->{
-               authorRepository.findById(authorId).subscribe(result->x.setAuthor(result));
-               genreRepository.findById(genreId).subscribe(result->x.setGenre(result));
-               x.setTitle(title);
-               return bookRepository.save(x);
-           });
+           return Mono.just(new Book())
+               .flatMap((x)->{
+                   x.setAuthorId(authorId);
+                   x.setGenreId(genreId);
+                   x.setTitle(title);
+                   return bookRepository.save(x);
+               });
         }
     }
 }
