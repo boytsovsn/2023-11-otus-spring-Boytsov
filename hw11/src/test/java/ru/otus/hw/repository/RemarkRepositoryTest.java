@@ -1,5 +1,6 @@
 package ru.otus.hw.repository;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -16,13 +17,14 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @DataMongoTest
 @EnableConfigurationProperties
-@ComponentScan({"ru.otus.hw.changelogs.test", "ru.otus.hw.repository"})
+@ComponentScan({"ru.otus.hw.repository"})
 class RemarkRepositoryTest {
 
     @Autowired
     private RemarkRepository repository;
 
     @Test
+    @DisplayName("Проверка реактивного репозитория на вставку/удаления элемента")
     void shouldSetIdOnSaveAndDeleted() {
         Book book = new Book("65e018a2b543be609ff166c3", null, null, null, null);
         Mono<Remark> remarkMono = repository.save(new Remark("Круто! Легко читается!", book.getId()));

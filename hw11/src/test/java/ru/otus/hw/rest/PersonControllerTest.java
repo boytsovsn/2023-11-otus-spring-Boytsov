@@ -18,7 +18,7 @@ import ru.otus.hw.services.BookService;
 
 @EnableConfigurationProperties
 @SpringBootTest(classes = {PersonController.class, PersonRepository.class},webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ComponentScan({"ru.otus.hw.config.test.funcendpoint","ru.otus.hw.config.test.reactiverest","ru.otus.hw.changelogs.test", "ru.otus.hw.repository"})
+@ComponentScan({"ru.otus.hw.config.test.funcendpoint","ru.otus.hw.config.test.reactiverest","ru.otus.hw.config.test", "ru.otus.hw.repository"})
 class PersonControllerTest {
 
     @Autowired

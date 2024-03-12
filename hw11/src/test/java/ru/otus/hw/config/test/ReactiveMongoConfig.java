@@ -1,4 +1,4 @@
-package ru.otus.hw.changelogs.test;
+package ru.otus.hw.config.test;
 
 import com.github.cloudyrock.spring.v5.EnableMongock;
 import org.springframework.context.annotation.Bean;
@@ -12,7 +12,6 @@ import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
 import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 
 @EnableReactiveMongoRepositories(basePackages = {"ru.otus.hw.repository"})
-//@EnableMongock
 @Configuration
 public class ReactiveMongoConfig {
 
