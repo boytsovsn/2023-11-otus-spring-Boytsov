@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 import ru.otus.hw.domain.entities.Book;
 import ru.otus.hw.domain.entities.Remark;
@@ -19,6 +20,8 @@ public class RemarkServiceImpl implements RemarkService {
 
     private final BookRepository bookRepository;
 
+    private final Scheduler workerPool;
+
     @Override
     public Flux<Remark> findByBookId(String id) {
         return bookRepository.findById(id).switchIfEmpty(Mono.error(new EntityNotFoundException("Book not found " + id)))
@@ -33,13 +36,11 @@ public class RemarkServiceImpl implements RemarkService {
     @Override
     public Mono<Void> deleteById(String id) {
         return remarkRepository.findById(id)
-            .flatMap(res -> {
-                Mono<Book> book = bookRepository.findById(res.getBookId())
+                .flatMap(res -> bookRepository.findById(res.getBookId())
                         .flatMap(res1 -> {
                             res1.getRemarks().remove(res);
-                            return bookRepository.save(res1);
-                        });
-                return remarkRepository.deleteById(res.getId());
-            });
+                            bookRepository.save(res1).publishOn(workerPool).subscribe();
+                            return remarkRepository.deleteById(res.getId());
+                        }));
     }
 }

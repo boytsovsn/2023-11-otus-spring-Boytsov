@@ -2,12 +2,15 @@ package ru.otus.hw.services;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.context.annotation.ComponentScan;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Scheduler;
+import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
 import ru.otus.hw.domain.entities.Author;
 import ru.otus.hw.domain.entities.Book;
@@ -22,10 +25,11 @@ import java.lang.reflect.Array;
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataMongoTest
 @EnableConfigurationProperties
-@ComponentScan({"ru.otus.hw.changelogs.test", "ru.otus.hw.repository"})
+@ComponentScan({"ru.otus.hw.changelogs.test", "ru.otus.hw.repository", "ru.otus.hw.config.test.reactiverest"})
 class RemarkServiceImplTest {
 
     @Autowired
@@ -42,11 +46,16 @@ class RemarkServiceImplTest {
 
     private Remark remark;
 
+    private Book testBook;
+
+    @Autowired
+    private Scheduler workerPool;
+
     @BeforeEach
     void setUp() {
-        authorRepository.deleteAll();
-        genreRepository.deleteAll();
-        bookRepository.deleteAll();
+        authorRepository.deleteAll().block();
+        genreRepository.deleteAll().block();
+        bookRepository.deleteAll().block();
         Author author1 = new Author( "Pushkin");
         Author author = authorRepository.save(author1).block();
         Genre genre1 = new Genre( "Poema");
@@ -55,25 +64,27 @@ class RemarkServiceImplTest {
         Book book2 = bookRepository.save(book1).block();
         remark = remarkRepository.save(new Remark("Cool! Easy read!", book2.getId())).block();
         book2.setRemarks(Arrays.asList(remark));
-        Book book3 = bookRepository.save(book2).block();
+        testBook = bookRepository.save(book2).block();
     }
 
     @Test
-    void shouldBeDeleted() {
-        Mono<Object> delRemark = remarkRepository.findById(remark.getId())
-                .map(res -> {
-                    Mono<Book> book = bookRepository.findById(res.getBookId())
-                            .flatMap(res1 -> {
-                                res1.getRemarks().remove(res);
-                                return bookRepository.save(res1);
-                            });
-                    return res;
-                })
-                .flatMap(res2 -> remarkRepository.deleteById(res2.getId()));
+    @DisplayName("Удаление замечания из таблицы замечаний и из книги")
+    void remarkShouldBeDeleted() {
+        Mono<Void> delRemark = remarkRepository.findById(remark.getId())
+                .flatMap(res -> bookRepository.findById(res.getBookId())
+                        .flatMap(res1 -> {
+                            res1.getRemarks().remove(res);
+                            bookRepository.save(res1).publishOn(workerPool).subscribe();
+                            return remarkRepository.deleteById(res.getId());
+                        }));
 
         StepVerifier
                 .create(delRemark)
                 .verifyComplete();
 
+        Book actualBook = bookRepository.findById(testBook.getId()).block();
+        assertEquals(actualBook.getRemarks().size(), 0);
+        Remark actualRemark = remarkRepository.findById(remark.getId()).block();
+        assertEquals(actualRemark, null);
     }
 }

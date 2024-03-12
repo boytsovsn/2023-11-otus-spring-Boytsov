@@ -23,8 +23,6 @@ public class BookServiceImpl implements BookService {
 
     private final RemarkService remarkServiceImpl;
 
-    private final Scheduler workerPool;
-
     @Override
     public Mono<Book> findById(String id) {
         return bookRepository.findById(id).switchIfEmpty(Mono.error(new EntityNotFoundException("Book not found " + id)))
@@ -68,16 +66,14 @@ public class BookServiceImpl implements BookService {
     private Mono<Book> save(String id, String title, String authorId, String genreId) {
         if (id!=null && !id.isEmpty() && !id.equalsIgnoreCase("0")) {
             return bookRepository.findById(id).switchIfEmpty(Mono.error(new EntityNotFoundException("Book not found " + id)))
-                .flatMap((x)->{
-                    x.setAuthorId(authorId);
-                    x.setGenreId(genreId);
-                    x.setTitle(title);
+                .flatMap((x)->
                     remarkServiceImpl.findByBookId(id).collectList().flatMap(remarks->{
+                        x.setAuthorId(authorId);
+                        x.setGenreId(genreId);
+                        x.setTitle(title);
                         x.setRemarks(remarks);
-                        return Mono.just(x);
-                    });
-                    return bookRepository.save(x);
-                });
+                        return bookRepository.save(x);
+                    }));
         } else {
            return Mono.just(new Book())
                .flatMap((x)->{
