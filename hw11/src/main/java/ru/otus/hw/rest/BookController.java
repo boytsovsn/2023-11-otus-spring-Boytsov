@@ -35,7 +35,7 @@ public class BookController {
 
     private static MultiValueMap<String, String> header = new LinkedMultiValueMap<>();
 
-    @CrossOrigin(origins = "http://localhost:5173")
+    @CrossOrigin(origins = {"http://localhost:5173", "http://localhost:8080"})
     @GetMapping("/api/book")
     public Flux<BookDto> bookList() {
         final boolean[] first = {true};
@@ -49,7 +49,7 @@ public class BookController {
         }).switchIfEmpty(Flux.empty());
     }
 
-    @CrossOrigin(origins = "http://localhost:5173")
+    @CrossOrigin(origins = {"http://localhost:5173", "http://localhost:8080"})
     @GetMapping("/api/book/{id}")
     public Mono<ResponseEntity<BookDto>> getBook(@PathVariable("id") String id) {
         if (id == null || id.isEmpty() || id.equals("0")) {
@@ -60,7 +60,7 @@ public class BookController {
                    return Mono.just(bookDto);
                 }).map(ResponseEntity::ok);
         } else {
-            return bookService.findById(id).map(BookDto::fromDomainObject).flatMap(bookDto -> {
+            return bookService.findById(id).map(BookDto::fromDomainObject).publishOn(Schedulers.boundedElastic()).flatMap(bookDto -> {
                     authorService.findAll().map(AuthorDto::fromDomainObject).collectList().subscribe(result -> bookDto.setAuthors(result));
                     genreService.findAll().map(GenreDto::fromDomainObject).collectList().subscribe(result -> bookDto.setGenres(result));
                     return Mono.just(bookDto);
