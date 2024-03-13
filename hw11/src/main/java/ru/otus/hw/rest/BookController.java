@@ -8,6 +8,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 import ru.otus.hw.domain.dto.AuthorDto;
 import ru.otus.hw.domain.dto.BookDto;
 import ru.otus.hw.domain.dto.GenreDto;
@@ -34,90 +35,69 @@ public class BookController {
 
     private static MultiValueMap<String, String> header = new LinkedMultiValueMap<>();
 
-    static MultiValueMap<String, String> getHeader() {
-        if (header.isEmpty()) {
-            header.add("Access-Control-Allow-Origin", "*");
-            header.add("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, PATCH, DELETE");
-            header.add("Access-Control-Allow-Headers", "Origin,Content-Type,X-Requested-With,Accept,Authorization");
-        }
-        return header;
-    }
-
+    @CrossOrigin(origins = "http://localhost:5173")
     @GetMapping("/api/book")
     public Flux<BookDto> bookList() {
         final boolean[] first = {true};
-        return bookService.findAll().map(BookDto::fromDomainObject).flatMap((x)->{
+        return bookService.findAll().map(BookDto::fromDomainObject).publishOn(Schedulers.boundedElastic()).flatMap((x)->{
             if (first[0]) {
-                authorService.findAll().map(AuthorDto::fromDomainObject).collectList().subscribe(result->x.setAuthors(result));
-                genreService.findAll().map(GenreDto::fromDomainObject).collectList().subscribe(result->x.setGenres(result));
+                x.setAuthors(authorService.findAll().map(AuthorDto::fromDomainObject).collectList().block());
+                x.setGenres(genreService.findAll().map(GenreDto::fromDomainObject).collectList().block());
                 first[0] =false;
             }
             return Mono.just(x);
         }).switchIfEmpty(Flux.empty());
     }
 
+    @CrossOrigin(origins = "http://localhost:5173")
     @GetMapping("/api/book/{id}")
-    public ResponseEntity<BookDto> getBook(@PathVariable("id") String id) {
-        BookDto bookDto;
-        List<AuthorDto> authors = authorService.findAll().collectList().block().stream().map(AuthorDto::fromDomainObject).toList();
-        List<GenreDto> genres = genreService.findAll().collectList().block().stream().map(GenreDto::fromDomainObject).toList();
-        if (id != null && !id.isEmpty() && !id.equals("0")) {
-            try {
-                Book book = bookService.findById(id).block();
-                bookDto = new BookDto(book.getId(), book.getTitle(), book.getAuthorId(), book.getGenreId(), authors, genres);
-            } catch (NoSuchElementException e) {
-                return new ResponseEntity<BookDto>(null, getHeader(), HttpStatus.NOT_FOUND);
-            }
+    public Mono<ResponseEntity<BookDto>> getBook(@PathVariable("id") String id) {
+        if (id == null || id.isEmpty() || id.equals("0")) {
+            BookDto newBookDto = new BookDto("0", "", null, null, null, null);
+            return Mono.just(newBookDto).flatMap(bookDto -> {
+                   authorService.findAll().map(AuthorDto::fromDomainObject).collectList().subscribe(result -> bookDto.setAuthors(result));
+                   genreService.findAll().map(GenreDto::fromDomainObject).collectList().subscribe(result -> bookDto.setGenres(result));
+                   return Mono.just(bookDto);
+                }).map(ResponseEntity::ok);
         } else {
-            bookDto = new BookDto("0", "", null, null, authors, genres);
+            return bookService.findById(id).map(BookDto::fromDomainObject).flatMap(bookDto -> {
+                    authorService.findAll().map(AuthorDto::fromDomainObject).collectList().subscribe(result -> bookDto.setAuthors(result));
+                    genreService.findAll().map(GenreDto::fromDomainObject).collectList().subscribe(result -> bookDto.setGenres(result));
+                    return Mono.just(bookDto);
+                }).map(ResponseEntity::ok).switchIfEmpty(Mono.fromCallable(() -> ResponseEntity.notFound().build()));
         }
-        return new ResponseEntity<BookDto>(bookDto, getHeader(), HttpStatus.OK);
     }
 
     @CrossOrigin(origins = "http://localhost:5173")
     @DeleteMapping("/api/book/{id}")
-    public ResponseEntity<?> deleteBook(@PathVariable("id") String id) {
-        if (id != null && !id.isEmpty() && !id.equals("0")) {
-            try {
-                bookService.deleteById(id);
-                return new ResponseEntity<>(null, HttpStatus.OK);
-            } catch (EntityNotFoundException e) {
-                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-            }
-        } else {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        }
+    public Mono<ResponseEntity<Void>> deleteBook(@PathVariable("id") String id) {
+        return bookService.deleteById(id).map(ResponseEntity::ok).switchIfEmpty(Mono.fromCallable(() -> ResponseEntity.notFound().build()));
     }
 
     @CrossOrigin(origins = "http://localhost:5173")
     @PutMapping("/api/book/{id}")
-    public ResponseEntity<BookDto> editBook(@PathVariable("id") String id, @RequestBody BookDto bookDto) {
-        Mono<Book> editBook;
+    public Mono<ResponseEntity<BookDto>> editBook(@PathVariable("id") String id, @RequestBody BookDto bookDto) {
         if (bookDto.getId()!=null && !bookDto.getId().isEmpty() && !bookDto.getId().equals("0") &&
             id != null && !id.isEmpty() && id.equals(bookDto.getId())) {
-            try {
-                editBook = bookService.update(id, bookDto.getTitle(), bookDto.getAuthorId(), bookDto.getGenreId());
-                return new ResponseEntity<BookDto>(BookDto.fromDomainObject(editBook.block()), HttpStatus.OK);
-            } catch (IllegalArgumentException e) {
-                return new ResponseEntity<BookDto>(HttpStatus.BAD_REQUEST);
-            }
+            return bookService.update(id, bookDto.getTitle(), bookDto.getAuthorId(), bookDto.getGenreId())
+                    .map(BookDto::fromDomainObject).flatMap(book -> Mono.just(book))
+                    .map(ResponseEntity::ok)
+                    .switchIfEmpty(Mono.fromCallable(() -> ResponseEntity.notFound().build()));
         } else {
-            return new ResponseEntity<BookDto>(HttpStatus.BAD_REQUEST);
+            return Mono.just(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
         }
     }
 
     @CrossOrigin(origins = "http://localhost:5173")
     @PostMapping("/api/book")
-    public ResponseEntity<BookDto> createBook(@RequestBody BookDto bookDto) {
+    public Mono<ResponseEntity<BookDto>> createBook(@RequestBody BookDto bookDto) {
        if (bookDto.getId()==null || bookDto.getId().isEmpty() || bookDto.getId().equals("0")) {
-           try {
-               Mono<Book> newBook = bookService.insert(bookDto.getTitle(), bookDto.getAuthorId(), bookDto.getGenreId());
-               return new ResponseEntity<BookDto>(BookDto.fromDomainObject(newBook.block()), HttpStatus.CREATED);
-           }  catch (IllegalArgumentException e) {
-               return new ResponseEntity<BookDto>(HttpStatus.BAD_REQUEST);
-           }
+               return bookService.insert(bookDto.getTitle(), bookDto.getAuthorId(), bookDto.getGenreId())
+                       .map(BookDto::fromDomainObject).flatMap(book -> Mono.just(book))
+                       .map(ResponseEntity::ok)
+                       .switchIfEmpty(Mono.fromCallable(() -> ResponseEntity.notFound().build()));
        } else {
-           return new ResponseEntity<BookDto>(HttpStatus.BAD_REQUEST);
+           return Mono.just(new ResponseEntity<BookDto>(HttpStatus.BAD_REQUEST));
        }
     }
 }

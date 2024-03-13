@@ -7,6 +7,8 @@ import reactor.core.publisher.Mono;
 import ru.otus.hw.domain.entities.Author;
 import ru.otus.hw.repository.AuthorRepository;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @Service
 public class AuthorServiceImpl implements AuthorService {
@@ -16,6 +18,11 @@ public class AuthorServiceImpl implements AuthorService {
     public Flux<Author> findAll() {
         return authorRepository.findAll();
     }
+
+    @Override
+    public Flux<Author> saveAll(List<Author> authors) {
+        return authorRepository.saveAll(authors);
+    };
 
     @Override
     public Mono<Author> findById(String id) {

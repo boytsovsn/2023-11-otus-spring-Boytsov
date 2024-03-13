@@ -5,11 +5,14 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
+import ru.otus.hw.domain.entities.Author;
 import ru.otus.hw.domain.entities.Book;
 import ru.otus.hw.domain.entities.Remark;
 import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.repository.BookRepository;
 import ru.otus.hw.repository.RemarkRepository;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -32,6 +35,11 @@ public class BookServiceImpl implements BookService {
     public Flux<Book> findAll() {
         return bookRepository.findAll();
     }
+
+    @Override
+    public Flux<Book> saveAll(List<Book> books) {
+        return bookRepository.saveAll(books);
+    };
 
     @Override
     public Mono<Book> insert(String title, String authorId, String genreId) {

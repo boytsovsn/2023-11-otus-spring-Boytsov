@@ -29,8 +29,8 @@ public class Book {
 
     public Book(String title, Author author, Genre genre/*, Remark... remarks*/) {
         this.title = title;
-        this.authorId = author.getId();
-        this.genreId = genre.getId();
+        this.authorId = author != null ? author.getId() : null;
+        this.genreId = genre != null ? genre.getId() : null;
 //        this.remarks = Arrays.asList(remarks);
     }
 }
