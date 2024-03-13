@@ -35,21 +35,24 @@ public class BookController {
 
     private static MultiValueMap<String, String> header = new LinkedMultiValueMap<>();
 
-    @CrossOrigin(origins = {"http://localhost:5173", "http://localhost:8080"})
+    @CrossOrigin(origins = {"http://localhost:5173"})
     @GetMapping("/api/book")
     public Flux<BookDto> bookList() {
         final boolean[] first = {true};
-        return bookService.findAll().map(BookDto::fromDomainObject).publishOn(Schedulers.boundedElastic()).flatMap((x)->{
+        BookDto newBookDto = new BookDto("0", "", null, null, null, null);
+        newBookDto.setAuthors(authorService.findAll().map(AuthorDto::fromDomainObject).collectList().block());
+        newBookDto.setGenres(genreService.findAll().map(GenreDto::fromDomainObject).collectList().block());
+        return bookService.findAll().map(BookDto::fromDomainObject).publishOn(Schedulers.boundedElastic()).flatMap(x->{
             if (first[0]) {
                 x.setAuthors(authorService.findAll().map(AuthorDto::fromDomainObject).collectList().block());
                 x.setGenres(genreService.findAll().map(GenreDto::fromDomainObject).collectList().block());
                 first[0] =false;
             }
             return Mono.just(x);
-        }).switchIfEmpty(Flux.empty());
+        }).switchIfEmpty(Mono.just(newBookDto));
     }
 
-    @CrossOrigin(origins = {"http://localhost:5173", "http://localhost:8080"})
+    @CrossOrigin(origins = {"http://localhost:5173"})
     @GetMapping("/api/book/{id}")
     public Mono<ResponseEntity<BookDto>> getBook(@PathVariable("id") String id) {
         if (id == null || id.isEmpty() || id.equals("0")) {
@@ -71,7 +74,7 @@ public class BookController {
     @CrossOrigin(origins = "http://localhost:5173")
     @DeleteMapping("/api/book/{id}")
     public Mono<ResponseEntity<Void>> deleteBook(@PathVariable("id") String id) {
-        return bookService.deleteById(id).map(ResponseEntity::ok).switchIfEmpty(Mono.fromCallable(() -> ResponseEntity.notFound().build()));
+        return bookService.deleteById(id).map(ResponseEntity::ok).switchIfEmpty(Mono.fromCallable(() -> ResponseEntity.ok().build()));
     }
 
     @CrossOrigin(origins = "http://localhost:5173")

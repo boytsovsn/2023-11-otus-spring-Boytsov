@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
-import ru.otus.hw.domain.entities.Author;
+import reactor.core.scheduler.Schedulers;
 import ru.otus.hw.domain.entities.Book;
 import ru.otus.hw.domain.entities.Remark;
 import ru.otus.hw.exceptions.EntityNotFoundException;
@@ -55,8 +55,10 @@ public class BookServiceImpl implements BookService {
     @Override
     public Mono<Void> deleteById(String id) {
         return bookRepository.findById(id).switchIfEmpty(Mono.error(new EntityNotFoundException("Book not found " + id)))
+                .publishOn(Schedulers.boundedElastic())
                 .flatMap(book->{
-                    remarkRepository.deleteAllById(book.getRemarks().stream().map(Remark::getId).toList()).publishOn(workerPool).subscribe();
+                    if (book.getRemarks() != null)
+                        remarkRepository.deleteAllById(book.getRemarks().stream().map(Remark::getId).toList()).subscribe();
                     return bookRepository.deleteById(id);
                 });
     }
