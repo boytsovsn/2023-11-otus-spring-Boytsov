@@ -34,8 +34,6 @@ public class BookController {
 
     private final GenreService genreService;
 
-    private static MultiValueMap<String, String> header = new LinkedMultiValueMap<>();
-
     @CrossOrigin(origins = {"http://localhost:5173"})
     @GetMapping("/api/book")
     public Flux<BookDto> bookList() {
@@ -62,17 +60,10 @@ public class BookController {
     public Mono<ResponseEntity<BookDto>> getBook(@PathVariable("id") String id) {
         if (id == null || id.isEmpty() || id.equals("0")) {
             BookDto newBookDto = new BookDto("0", "", null, null, null, null);
-            return Mono.just(newBookDto).flatMap(bookDto -> {
-                   authorService.findAll().map(AuthorDto::fromDomainObject).collectList().subscribe(result -> bookDto.setAuthors(result));
-                   genreService.findAll().map(GenreDto::fromDomainObject).collectList().subscribe(result -> bookDto.setGenres(result));
-                   return Mono.just(bookDto);
-                }).map(ResponseEntity::ok);
+            return Mono.just(newBookDto).map(ResponseEntity::ok);
         } else {
-            return bookService.findById(id).map(BookDto::fromDomainObject).publishOn(Schedulers.boundedElastic()).flatMap(bookDto -> {
-                    authorService.findAll().map(AuthorDto::fromDomainObject).collectList().subscribe(result -> bookDto.setAuthors(result));
-                    genreService.findAll().map(GenreDto::fromDomainObject).collectList().subscribe(result -> bookDto.setGenres(result));
-                    return Mono.just(bookDto);
-                }).map(ResponseEntity::ok).switchIfEmpty(Mono.fromCallable(() -> ResponseEntity.notFound().build()));
+            return bookService.findById(id).map(BookDto::fromDomainObject)
+                    .map(ResponseEntity::ok).switchIfEmpty(Mono.fromCallable(() -> ResponseEntity.notFound().build()));
         }
     }
 

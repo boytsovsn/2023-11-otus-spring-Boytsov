@@ -45,23 +45,6 @@ public class DataFiller implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
-//        personRepository.saveAll(Arrays.asList(
-//                new Person("Pushkin", 22),
-//                new Person("Lermontov", 22),
-//                new Person("Tolstoy", 60)
-//        )).publishOn(workerPool)
-//                .subscribe(savedPerson -> {
-//                    logger.info("saved person:{}", savedPerson);
-//                    notesRepository.saveAll(Arrays.asList(
-//                                    new Notes(null, "txt_1_" + savedPerson.getId(), savedPerson.getId()),
-//                                    new Notes(null, "txt_2_" + savedPerson.getId(), savedPerson.getId())))
-//                            .publishOn(workerPool)
-//                            .subscribe(savedNotes -> logger.info("saved notes:{}", savedNotes));
-//                });
-
-//        personRepositoryCustom.findAll()
-//                .publishOn(workerPool)
-//                .subscribe(personDto -> logger.info("personDto:{}", personDto));
         bookRepository.deleteAll().publishOn(workerPool).subscribe();
         authorRepository.deleteAll().publishOn(workerPool).subscribe();
         genreRepository.deleteAll().publishOn(workerPool).subscribe();
