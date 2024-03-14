@@ -1,0 +1,16 @@
+server:
+  port: 8090
+
+spring:
+  messages:
+    encoding: UTF-8
+  data:
+    mongodb:
+#      port: 0
+      database: test
+      host: localhost
+      port: 27017
+
+logging:
+  level:
+    ROOT: ERROR
