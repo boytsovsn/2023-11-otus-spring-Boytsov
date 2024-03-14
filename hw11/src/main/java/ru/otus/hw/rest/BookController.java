@@ -20,6 +20,7 @@ import ru.otus.hw.services.GenreService;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static reactor.core.publisher.Mono.just;
 
@@ -38,18 +39,22 @@ public class BookController {
     @CrossOrigin(origins = {"http://localhost:5173"})
     @GetMapping("/api/book")
     public Flux<BookDto> bookList() {
-        final boolean[] first = {true};
+        final AtomicReference<Boolean> first = new AtomicReference<>(true);
+        return bookService.findAll().map(BookDto::fromDomainObject).publishOn(Schedulers.boundedElastic()).flatMap(x->{
+            if (first.get()) {
+                x.setAuthors(authorService.findAll().map(AuthorDto::fromDomainObject).collectList().block());
+                x.setGenres(genreService.findAll().map(GenreDto::fromDomainObject).collectList().block());
+                first.set(false);
+            }
+            return Mono.just(x);
+        }).switchIfEmpty(Mono.just(this.getNewBookDto()));
+    }
+
+    private BookDto getNewBookDto() {
         BookDto newBookDto = new BookDto("0", "", null, null, null, null);
         newBookDto.setAuthors(authorService.findAll().map(AuthorDto::fromDomainObject).collectList().block());
         newBookDto.setGenres(genreService.findAll().map(GenreDto::fromDomainObject).collectList().block());
-        return bookService.findAll().map(BookDto::fromDomainObject).publishOn(Schedulers.boundedElastic()).flatMap(x->{
-            if (first[0]) {
-                x.setAuthors(authorService.findAll().map(AuthorDto::fromDomainObject).collectList().block());
-                x.setGenres(genreService.findAll().map(GenreDto::fromDomainObject).collectList().block());
-                first[0] =false;
-            }
-            return Mono.just(x);
-        }).switchIfEmpty(Mono.just(newBookDto));
+        return newBookDto;
     }
 
     @CrossOrigin(origins = {"http://localhost:5173"})
@@ -74,7 +79,11 @@ public class BookController {
     @CrossOrigin(origins = "http://localhost:5173")
     @DeleteMapping("/api/book/{id}")
     public Mono<ResponseEntity<Void>> deleteBook(@PathVariable("id") String id) {
-        return bookService.deleteById(id).map(ResponseEntity::ok).switchIfEmpty(Mono.fromCallable(() -> ResponseEntity.ok().build()));
+        if (id != null && !id.isEmpty() && !id.equals("0")) {
+            return bookService.deleteById(id).map(ResponseEntity::ok).switchIfEmpty(Mono.fromCallable(() -> ResponseEntity.ok().build()));
+        } else {
+            return Mono.just(ResponseEntity.badRequest().build());
+        }
     }
 
     @CrossOrigin(origins = "http://localhost:5173")
