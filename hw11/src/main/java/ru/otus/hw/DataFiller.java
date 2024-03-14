@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
-import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 import ru.otus.hw.domain.entities.Author;
 import ru.otus.hw.domain.entities.Book;
@@ -26,9 +25,6 @@ import java.util.List;
 public class DataFiller implements ApplicationRunner {
     private static final Logger logger = LoggerFactory.getLogger(DataFiller.class);
 
-//    private final PersonRepository personRepository;
-//    private final NotesRepository notesRepository;
-//    private final PersonRepositoryCustom personRepositoryCustom;
     private final Scheduler workerPool;
 
     private final AuthorService authorService;

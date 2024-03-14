@@ -11,15 +11,6 @@ spring:
       host: localhost
       port: 27017
 
-mongock:
-  runner-type: "InitializingBean"
-  change-logs-scan-package:
-    - ru.otus.hw.changelogs.test
-  mongo-db:
-    write-concern:
-      journal: false
-    read-concern: local
-
 logging:
   level:
     ROOT: ERROR

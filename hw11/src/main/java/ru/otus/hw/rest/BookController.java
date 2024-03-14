@@ -96,8 +96,8 @@ public class BookController {
     public Mono<ResponseEntity<BookDto>> createBook(@RequestBody BookDto bookDto) {
        if (bookDto.getId()==null || bookDto.getId().isEmpty() || bookDto.getId().equals("0")) {
                return bookService.insert(bookDto.getTitle(), bookDto.getAuthorId(), bookDto.getGenreId())
-                       .map(BookDto::fromDomainObject).flatMap(book -> Mono.just(book))
-                       .map(ResponseEntity::ok)
+                       .map(BookDto::fromDomainObject)
+                       .map(x -> ResponseEntity.status(201).body(x))
                        .switchIfEmpty(Mono.fromCallable(() -> ResponseEntity.notFound().build()));
        } else {
            return Mono.just(new ResponseEntity<BookDto>(HttpStatus.BAD_REQUEST));

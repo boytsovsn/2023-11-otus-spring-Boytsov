@@ -13,6 +13,7 @@ import ru.otus.hw.domain.entities.Remark;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @DataMongoTest
@@ -38,6 +39,8 @@ class RemarkRepositoryTest {
         Mono<Void> res =  repository.deleteById(id.get());
         StepVerifier.create(res)
                 .verifyComplete();
+        Remark actualRemark = repository.findById(id.get()).block();
+        assertEquals(actualRemark, null);
     }
 
 }

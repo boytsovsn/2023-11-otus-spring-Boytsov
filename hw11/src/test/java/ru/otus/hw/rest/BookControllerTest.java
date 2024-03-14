@@ -6,10 +6,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 import ru.otus.hw.domain.dto.AuthorDto;
 import ru.otus.hw.domain.dto.BookDto;
@@ -27,8 +27,13 @@ import ru.otus.hw.services.GenreService;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static com.google.common.net.HttpHeaders.ACCEPT;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @EnableConfigurationProperties
 @ComponentScan({"ru.otus.hw.config.test", "ru.otus.hw.config.test.reactiverest", "ru.otus.hw.services", "ru.otus.hw.repository"})
@@ -135,13 +140,63 @@ class BookControllerTest {
 
     @Test
     void deleteBook() {
+        var webTestClientForTest = webTestClient.mutate()
+                .responseTimeout(Duration.ofSeconds(1))
+                .build();
+        var result = webTestClientForTest
+                    .delete().uri("/api/book/"+expectedBooks.get(0).getId())
+                    .exchange()
+                    .expectStatus().isOk();
+        Book findBook = bookRepository.findById(expectedBooks.get(0).getId()).block();
+        assertEquals(findBook, null);
     }
 
     @Test
     void editBook() {
+        var webTestClientForTest = webTestClient.mutate()
+                .responseTimeout(Duration.ofSeconds(1))
+                .build();
+        BookDto updatedBook = BookDto.fromDomainObject(expectedBooks.get(0));
+        updatedBook.setTitle("Другая книга");
+        updatedBook.setAuthorId(expectedBooks.get(1).getAuthorId());
+        updatedBook.setGenreId(expectedBooks.get(2).getGenreId());
+        var result = webTestClientForTest
+                .put().uri("/api/book/"+expectedBooks.get(0).getId())
+                .body(Mono.just(updatedBook), BookDto.class)
+                .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                .header(ACCEPT, APPLICATION_JSON_VALUE)
+                .exchange()
+                .expectStatus().isOk();
+        BookDto actualBook = bookRepository.findById(expectedBooks.get(0).getId()).map(BookDto::fromDomainObject).block();
+        assertEquals(updatedBook, actualBook);
     }
 
     @Test
     void createBook() {
+        var webTestClientForTest = webTestClient.mutate()
+                .responseTimeout(Duration.ofSeconds(1))
+                .build();
+        BookDto newBookDto = BookDto.fromDomainObject(new Book());
+        newBookDto.setTitle("Новая книга");
+        newBookDto.setAuthorId(expectedBooks.get(2).getAuthorId());
+        newBookDto.setGenreId(expectedBooks.get(1).getGenreId());
+        var result = webTestClientForTest
+                .post().uri("/api/book")
+                .body(Mono.just(newBookDto), BookDto.class)
+                .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                .header(ACCEPT, APPLICATION_JSON_VALUE)
+                .exchange()
+                .expectStatus().isCreated()
+                .returnResult(BookDto.class)
+                .getResponseBody();
+        var step = StepVerifier.create(result);
+        StepVerifier.Step<BookDto> stepResult = null;
+        AtomicReference<String> id = new AtomicReference<>("");
+        stepResult = step.assertNext(bookDto -> {
+            id.set(bookDto.getId()); assertNotNull(bookDto.getId());});
+        stepResult.verifyComplete();
+        BookDto actualBook = bookRepository.findById(id.get()).map(BookDto::fromDomainObject).block();
+        newBookDto.setId(id.get());
+        assertEquals(newBookDto, actualBook);
     }
 }
