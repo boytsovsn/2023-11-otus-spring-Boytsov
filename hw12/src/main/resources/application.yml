@@ -1,0 +1,25 @@
+spring:
+  messages:
+    encoding: UTF-8
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: mainDB
+  mvc:
+    hidden-method:
+      filter:
+        enabled: true
+cross-origin: http://localhost:5173
+mongock:
+  runner-type: "InitializingBean"
+  change-logs-scan-package:
+    - ru.otus.hw.changelogs
+  mongo-db:
+    write-concern:
+      journal: false
+    read-concern: local
+
+logging:
+  level:
+    ROOT: ERROR
