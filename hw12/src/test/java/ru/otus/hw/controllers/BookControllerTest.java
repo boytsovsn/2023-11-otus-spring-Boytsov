@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -18,8 +19,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -38,6 +38,11 @@ public class BookControllerTest {
     private MockMvc mockMvc;
 
 
+    @WithMockUser(
+            username = "user",
+            password = "password",
+            roles = {"USER"}
+    )
     @Test
     public void listBookGet() throws Exception {
         List<Book> books = new ArrayList<>();
@@ -54,6 +59,10 @@ public class BookControllerTest {
         assertThat(actualResponseBody).contains("0515e04eeead46478298faa1", "0515e04eeead46478298faa2", "0515e04eeead46478298faa3");
     }
 
+    @WithMockUser(
+            username = "user",
+            authorities = {"ROLE_USER"}
+    )
     @Test
     public void deleteBookDelete() throws Exception {
         mockMvc.perform(delete("/book/0515e04eeead46478298faa1"))
@@ -78,5 +87,6 @@ public class BookControllerTest {
                         param("title", bookDto.getTitle()).param("authorId", bookDto.getAuthorId()).param("genreId", bookDto.getGenreId()))
                 .andExpect(status().isMovedTemporarily()).andDo(print());
     }
+
 
 }
