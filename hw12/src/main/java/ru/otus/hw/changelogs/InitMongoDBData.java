@@ -3,14 +3,9 @@ package ru.otus.hw.changelogs;
 import com.github.cloudyrock.mongock.ChangeLog;
 import com.github.cloudyrock.mongock.ChangeSet;
 import com.mongodb.client.MongoDatabase;
-import ru.otus.hw.models.entities.Author;
-import ru.otus.hw.models.entities.Book;
-import ru.otus.hw.models.entities.Genre;
-import ru.otus.hw.models.entities.Remark;
-import ru.otus.hw.repositories.AuthorRepository;
-import ru.otus.hw.repositories.BookRepository;
-import ru.otus.hw.repositories.GenreRepository;
-import ru.otus.hw.repositories.RemarkRepository;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import ru.otus.hw.models.entities.*;
+import ru.otus.hw.repositories.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,5 +75,28 @@ public class InitMongoDBData {
         for (Book book : books) {
             repository.save(book);
         }
+    }
+
+    @ChangeSet(order = "006", id = "initUser", author = "boytsov", runAlways = true)
+    public void initUser(UserRepository repository) {
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        User user = new User();
+        user.setLogin("admin");
+        user.setPassword(passwordEncoder.encode("password"));
+        user.setRole("ADMIN");
+        user.setLock(false);
+        repository.save(user);
+        user = new User();
+        user.setLogin("user");
+        user.setPassword(passwordEncoder.encode("password"));
+        user.setRole("USER");
+        user.setLock(false);
+        repository.save(user);
+        user = new User();
+        user.setLogin("manager");
+        user.setPassword(passwordEncoder.encode("password"));
+        user.setRole("USER");
+        user.setLock(true);
+        repository.save(user);
     }
 }

@@ -1,44 +1,41 @@
 package ru.otus.hw.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import ru.otus.hw.repositories.UserRepository;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @EnableWebSecurity
 @Configuration
 public class SecurityConfig {
+
+    @Autowired
+    UserRepository userRepository;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http ) throws Exception {
         http
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
-//                .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
                 .authorizeHttpRequests( ( authorize ) -> authorize
+                        .requestMatchers(  "/error", "/*.css", "/*.png").permitAll()
                         .requestMatchers( "/" ).authenticated()
-                        .requestMatchers( "/**" ).hasAnyRole("ADMIN", "USER")
+                        .requestMatchers( "/list", "/book*" ).hasAnyRole("ADMIN", "USER")
+                        .requestMatchers( "/book/*" ).hasAnyRole("ADMIN")
                   )
-//                .anonymous().principal( new AnonymousUD() )
-//                .and()
-//                .rememberMe().key("AnySecret").tokenValiditySeconds(60 * 30)
-//                .and()
                 .formLogin(Customizer.withDefaults())
         ;
         return http.build();
@@ -46,32 +43,22 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        //return new BCryptPasswordEncoder();
-        return NoOpPasswordEncoder.getInstance();
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
-    }
-
-    @Bean
-    public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService());
-        authProvider.setPasswordEncoder(passwordEncoder());
-        return authProvider;
+        return new BCryptPasswordEncoder();
+        //return NoOpPasswordEncoder.getInstance();
     }
 
     @Bean
     public InMemoryUserDetailsManager userDetailsService() {
         var users = new ArrayList<UserDetails>();
-        users.add( User
-                .builder().username( "admin" ).password( "password" ).roles( "ADMIN" )
-                .build() );
-        users.add( User
-                .builder().username( "user" ).password( "password" ).roles( "USER" )
-                .build());
-        return new InMemoryUserDetailsManager( users );
+        List<ru.otus.hw.models.entities.User> usersDB = userRepository.findAll();
+
+        for (ru.otus.hw.models.entities.User user: usersDB) {
+            if (user.getLock() != true) {
+                users.add(User
+                        .builder().username(user.getUsername()).password(user.getPassword()).roles(user.getRole())
+                        .build());
+            }
+        }
+        return new InMemoryUserDetailsManager(users);
     }
 }
