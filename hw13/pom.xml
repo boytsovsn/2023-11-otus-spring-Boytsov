@@ -10,9 +10,9 @@
     </parent>
 
     <groupId>ru.otus.hw</groupId>
-    <artifactId>hw12-mvc-security</artifactId>
+    <artifactId>hw13-mvc-security-acl</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>spring-mvc-security-hw12</name>
+    <name>spring-mvc-security-acl-hw13</name>
 
     <properties>
         <java.version>17</java.version>
