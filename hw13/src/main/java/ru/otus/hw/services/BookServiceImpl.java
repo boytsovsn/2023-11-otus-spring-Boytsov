@@ -43,7 +43,7 @@ public class BookServiceImpl implements BookService {
 
     @Transactional
     @Override
-    public Book     update(String id, String title, String authorId, String genreId) {
+    public Book update(String id, String title, String authorId, String genreId) {
         return save(id, title, authorId, genreId);
     }
 
