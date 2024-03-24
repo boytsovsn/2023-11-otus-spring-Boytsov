@@ -32,21 +32,23 @@ public class AclConfig {
     @Autowired
     private CacheManager cacheManager;
 
-//    @Autowired
-//    private DataSource dataSource;
+    @SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
+    @Autowired
+    private DataSource dataSource;
 
-    @Bean
-    public DataSource dataSource() {
-        try {
-            var dbBuilder = new EmbeddedDatabaseBuilder();
-            return dbBuilder.setType(EmbeddedDatabaseType.H2)
-                    .addScripts("classpath:schema.sql", "classpath:data.sql")
-                    .build();
-        } catch (Exception e) {
-            LOGGER.error("Embedded DataSource bean cannot be created!", e);
-            return null;
-        }
-    }
+
+//    @Bean
+//    public DataSource dataSource() {
+//        try {
+//            var dbBuilder = new EmbeddedDatabaseBuilder();
+//            return dbBuilder.setType(EmbeddedDatabaseType.H2)
+//                    .addScripts("classpath:schema.sql", "classpath:data.sql")
+//                    .build();
+//        } catch (Exception e) {
+//            LOGGER.error("Embedded DataSource bean cannot be created!", e);
+//            return null;
+//        }
+//    }
 
     @Bean
     public AclCache aclCache() {
@@ -77,11 +79,11 @@ public class AclConfig {
 
     @Bean
     public LookupStrategy lookupStrategy() {
-        return new BasicLookupStrategy(dataSource(), aclCache(), aclAuthorizationStrategy(), new ConsoleAuditLogger());
+        return new BasicLookupStrategy(dataSource, aclCache(), aclAuthorizationStrategy(), new ConsoleAuditLogger());
     }
 
     @Bean
     public JdbcMutableAclService aclService() {
-        return new JdbcMutableAclService(dataSource(), lookupStrategy(), aclCache());
+        return new JdbcMutableAclService(dataSource, lookupStrategy(), aclCache());
     }
 }

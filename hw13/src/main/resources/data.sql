@@ -1,13 +1,15 @@
-INSERT INTO system_message(id,content) VALUES
-(1,'First Level Message'),
-(2,'Second Level Message'),
-(3,'Third Level Message');
+-- INSERT INTO system_message(content) VALUES
+-- ('First Level Message'),
+-- ('Second Level Message'),
+-- ('Third Level Message');
 
 
-INSERT INTO acl_sid (id, principal, sid) VALUES
-(1, 1, 'admin'),
-(2, 1, 'user'),
-(3, 0, 'ROLE_EDITOR');
+INSERT INTO acl_sid (principal, sid) VALUES
+(1, 'admin');
+INSERT INTO acl_sid (principal, sid) VALUES
+(1, 'user');
+INSERT INTO acl_sid (principal, sid) VALUES
+(0, 'ROLE_EDITOR');
 
 INSERT INTO acl_class (id, class) VALUES
 (1, 'ru.otus.spring.model.NoticeMessage');

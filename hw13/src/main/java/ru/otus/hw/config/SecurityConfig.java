@@ -37,13 +37,13 @@ public class SecurityConfig {
         http
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests( ( authorize ) -> authorize
-                        .requestMatchers(  "/error", "/*.css", "/*.png").permitAll()
-                        .requestMatchers( "/" ).authenticated()
-                        .requestMatchers( "/list", "/book*" ).hasAnyRole("ADMIN", "USER")
-                        .requestMatchers( "/book/*" ).hasAnyRole("ADMIN")
-                  )
-                .formLogin(Customizer.withDefaults())
+//                .authorizeHttpRequests( ( authorize ) -> authorize
+//                        .requestMatchers(  "/error", "/*.css", "/*.png", "/h2-console*", "/h2-console/**").permitAll()
+//                        .requestMatchers( "/" ).authenticated()
+//                        .requestMatchers( "/list", "/book*" ).hasAnyRole("ADMIN", "USER")
+//                        .requestMatchers( "/book/*" ).hasAnyRole("ADMIN")
+//                  )
+//                .formLogin(Customizer.withDefaults())
         ;
         return http.build();
     }
