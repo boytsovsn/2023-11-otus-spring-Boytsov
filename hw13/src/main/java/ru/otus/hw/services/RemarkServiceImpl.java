@@ -23,25 +23,25 @@ public class RemarkServiceImpl implements RemarkService {
 
     @Override
     @Transactional(readOnly=true)
-    public List<Remark> findByBookId(String id) {
+    public List<Remark> findByBookId(Long id) {
         Book book = bookRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Book with id %s not found".formatted(id)));
         book.getRemarks().size();
         return book.getRemarks();
     }
 
     @Override
-    public Optional<Remark> findById(String id) {
+    public Optional<Remark> findById(Long id) {
 
         return remarkRepository.findById(id);
     }
 
     @Transactional
     @Override
-    public Remark save(String id, String remarkText, String bookId) {
+    public Remark save(Long id, String remarkText, Long bookId) {
         Remark remark;
         Remark savedRemark;
         Book book = bookRepository.findById(bookId).orElseThrow(() -> new EntityNotFoundException("Book with id %s not found".formatted(bookId)));
-        if (id==null || id.isEmpty() || id.equals("0")) {
+        if (id==null || id.equals(0L)) {
             remark = new Remark(remarkText, book);
             savedRemark = remarkRepository.save(remark);
             book.getRemarks().add(savedRemark);
@@ -80,7 +80,7 @@ public class RemarkServiceImpl implements RemarkService {
 
     @Override
     @Transactional
-    public void deleteById(String id) {
+    public void deleteById(Long id) {
         var remark = remarkRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Remark with id %s not found".formatted(id)));
         Book rbook = remark.getBook();
         Book book = bookRepository.findById(rbook.getId()).orElseThrow(() -> new EntityNotFoundException("Book with id %s not found".formatted(rbook.getId())));

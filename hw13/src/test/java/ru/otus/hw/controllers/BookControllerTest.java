@@ -64,9 +64,9 @@ public class BookControllerTest {
     @DisplayName("Список книг")
     public void listBookGet() throws Exception {
         List<Book> books = new ArrayList<>();
-        books.add(new BookDto("0515e04eeead46478298faa1", "Test title1", "65ce2a68d4437132eb18a431", "65ce2a68d4437132eb18a43e").toDomainObject());
-        books.add(new BookDto("0515e04eeead46478298faa2", "Test title2", "65ce2a68d4437132eb18a432", "65ce2a68d4437132eb18a43e").toDomainObject());
-        books.add(new BookDto("0515e04eeead46478298faa3", "Test title3", "65ce2a68d4437132eb18a433", "65ce2a68d4437132eb18a43f").toDomainObject());
+        books.add(new BookDto(1L, "Test title1", "1", "2").toDomainObject());
+        books.add(new BookDto(2L, "Test title2", "2", "2").toDomainObject());
+        books.add(new BookDto(3L, "Test title3", "3", "3").toDomainObject());
         given(bookService.findAll()).willReturn(books);
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/")
                         )
@@ -74,7 +74,7 @@ public class BookControllerTest {
                 .andDo(print())
                 .andReturn();
         String actualResponseBody = mvcResult.getResponse().getContentAsString();
-        assertThat(actualResponseBody).contains("0515e04eeead46478298faa1", "0515e04eeead46478298faa2", "0515e04eeead46478298faa3");
+        assertThat(actualResponseBody).contains("1", "2", "3");
     }
 
     @WithMockUser(
@@ -85,7 +85,7 @@ public class BookControllerTest {
     @Test
     @DisplayName("Удаление книги")
     public void deleteBookDelete() throws Exception {
-        mockMvc.perform(delete("/book/0515e04eeead46478298faa1").with(csrf().asHeader()))
+        mockMvc.perform(delete("/book/1").with(csrf().asHeader()))
                 .andExpect(status().isMovedTemporarily()).andDo(print());
     }
 
@@ -97,9 +97,9 @@ public class BookControllerTest {
     @Test
     @DisplayName("Редактирование книги")
     public void editBookPut() throws Exception {
-        BookDto bookDto = new BookDto("0515e04eeead46478298faa1", "Test title", "65ce2a68d4437132eb18a431", "65ce2a68d4437132eb18a43e");
-        mockMvc.perform(put("/book/0515e04eeead46478298faa1")
-                .param("id", bookDto.getId())
+        BookDto bookDto = new BookDto(1L, "Test title", "2", "1");
+        mockMvc.perform(put("/book/1")
+                .param("id", bookDto.getId().toString())
                 .param("title", bookDto.getTitle())
                 .param("authorId", bookDto.getAuthorId())
                 .param("genreId", bookDto.getGenreId()).with(csrf().asHeader()))
@@ -114,7 +114,7 @@ public class BookControllerTest {
     @Test
     @DisplayName("Создание книги")
     public void createBookPost() throws Exception {
-        BookDto bookDto = new BookDto("0", "Test title", "65ce2a68d4437132eb18a431", "65ce2a68d4437132eb18a43e");
+        BookDto bookDto = new BookDto(0L, "Test title", "2", "3");
         mockMvc.perform(MockMvcRequestBuilders.post("/book")
                         .param("title", bookDto.getTitle())
                         .param("authorId", bookDto.getAuthorId())
@@ -127,9 +127,9 @@ public class BookControllerTest {
     @DisplayName("Список книг без аутентификации")
     public void listBookGetUnauthorized() throws Exception {
         List<Book> books = new ArrayList<>();
-        books.add(new BookDto("0515e04eeead46478298faa1", "Test title1", "65ce2a68d4437132eb18a431", "65ce2a68d4437132eb18a43e").toDomainObject());
-        books.add(new BookDto("0515e04eeead46478298faa2", "Test title2", "65ce2a68d4437132eb18a432", "65ce2a68d4437132eb18a43e").toDomainObject());
-        books.add(new BookDto("0515e04eeead46478298faa3", "Test title3", "65ce2a68d4437132eb18a433", "65ce2a68d4437132eb18a43f").toDomainObject());
+        books.add(new BookDto(1L, "Test title1", "1", "2").toDomainObject());
+        books.add(new BookDto(2L, "Test title2", "2", "2").toDomainObject());
+        books.add(new BookDto(3L, "Test title3", "3", "3").toDomainObject());
         given(bookService.findAll()).willReturn(books);
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/")
                 )
@@ -141,16 +141,16 @@ public class BookControllerTest {
     @Test
     @DisplayName("Удаление книги без аутентификации")
     public void deleteBookDeleteUnauthorized() throws Exception {
-        mockMvc.perform(delete("/book/0515e04eeead46478298faa1").with(csrf().asHeader()))
+        mockMvc.perform(delete("/book/1").with(csrf().asHeader()))
                 .andExpect(status().isUnauthorized()).andDo(print());
     }
 
     @Test
     @DisplayName("Редактирование книги без аутентификации")
     public void editBookPutUnauthorized() throws Exception {
-        BookDto bookDto = new BookDto("0515e04eeead46478298faa1", "Test title", "65ce2a68d4437132eb18a431", "65ce2a68d4437132eb18a43e");
-        mockMvc.perform(put("/book/0515e04eeead46478298faa1")
-                        .param("id", bookDto.getId())
+        BookDto bookDto = new BookDto(1L, "Test title", "2", "3");
+        mockMvc.perform(put("/book/1")
+                        .param("id", bookDto.getId().toString())
                         .param("title", bookDto.getTitle())
                         .param("authorId", bookDto.getAuthorId())
                         .param("genreId", bookDto.getGenreId()).with(csrf().asHeader()))
@@ -161,7 +161,7 @@ public class BookControllerTest {
     @Test
     @DisplayName("Создание книги без аутентификации")
     public void createBookPostUnauthorized() throws Exception {
-        BookDto bookDto = new BookDto("0", "Test title", "65ce2a68d4437132eb18a431", "65ce2a68d4437132eb18a43e");
+        BookDto bookDto = new BookDto(0L, "Test title", "1", "2");
         mockMvc.perform(MockMvcRequestBuilders.post("/book")
                         .param("title", bookDto.getTitle())
                         .param("authorId", bookDto.getAuthorId())

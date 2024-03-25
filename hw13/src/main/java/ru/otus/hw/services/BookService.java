@@ -6,13 +6,13 @@ import java.util.List;
 import java.util.Optional;
 
 public interface BookService {
-    Optional<Book> findById(String id);
+    Optional<Book> findById(Long id);
 
     List<Book> findAll();
 
-    Book insert(String title, String authorId, String genreId);
+    Book insert(String title, Long authorId, Long genreId);
 
-    Book update(String id, String title, String authorId, String genreId);
+    Book update(Long id, String title, Long authorId, Long genreId);
 
-    void deleteById(String id);
+    void deleteById(Long id);
 }

@@ -1,7 +1,7 @@
 package ru.otus.hw;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.otus.hw.changelogs.test.AllEntitiesModel;
+import ru.otus.hw.models.AllEntitiesModel;
 import ru.otus.hw.models.entities.Author;
 import ru.otus.hw.models.entities.Book;
 import ru.otus.hw.models.entities.Genre;

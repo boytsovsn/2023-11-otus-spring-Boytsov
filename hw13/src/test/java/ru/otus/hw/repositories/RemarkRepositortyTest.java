@@ -4,6 +4,7 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
 import ru.otus.hw.BaseTest;
 import ru.otus.hw.exceptions.EntityNotFoundException;
@@ -16,10 +17,10 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@DataMongoTest
+@DataJpaTest
 @EnableConfigurationProperties
-@ComponentScan({"ru.otus.hw.changelogs.test", "ru.otus.hw.repositories"})
-@DisplayName("Mongo репозиторий для Remark")
+@ComponentScan({"ru.otus.hw.models", "ru.otus.hw.repositories"})
+@DisplayName("JPA репозиторий для Remark")
 class RemarkRepositortyTest extends BaseTest {
 
     @Autowired
@@ -41,8 +42,8 @@ class RemarkRepositortyTest extends BaseTest {
     @Test
     void findById() {
         List<Remark> remarksList = convertToFlatDbRemarks();
-        String updatedRemarkId = remarksList.get(updatedRemarkN-1).getId();
-        String deletedRemarkId = remarksList.get(deletedRemarkN-1).getId();
+        Long updatedRemarkId = remarksList.get(updatedRemarkN-1).getId();
+        Long deletedRemarkId = remarksList.get(deletedRemarkN-1).getId();
         for (Remark remark: remarksList) {
                 var fRemark = remarkRepository.findById(remark.getId()).orElseThrow(() -> new EntityNotFoundException("Remark not found, id %s".formatted(remark.getId())));
                 assertThat(fRemark.getId()).isEqualTo(remark.getId());
@@ -59,7 +60,7 @@ class RemarkRepositortyTest extends BaseTest {
         var returnedRemark = remarkRepository.save(newRemark);
         newRemark.setId(returnedRemark.getId());
         assertThat(returnedRemark).isNotNull()
-                .matches(remark -> remark.getId() != null && remark.getId().length() > 0)
+                .matches(remark -> remark.getId() != null && remark.getId() > 0)
                 .isEqualTo(newRemark);
         Optional<Remark> checkRemark = remarkRepository.findById(returnedRemark.getId());
         assertThat(checkRemark)
@@ -74,7 +75,7 @@ class RemarkRepositortyTest extends BaseTest {
     void updateRemark() {
         int forBookN = 2;
         Book forBook = dbBooks.get(forBookN-1);
-        String updatedRemarkId = convertToFlatDbRemarks().get(updatedRemarkN-1).getId();
+        Long updatedRemarkId = convertToFlatDbRemarks().get(updatedRemarkN-1).getId();
         var expectedRemark = new Remark(updatedRemarkId, "Remark_10500", forBook);
         var fromBDRemark = remarkRepository.findById(expectedRemark.getId());
         assertThat(fromBDRemark)
@@ -84,7 +85,7 @@ class RemarkRepositortyTest extends BaseTest {
 
         var returnedRemark = remarkRepository.save(expectedRemark);
         assertThat(returnedRemark).isNotNull()
-                .matches(remark -> remark.getId() != null && remark.getId().length() > 0)
+                .matches(remark -> remark.getId() != null && remark.getId() > 0)
                 .usingRecursiveComparison().ignoringExpectedNullFields()
                 .isEqualTo(expectedRemark);
 
@@ -103,7 +104,7 @@ class RemarkRepositortyTest extends BaseTest {
     void deleteById() {
         Book insertToBook = dbBooks.get(insertToBookN-1);
         var returnedRemark = remarkRepository.save(new Remark("Remark_100500", insertToBook));
-        String deletedRemarkId = returnedRemark.getId();
+        Long deletedRemarkId = returnedRemark.getId();
         assertThat(remarkRepository.findById(deletedRemarkId)).isPresent();
         var remark = remarkRepository.findById(deletedRemarkId);
         remarkRepository.deleteById(deletedRemarkId);

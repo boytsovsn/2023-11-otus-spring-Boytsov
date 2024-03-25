@@ -1,11 +1,11 @@
 package ru.otus.hw.repositories;
 
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.repository.CrudRepository;
 import ru.otus.hw.models.entities.Book;
 
 import java.util.List;
 
-public interface BookRepository extends MongoRepository<Book, String> {
+public interface BookRepository extends CrudRepository<Book, Long> {
 
     List<Book> findAll();
 }

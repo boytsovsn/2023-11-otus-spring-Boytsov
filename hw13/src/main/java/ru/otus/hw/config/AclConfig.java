@@ -42,7 +42,7 @@ public class AclConfig {
 //        try {
 //            var dbBuilder = new EmbeddedDatabaseBuilder();
 //            return dbBuilder.setType(EmbeddedDatabaseType.H2)
-//                    .addScripts("classpath:schema.sql", "classpath:data.sql")
+//                    .addScripts("classpath:schema1.sql", "classpath:data1sql")
 //                    .build();
 //        } catch (Exception e) {
 //            LOGGER.error("Embedded DataSource bean cannot be created!", e);

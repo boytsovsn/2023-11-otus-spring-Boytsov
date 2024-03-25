@@ -1,0 +1,44 @@
+delete from remark;
+delete from book;
+delete from author;
+delete from genre;
+insert into author(id, full_name)
+values ('Конан Дойл'), ('Агата Кристи'), ('Пушкин А.С.');
+
+insert into genre(id, name)
+values ('Детектив'), ('Роман'), ('Поэма');
+
+insert into book(id, title, author_id, genre_id)
+values ('Шерлок Холмс', 1, 1), ('Восточный экспресс', 2, 1), ('Капитанская дочка', 3, 3);
+
+UPDATE BOOK SET GENRE_ID=2 WHERE ID=3;
+UPDATE BOOK SET AUTHOR_ID=3 WHERE ID=2;
+UPDATE BOOK SET AUTHOR_ID=2 WHERE ID=3;
+
+delete from acl_sid;
+delete from acl_class;
+delete from acl_object_identity;
+delete from acl_entry;
+
+INSERT INTO acl_sid (id, principal, sid) VALUES
+(1, 1, 'admin'),
+(2, 1, 'user'),
+(3, 0, 'ROLE_EDITOR');
+
+INSERT INTO acl_class (id, class) VALUES
+(1, 'ru.otus.spring.models.entities.Book');
+
+INSERT INTO acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES
+(1, 1, 1, NULL, 3, 0),
+(2, 1, 2, NULL, 3, 0),
+(3, 1, 3, NULL, 3, 0);
+
+INSERT INTO acl_entry (id, acl_object_identity, ace_order, sid, mask,
+                       granting, audit_success, audit_failure) VALUES
+(1, 1, 1, 1, 1, 1, 1, 1),
+(2, 1, 2, 1, 2, 1, 1, 1),
+(3, 1, 3, 3, 1, 1, 1, 1),
+(4, 2, 1, 2, 1, 1, 1, 1),
+(5, 2, 2, 3, 1, 1, 1, 1),
+(6, 3, 1, 3, 1, 1, 1, 1),
+(7, 3, 2, 3, 2, 1, 1, 1);

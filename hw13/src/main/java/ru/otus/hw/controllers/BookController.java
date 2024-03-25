@@ -35,14 +35,14 @@ public class BookController {
     }
 
     @GetMapping("/book")
-    public String editPage(@RequestParam("id") String id, Model model) {
+    public String editPage(@RequestParam("id") Long id, Model model) {
         BookDto bookDto;
         String sReturn = "edit";
-        if (id != null && !id.isEmpty() && !id.equals("0")) {
+        if (id != null && !id.equals(0L)) {
             Book book = bookService.findById(id).orElseThrow(NotFoundException::new);
-            bookDto = new BookDto(book.getId(), book.getTitle(), book.getAuthor().getId(), book.getGenre().getId());
+            bookDto = new BookDto(book.getId(), book.getTitle(), book.getAuthor().getId().toString(), book.getGenre().getId().toString());
         } else {
-            bookDto = new BookDto("0", "", null, null);
+            bookDto = new BookDto(0L, "", null, null);
             sReturn = "create";
         }
         model.addAttribute("bookDto", bookDto);
@@ -54,8 +54,8 @@ public class BookController {
     }
 
     @DeleteMapping("/book/{id}")
-    public String deleteBook(@PathVariable("id") String id, Model model) {
-        if (id != null && !id.isEmpty() && !id.equals("0")) {
+    public String deleteBook(@PathVariable("id") Long id, Model model) {
+        if (id != null && !id.equals(0L)) {
             bookService.deleteById(id);
         }
         return "redirect:/";
@@ -65,9 +65,9 @@ public class BookController {
     public String editBook(@PathVariable("id") String id, @Valid @ModelAttribute("bookDto") BookDto bookDto,
                            BindingResult bindingResult, Model model) {
         if (!bindingResult.hasErrors()) {
-            if (bookDto.getId()!=null && !bookDto.getId().isEmpty() && !bookDto.getId().equals("0") &&
-                id != null && !id.isEmpty() && id.equals(bookDto.getId())) {
-                bookService.update(bookDto.getId(), bookDto.getTitle(), bookDto.getAuthorId(), bookDto.getGenreId());
+            if (bookDto.getId()!=null && !bookDto.getId().equals("0") &&
+                id != null && id.equals(bookDto.getId())) {
+                bookService.update(bookDto.getId(), bookDto.getTitle(), Long.getLong(bookDto.getAuthorId()), Long.getLong(bookDto.getGenreId()));
                 return "redirect:/";
             } else {
                 return "create";
@@ -85,8 +85,8 @@ public class BookController {
     public String createBook(@Valid @ModelAttribute("bookDto") BookDto bookDto,
                              BindingResult bindingResult, Model model) {
         if (!bindingResult.hasErrors()) {
-            if (bookDto.getId()==null || bookDto.getId().isEmpty() || bookDto.getId().equals("0")) {
-                bookService.insert(bookDto.getTitle(), bookDto.getAuthorId(), bookDto.getGenreId());
+            if (bookDto.getId()==null || bookDto.getId().equals("0")) {
+                bookService.insert(bookDto.getTitle(), Long.getLong(bookDto.getAuthorId()), Long.getLong(bookDto.getGenreId()));
             }
             return "redirect:/";
         } else {

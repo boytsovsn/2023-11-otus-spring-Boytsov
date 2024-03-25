@@ -6,6 +6,6 @@ import ru.otus.hw.models.entities.Genre;
 @Component
 public class GenreConverter {
     public String genreToString(Genre genre) {
-        return "[Id: %s, Name: %s]".formatted(genre.getId(), genre.getName());
+        return "[Id: %d, Name: %s]".formatted(genre.getId(), genre.getName());
     }
 }

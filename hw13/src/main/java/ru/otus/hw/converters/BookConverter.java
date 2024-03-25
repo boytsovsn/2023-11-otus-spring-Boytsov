@@ -14,7 +14,7 @@ public class BookConverter {
     private final RemarkConverter remarkConverter;
 
     public String bookToString(Book book) {
-        return "[Id: %s, title: %s, author: %s, genres: %s, remarks: [%s]]".formatted(
+        return "[Id: %d, title: %s, author: %s, genres: %s, remarks: [%s]]".formatted(
                 book.getId(),
                 book.getTitle(),
                 authorConverter.authorToString(book.getAuthor()),

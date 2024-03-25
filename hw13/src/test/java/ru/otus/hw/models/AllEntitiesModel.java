@@ -1,4 +1,4 @@
-package ru.otus.hw.changelogs.test;
+package ru.otus.hw.models;
 
 import ru.otus.hw.models.entities.Author;
 import ru.otus.hw.models.entities.Book;

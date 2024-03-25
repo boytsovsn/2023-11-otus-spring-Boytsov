@@ -19,7 +19,7 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
-    public Optional<Author> findById(String id) {
+    public Optional<Author> findById(Long id) {
         return authorRepository.findById(id);
     }
 }

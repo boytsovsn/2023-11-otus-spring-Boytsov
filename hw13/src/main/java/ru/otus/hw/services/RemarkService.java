@@ -7,11 +7,11 @@ import java.util.Optional;
 
 public interface RemarkService {
 
-    List<Remark> findByBookId(String id);
+    List<Remark> findByBookId(Long id);
 
-    Optional<Remark> findById(String id);
+    Optional<Remark> findById(Long id);
 
-    Remark save(String id, String remarkText, String bookId);
+    Remark save(Long id, String remarkText, Long bookId);
 
-    void deleteById(String id);
+    void deleteById(Long id);
 }

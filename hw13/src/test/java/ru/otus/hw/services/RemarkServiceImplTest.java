@@ -4,6 +4,7 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
 import ru.otus.hw.BaseTest;
 import ru.otus.hw.exceptions.EntityNotFoundException;
@@ -17,9 +18,9 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@DataMongoTest
+@DataJpaTest
 @EnableConfigurationProperties
-@ComponentScan({"ru.otus.hw.changelogs.test", "ru.otus.hw.repositories", "ru.otus.hw.services"})
+@ComponentScan({"ru.otus.hw.models", "ru.otus.hw.repositories", "ru.otus.hw.services"})
 @DisplayName("Сервисы для Remark")
 class RemarkServiceImplTest extends BaseTest {
 
@@ -29,9 +30,9 @@ class RemarkServiceImplTest extends BaseTest {
     @Autowired
     private BookRepository bookRepository;
 
-    private static String insertedRemarkId;
+    private static Long insertedRemarkId;
 
-    private static String updatedRemarkId;
+    private static Long updatedRemarkId;
 
     private final int insertToBookN = 2;
 
@@ -39,7 +40,7 @@ class RemarkServiceImplTest extends BaseTest {
 
     @BeforeEach
     public void setUp() {
-        testN = 1;
+        testN = 0;
         super.setUp(testN);
     }
 
@@ -72,7 +73,7 @@ class RemarkServiceImplTest extends BaseTest {
         insertedRemarkId = returnedRemark.getId();
         newRemark.setId(returnedRemark.getId());
         assertThat(returnedRemark).isNotNull()
-                .matches(remark -> remark.getId() != null && remark.getId().length() > 0)
+                .matches(remark -> remark.getId() != null && remark.getId() > 0)
                 .isEqualTo(newRemark);
         Optional<Remark> expectedRemark = remarkServiceImpl.findById(returnedRemark.getId());
         assertThat(expectedRemark)
@@ -98,7 +99,7 @@ class RemarkServiceImplTest extends BaseTest {
 
         var returnedRemark = remarkServiceImpl.save(updatedRemarkId, "Remark_10500", forBook.getId());
         assertThat(returnedRemark).isNotNull()
-                .matches(remark -> remark.getId() != null && remark.getId().length() > 0)
+                .matches(remark -> remark.getId() != null && remark.getId() > 0)
                 .isEqualTo(updatedRemark);
 
         Remark expectedRemark = remarkServiceImpl.findById(returnedRemark.getId()).get();
@@ -137,7 +138,7 @@ class RemarkServiceImplTest extends BaseTest {
     void deleteById() {
         Book insertToBook = dbBooks.get(insertToBookN-1);
         var returnedRemark = remarkServiceImpl.save(null, "Remark_100500", insertToBook.getId());
-        String deletedRemarkId = returnedRemark.getId();
+        Long deletedRemarkId = returnedRemark.getId();
         assertThat(remarkServiceImpl.findById(deletedRemarkId)).isPresent();
         var remark = remarkServiceImpl.findById(deletedRemarkId);
         remarkServiceImpl.deleteById(deletedRemarkId);

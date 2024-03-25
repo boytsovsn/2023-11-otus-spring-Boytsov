@@ -25,7 +25,7 @@ public class BookServiceImpl implements BookService {
     private final RemarkService remarkServiceImpl;
 
     @Override
-    public Optional<Book> findById(String id) {
+    public Optional<Book> findById(Long id) {
         var book = bookRepository.findById(id);
         return book;
     }
@@ -37,30 +37,30 @@ public class BookServiceImpl implements BookService {
 
     @Transactional
     @Override
-    public Book insert(String title, String authorId, String genreId) {
+    public Book insert(String title, Long authorId, Long genreId) {
         return save(null, title, authorId, genreId);
     }
 
     @Transactional
     @Override
-    public Book update(String id, String title, String authorId, String genreId) {
+    public Book update(Long id, String title, Long authorId, Long genreId) {
         return save(id, title, authorId, genreId);
     }
 
     @Override
-    public void deleteById(String id) {
+    public void deleteById(Long id) {
         for (Remark remark: remarkServiceImpl.findByBookId(id))
             remarkServiceImpl.deleteById(remark.getId());
         bookRepository.deleteById(id);
     }
 
-    private Book save(String id, String title, String authorId, String genreId) {
+    private Book save(Long id, String title, Long authorId, Long genreId) {
         var author = authorRepository.findById(authorId)
                 .orElseThrow(() -> new EntityNotFoundException("Author with id %s not found".formatted(authorId)));
         var genre = genreRepository.findById(genreId)
                 .orElseThrow(() -> new EntityNotFoundException("Genre with id %s not found".formatted(genreId)));
         Book book;
-        if (id!=null && !id.isEmpty() && !id.equalsIgnoreCase("0")) {
+        if (id!=null && !id.equals(0L)) {
             var remarks = remarkServiceImpl.findByBookId(id);
             book = new Book(id, title, author, genre, remarks);
         } else {

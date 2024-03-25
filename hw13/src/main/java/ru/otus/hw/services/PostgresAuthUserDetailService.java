@@ -7,20 +7,20 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import ru.otus.hw.models.entities.User;
+import ru.otus.hw.models.entities.Users;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @RequiredArgsConstructor
 @Service
-public class MongoAuthUserDetailService  implements UserDetailsService {
+public class PostgresAuthUserDetailService implements UserDetailsService {
 
-    private final UserService userService;
+    private final UsersService userService;
 
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
-        User user = userService.findUserByUsername(userName);
+        Users user = userService.findUserByUsername(userName);
         Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
         user.getAuthorities()
                 .forEach(role -> grantedAuthorities.add(new SimpleGrantedAuthority(role.getAuthority())));

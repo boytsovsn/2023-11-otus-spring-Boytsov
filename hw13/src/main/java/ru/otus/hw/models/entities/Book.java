@@ -1,12 +1,11 @@
 package ru.otus.hw.models.entities;
 
 
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
-import org.springframework.data.mongodb.core.mapping.Document;
+
 
 import java.util.Arrays;
 import java.util.List;
@@ -14,20 +13,21 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Document
+@Entity
 public class Book {
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     private String title;
 
-    @DBRef
+    @ManyToOne
     private Author author;
 
-    @DBRef
+    @ManyToOne
     private Genre genre;
 
-    @DBRef
+    @OneToMany(mappedBy="book", targetEntity = Remark.class, orphanRemoval = true)
     private List<Remark> remarks;
 
     public Book(String title, Author author, Genre genre, Remark... remarks) {

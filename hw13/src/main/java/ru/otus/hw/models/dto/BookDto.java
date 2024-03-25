@@ -12,7 +12,7 @@ import ru.otus.hw.models.entities.Genre;
 @AllArgsConstructor
 public class BookDto {
 
-    private String id;
+    private Long id;
 
     @NotBlank(message = "{field-should-not-be-blank}")
     @Size(min = 2, max = 50, message = "{string-field-should-has-expected-size}")
@@ -27,10 +27,10 @@ public class BookDto {
     private String genreId;
 
     public Book toDomainObject(){
-        return new Book(id, title, new Author(authorId, null), new Genre(genreId, null), null);
+        return new Book(id, title, new Author(Long.getLong(authorId), null), new Genre(Long.getLong(genreId), null), null);
     }
 
     public static BookDto fromDomainObject(Book book) {
-        return new BookDto(book.getId(), book.getTitle(), book.getAuthor().getId(), book.getGenre().getId());
+        return new BookDto(book.getId(), book.getTitle(), book.getAuthor().getId().toString(), book.getGenre().getId().toString());
     }
 }

@@ -1,23 +1,23 @@
 package ru.otus.hw.models.entities;
 
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
-import org.springframework.data.mongodb.core.mapping.Document;
+
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Document
+@Entity
 public class Remark {
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     private String remarkText;
 
-    @DBRef
+    @ManyToOne
     private Book book;
 
     public Remark(String text, Book book) {
@@ -27,7 +27,7 @@ public class Remark {
 
     @Override
     public String toString() {
-        return "Remark id = %s, remarkText = %s, book id = %s".formatted(id, remarkText, book.getId());
+        return "Remark id = %d, remarkText = %s, book id = %d".formatted(id, remarkText, book.getId());
     }
 
     @Override
@@ -54,5 +54,13 @@ public class Remark {
         hash = hash*17 + remarkText.hashCode();
         hash = hash*17 + book.getId().hashCode();
         return hash;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getId() {
+        return id;
     }
 }
