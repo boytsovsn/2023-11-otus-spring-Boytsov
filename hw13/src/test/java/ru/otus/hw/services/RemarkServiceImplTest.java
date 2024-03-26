@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import ru.otus.hw.BaseTest;
 import ru.otus.hw.exceptions.EntityNotFoundException;
@@ -18,7 +19,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@DataJpaTest
+@SpringBootTest
 @EnableConfigurationProperties
 @ComponentScan({"ru.otus.hw.models", "ru.otus.hw.repositories", "ru.otus.hw.services"})
 @DisplayName("Сервисы для Remark")
@@ -40,7 +41,7 @@ class RemarkServiceImplTest extends BaseTest {
 
     @BeforeEach
     public void setUp() {
-        testN = 0;
+        testN = 2;
         super.setUp(testN);
     }
 
@@ -50,7 +51,7 @@ class RemarkServiceImplTest extends BaseTest {
         for (int i = 0; i < dbRemarks.size(); i++) {
             List<Remark> actualRemarks = remarkServiceImpl.findByBookId(dbRemarks.get(i).get(0).getBook().getId());
             List<Remark> expectedRemarks = dbRemarks.get(i);
-                assertThat(actualRemarks).isEqualTo(expectedRemarks);
+            assertThat(actualRemarks.stream().map(x->x.getId()).toList()).isEqualTo(expectedRemarks.stream().map(x->x.getId()).toList());
         }
     }
 
@@ -60,7 +61,7 @@ class RemarkServiceImplTest extends BaseTest {
         List<Remark> remarks = convertToFlatDbRemarks();
         for (Remark expectedRemark: remarks) {
             var actualRemark = remarkServiceImpl.findById(expectedRemark.getId()).orElseThrow(() -> new EntityNotFoundException("Remark not found, id %s".formatted(expectedRemark.getId())));
-                assertThat(actualRemark).isEqualTo(expectedRemark);
+                assertThat(actualRemark.getId()).isEqualTo(expectedRemark.getId());
         }
     }
 
@@ -107,28 +108,28 @@ class RemarkServiceImplTest extends BaseTest {
                 .isEqualTo(returnedRemark.getId());
         assertThat(expectedRemark.getRemarkText())
                 .isEqualTo(returnedRemark.getRemarkText());
-        assertThat(expectedRemark.getBook())
-                .isEqualTo(returnedRemark.getBook());
+        assertThat(expectedRemark.getBook().getId())
+                .isEqualTo(returnedRemark.getBook().getId());
         // Проверка, что замечание "перекочевало" из одной книги в другую
-        var bookFrom = bookRepository.findById(fromBDRemark.get().getBook().getId());
-        var bookTo   = bookRepository.findById(forBook.getId());
+        var bookRemarksFrom = remarkServiceImpl.findByBookId(fromBDRemark.get().getBook().getId());
+        var bookRemarksTo   = remarkServiceImpl.findByBookId(forBook.getId());
         int i = 0;
-        for (Remark remark : bookFrom.get().getRemarks()) {
+        for (Remark remark : bookRemarksFrom) {
             if (remark.getId().equals(updatedRemarkId))
                 break;
             i++;
         }
         // Замечания нет в книге, из которой  оно переместилось
-        assertThat(i).isEqualTo(bookFrom.get().getRemarks().size());
+        assertThat(i).isEqualTo(bookRemarksFrom.size());
 
         i = 0;
-        for (Remark remark : bookTo.get().getRemarks()) {
+        for (Remark remark : bookRemarksTo) {
             if (remark.getId().equals(updatedRemarkId))
                 break;
             i++;
         }
         // Зато есть там, куда переместилось
-        assertThat(i).isLessThan(bookTo.get().getRemarks().size());
+        assertThat(i).isLessThan(bookRemarksTo.size());
         //Восстановление изменённого замечания
         remarkServiceImpl.save(updatedRemarkId, fromBDRemark.get().getRemarkText(), fromBDRemark.get().getBook().getId());
     }

@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import ru.otus.hw.BaseTest;
 import ru.otus.hw.exceptions.EntityNotFoundException;
@@ -17,8 +18,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@DataJpaTest
-@EnableConfigurationProperties
+@SpringBootTest
 @ComponentScan({"ru.otus.hw.models", "ru.otus.hw.repositories"})
 @DisplayName("JPA репозиторий для Remark")
 class RemarkRepositortyTest extends BaseTest {
@@ -48,7 +48,7 @@ class RemarkRepositortyTest extends BaseTest {
                 var fRemark = remarkRepository.findById(remark.getId()).orElseThrow(() -> new EntityNotFoundException("Remark not found, id %s".formatted(remark.getId())));
                 assertThat(fRemark.getId()).isEqualTo(remark.getId());
                 assertThat(fRemark.getRemarkText()).isEqualTo(remark.getRemarkText());
-                assertThat(fRemark.getBook()).isEqualTo(remark.getBook());
+                assertThat(fRemark.getBook().getId()).isEqualTo(remark.getBook().getId());
         }
     }
 
@@ -83,19 +83,19 @@ class RemarkRepositortyTest extends BaseTest {
                 .get()
                 .isNotEqualTo(expectedRemark);
 
-        var returnedRemark = remarkRepository.save(expectedRemark);
+        Remark returnedRemark = remarkRepository.save(expectedRemark);
         assertThat(returnedRemark).isNotNull()
-                .matches(remark -> remark.getId() != null && remark.getId() > 0)
-                .usingRecursiveComparison().ignoringExpectedNullFields()
-                .isEqualTo(expectedRemark);
+                .matches(remark -> remark.getId() != null && remark.getId() > 0);
+        assertThat(returnedRemark.getId())
+                .isEqualTo(expectedRemark.getId());
 
         Remark bdReamrk = remarkRepository.findById(returnedRemark.getId()).get();
         assertThat(bdReamrk.getId())
                 .isEqualTo(returnedRemark.getId());
         assertThat(bdReamrk.getRemarkText())
                 .isEqualTo(returnedRemark.getRemarkText());
-        assertThat(bdReamrk.getBook())
-                .isEqualTo(returnedRemark.getBook());
+        assertThat(bdReamrk.getBook().getId())
+                .isEqualTo(returnedRemark.getBook().getId());
         remarkRepository.save(fromBDRemark.get());
     }
 

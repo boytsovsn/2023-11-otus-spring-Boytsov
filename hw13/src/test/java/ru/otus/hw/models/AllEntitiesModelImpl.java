@@ -2,11 +2,17 @@ package ru.otus.hw.models;
 
 import jakarta.annotation.PostConstruct;
 import lombok.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
 import ru.otus.hw.models.entities.Author;
 import ru.otus.hw.models.entities.Book;
 import ru.otus.hw.models.entities.Genre;
 import ru.otus.hw.models.entities.Remark;
+import ru.otus.hw.repositories.AuthorRepository;
+import ru.otus.hw.repositories.BookRepository;
+import ru.otus.hw.repositories.GenreRepository;
+import ru.otus.hw.repositories.RemarkRepository;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,10 +21,11 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
+@ComponentScan({"ru.otus.hw.models", "ru.otus.hw.repositories"})
 public class AllEntitiesModelImpl implements AllEntitiesModel {
 
     //Количество тестов и наборов данных для тестирования
-    private final int testsCount = 1;
+    private final int testsCount = 4;
 
     private Map<Integer, List<Author>> authors;
 
@@ -28,8 +35,21 @@ public class AllEntitiesModelImpl implements AllEntitiesModel {
 
     private Map<Integer, List<Book>> books;
 
+    @Autowired
+    AuthorRepository authorRepository;
+
+    @Autowired
+    GenreRepository genreRepository;
+
+    @Autowired
+    BookRepository bookRepository;
+
+    @Autowired
+    RemarkRepository remarkRepository;
+
     @PostConstruct
     private void init() {
+        deleteAll();
         initAuthor();
         initGenre();
         initBooks();
@@ -77,15 +97,22 @@ public class AllEntitiesModelImpl implements AllEntitiesModel {
         return books;
     }
 
+    public void deleteAll() {
+        remarkRepository.deleteAll();
+        bookRepository.deleteAll();
+        authorRepository.deleteAll();
+        genreRepository.deleteAll();
+    }
+
     public void initAuthor() {
         Map<Integer, List<Author>> authorsMap = new HashMap<Integer, List<Author>>();
         setAuthors(authorsMap);
         long j=1;
         for (Integer i = 0; i < testsCount; i++) {
             List<Author> authors = new ArrayList<>();
-            authors.add(new Author(j++, "Author_1"));
-            authors.add(new Author(j++,"Author_2"));
-            authors.add(new Author(j++,"Author_3"));
+            authors.add(authorRepository.save(new Author(j++, "Author_1")));
+            authors.add(authorRepository.save(new Author(j++,"Author_2")));
+            authors.add(authorRepository.save(new Author(j++,"Author_3")));
             getAuthors().put(i, authors);
         }
     }
@@ -96,9 +123,9 @@ public class AllEntitiesModelImpl implements AllEntitiesModel {
         long j=1;
         for (Integer i = 0; i < testsCount; i++) {
             List<Genre> genres = new ArrayList<>();
-            genres.add(new Genre(j++,"Genre_1"));
-            genres.add(new Genre(j++,"Genre_2"));
-            genres.add(new Genre(j++,"Genre_3"));
+            genres.add(genreRepository.save(new Genre(j++,"Genre_1")));
+            genres.add(genreRepository.save(new Genre(j++,"Genre_2")));
+            genres.add(genreRepository.save(new Genre(j++,"Genre_3")));
             getGenres().put(i, genres);
         }
     }
@@ -111,9 +138,9 @@ public class AllEntitiesModelImpl implements AllEntitiesModel {
             List<Book> books = new ArrayList<>();
             List<Author> authors = getAuthors().get(i);
             List<Genre> genres = getGenres().get(i);
-            books.add(new Book(j++, "BookTitle_1", authors.get(0), genres.get(0), null));
-            books.add(new Book(j++, "BookTitle_2", authors.get(1), genres.get(1), null));
-            books.add(new Book(j++, "BookTitle_3", authors.get(2), genres.get(2), null));
+            books.add(bookRepository.save(new Book(j++, "BookTitle_1", authors.get(0), genres.get(0), null)));
+            books.add(bookRepository.save(new Book(j++, "BookTitle_2", authors.get(1), genres.get(1), null)));
+            books.add(bookRepository.save(new Book(j++, "BookTitle_3", authors.get(2), genres.get(2), null)));
             getBooks().put(i, books);
         }
     }
@@ -125,12 +152,12 @@ public class AllEntitiesModelImpl implements AllEntitiesModel {
         for (Integer i = 0; i < testsCount; i++) {
             List<Remark> remarks = new ArrayList<>();
             List<Book> books = getBooks().get(i);
-            remarks.add(new Remark(j++, "Remark_11", books.get(0)));
-            remarks.add(new Remark(j++, "Remark_21", books.get(1)));
-            remarks.add(new Remark(j++, "Remark_22", books.get(1)));
-            remarks.add(new Remark(j++, "Remark_31", books.get(2)));
-            remarks.add(new Remark(j++, "Remark_32", books.get(2)));
-            remarks.add(new Remark(j++, "Remark_33", books.get(2)));
+            remarks.add(remarkRepository.save(new Remark(j++, "Remark_11", books.get(0))));
+            remarks.add(remarkRepository.save(new Remark(j++, "Remark_21", books.get(1))));
+            remarks.add(remarkRepository.save(new Remark(j++, "Remark_22", books.get(1))));
+            remarks.add(remarkRepository.save(new Remark(j++, "Remark_31", books.get(2))));
+            remarks.add(remarkRepository.save(new Remark(j++, "Remark_32", books.get(2))));
+            remarks.add(remarkRepository.save(new Remark(j++, "Remark_33", books.get(2))));
             getRemarks().put(i, remarks);
         }
     }
@@ -149,6 +176,9 @@ public class AllEntitiesModelImpl implements AllEntitiesModel {
             books.get(2).getRemarks().add(remarks.get(4));
             books.get(2).getRemarks().add(remarks.get(5));
             getBooks().replace(i, books);
+            for (Book book : books) {
+                bookRepository.save(book);
+            }
         }
     }
 

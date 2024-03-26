@@ -5,7 +5,7 @@ import ru.otus.hw.models.entities.Book;
 
 import java.util.List;
 
-public interface BookRepository extends CrudRepository<Book, Long> {
+public interface BookRepository extends BookRepositoryCustom, CrudRepository<Book, Long> {
 
     List<Book> findAll();
 }

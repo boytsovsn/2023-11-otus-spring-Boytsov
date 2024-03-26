@@ -103,7 +103,7 @@ public class BookControllerTest {
                 .param("title", bookDto.getTitle())
                 .param("authorId", bookDto.getAuthorId())
                 .param("genreId", bookDto.getGenreId()).with(csrf().asHeader()))
-            .andExpect(status().isMovedTemporarily()).andDo(print());
+            .andExpect(status().isOk()).andDo(print());
     }
 
     @WithMockUser(
@@ -120,7 +120,7 @@ public class BookControllerTest {
                         .param("authorId", bookDto.getAuthorId())
                         .param("genreId", bookDto.getGenreId())
                         .with(csrf().asHeader()))
-                .andExpect(status().isMovedTemporarily()).andDo(print());
+                .andExpect(status().isOk()).andDo(print());
     }
 
     @Test

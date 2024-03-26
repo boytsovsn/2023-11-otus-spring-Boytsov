@@ -12,9 +12,9 @@ import static ru.otus.hw.models.entities.Privilege.*;
 
 @RequiredArgsConstructor
 public enum Role {
-
-    ADMIN(Set.of(READ_PRIVILEGE, CREATE_PRIVILEGE, UPDATE_PRIVILEGE, DELETE_PRIVILEGE)),
-    USER(Set.of(READ_PRIVILEGE));
+    EDITOR(Set.of(READ_PRIVILEGE, CREATE_PRIVILEGE, UPDATE_PRIVILEGE, DELETE_PRIVILEGE)),
+    USER(Set.of(READ_PRIVILEGE)),
+    SOMEONE(Set.of(CREATE_PRIVILEGE, DELETE_PRIVILEGE)),;
 
     @Getter
     private final Set<Privilege> privileges;

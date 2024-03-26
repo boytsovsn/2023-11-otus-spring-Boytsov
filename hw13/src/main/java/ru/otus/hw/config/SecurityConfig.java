@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -29,11 +30,10 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests( ( authorize ) -> authorize
-                        .requestMatchers(  "/error", "/*.css", "/*.png", "/h2-console*", "/h2-console/**").permitAll()
+                        .requestMatchers( "/error", "/*.css", "/*.png").permitAll()
                         .requestMatchers( "/" ).authenticated()
-                        .requestMatchers( "/list", "/book*" ).hasAnyRole("ADMIN", "USER")
-                        .requestMatchers( "/book/*" ).hasAnyRole("ADMIN")
-                  )
+                        .requestMatchers( "/list", "/book*", "/book/*").hasAnyRole("EDITOR", "USER", "SOMEONE")
+                )
                 .formLogin(Customizer.withDefaults())
         ;
         return http.build();
@@ -41,8 +41,8 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-        //return NoOpPasswordEncoder.getInstance();
+//        return new BCryptPasswordEncoder();
+        return NoOpPasswordEncoder.getInstance();
     }
 
     public SecurityConfig(UserDetailsService userDetailsService) {

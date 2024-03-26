@@ -49,8 +49,6 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public void deleteById(Long id) {
-        for (Remark remark: remarkServiceImpl.findByBookId(id))
-            remarkServiceImpl.deleteById(remark.getId());
         bookRepository.deleteById(id);
     }
 

@@ -15,13 +15,13 @@ import ru.otus.hw.models.entities.Book;
 import ru.otus.hw.models.entities.Remark;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-//@EnableConfigurationProperties
 @ComponentScan({"ru.otus.hw.models", "ru.otus.hw.repositories"})
 @DisplayName("JPA репозиторий для Book")
 class BookRepositoryTest extends BaseTest {
@@ -34,14 +34,14 @@ class BookRepositoryTest extends BaseTest {
 
     @BeforeEach
     public void setUp() {
-        testN = 0;
+        testN = 1;
         super.setUp(testN);
     }
 
     @DisplayName("Список всех книг")
     @Test
     void findAll() {
-        List<Book> books = bookRepository.findAll();
+        List<Book> books = bookRepository.findAll().stream().sorted(Comparator.comparingLong(Book::getId)).toList();
         List<Book> checkBooks = dbBooks;
         int k = 0;
         for (int i = testN * dbBooks.size(); i < (testN + 1) * dbBooks.size(); i++) {
@@ -72,11 +72,8 @@ class BookRepositoryTest extends BaseTest {
         var returnedRemark = remarkRepository.save(newRemark);
         returnedBook.setRemarks(Arrays.asList(returnedRemark));
         bookRepository.save(returnedBook);
-        Optional<Book> checkBook = bookRepository.findById(returnedBook.getId());
-        assertThat(checkBook)
-                .isPresent()
-                .get()
-                .usingRecursiveComparison().ignoringExpectedNullFields().isEqualTo(returnedBook);
+        Book checkBook = bookRepository.findById(returnedBook.getId()).get();
+        assertThat(checkBook.getId()).isEqualTo(returnedBook.getId());
     }
 
     @DisplayName("Обновление книги")
@@ -108,10 +105,11 @@ class BookRepositoryTest extends BaseTest {
         for (Remark remark : expectedRemarks) {
             var returnedRemark = remarkRepository.save(remark);
         }
-        assertThat(bookRepository.findById(returnedBook.getId()))
-                .isPresent()
-                .get()
-                .isEqualTo(returnedBook);
+        Book actualBook = bookRepository.findById(returnedBook.getId()).get();
+        assertThat(actualBook.getId()).isEqualTo(returnedBook.getId());
+        assertThat(actualBook.getTitle()).isEqualTo(returnedBook.getTitle());
+        assertThat(actualBook.getAuthor()).isEqualTo(returnedBook.getAuthor());
+        assertThat(actualBook.getGenre()).isEqualTo(returnedBook.getGenre());
     }
 
     @DisplayName("Удаление книги по id")

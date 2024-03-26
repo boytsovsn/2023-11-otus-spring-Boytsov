@@ -3,22 +3,30 @@ delete from book;
 delete from author;
 delete from genre;
 insert into author(id, full_name)
-values ('Конан Дойл'), ('Агата Кристи'), ('Пушкин А.С.');
+values (1, 'Конан Дойл'), (2, 'Агата Кристи'), (3, 'Пушкин А.С.');
 
 insert into genre(id, name)
-values ('Детектив'), ('Роман'), ('Поэма');
+values (1, 'Детектив'), (2, 'Роман'), (3, 'Поэма');
 
 insert into book(id, title, author_id, genre_id)
-values ('Шерлок Холмс', 1, 1), ('Восточный экспресс', 2, 1), ('Капитанская дочка', 3, 3);
+values (1, 'Шерлок Холмс', 1, 1), (2, 'Восточный экспресс', 2, 1), (3, 'Капитанская дочка', 3, 3);
 
 UPDATE BOOK SET GENRE_ID=2 WHERE ID=3;
 UPDATE BOOK SET AUTHOR_ID=3 WHERE ID=2;
 UPDATE BOOK SET AUTHOR_ID=2 WHERE ID=3;
 
+delete from users;
+
+insert into users(id, login, password, role, lock) values
+(1, 'admin', 'password', 'EDITOR', false),
+(2, 'user', 'password', 'USER', false),
+(3, 'someone', 'password', 'SOMEONE', false);
+
+delete from acl_entry;
+delete from acl_object_identity;
 delete from acl_sid;
 delete from acl_class;
-delete from acl_object_identity;
-delete from acl_entry;
+
 
 INSERT INTO acl_sid (id, principal, sid) VALUES
 (1, 1, 'admin'),

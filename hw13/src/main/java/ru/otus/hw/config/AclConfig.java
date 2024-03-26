@@ -36,20 +36,6 @@ public class AclConfig {
     @Autowired
     private DataSource dataSource;
 
-
-//    @Bean
-//    public DataSource dataSource() {
-//        try {
-//            var dbBuilder = new EmbeddedDatabaseBuilder();
-//            return dbBuilder.setType(EmbeddedDatabaseType.H2)
-//                    .addScripts("classpath:schema1.sql", "classpath:data1sql")
-//                    .build();
-//        } catch (Exception e) {
-//            LOGGER.error("Embedded DataSource bean cannot be created!", e);
-//            return null;
-//        }
-//    }
-
     @Bean
     public AclCache aclCache() {
         return new SpringCacheBasedAclCache(
