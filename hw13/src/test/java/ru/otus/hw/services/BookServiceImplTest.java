@@ -45,7 +45,7 @@ class BookServiceImplTest extends BaseTest {
     @Test
     void findById() {
         for (Book checkBook: dbBooks) {
-            var book = bookServiceImpl.findById(checkBook.getId()).get();
+            Book book = bookServiceImpl.findById(checkBook.getId());
             assertThat(book.getId())
                     .isEqualTo(checkBook.getId());
         }
@@ -76,7 +76,7 @@ class BookServiceImplTest extends BaseTest {
                 .matches(book -> book.getId() != null && book.getId() > 0)
                 .usingRecursiveComparison().ignoringExpectedNullFields().isEqualTo(newBook);
         // Отзывы о книге в книге сохраняются в сервисе RemarkService, поэтому проверку по комментариям не делаем
-        Book checkBook = bookServiceImpl.findById(returnedBook.getId()).get();
+        Book checkBook = bookServiceImpl.findById(returnedBook.getId());
         assertThat(checkBook.getId())
                 .isEqualTo(returnedBook.getId());
     }
@@ -98,8 +98,6 @@ class BookServiceImplTest extends BaseTest {
         var expectedBook = new Book(dbBooks.get(updatedBookN-1).getId(), "BookTitle_10500", dbAuthors.get(fromBookN), dbGenres.get(fromBookN), expectedRemarks);
 
         assertThat(bookServiceImpl.findById(expectedBook.getId()))
-                .isPresent()
-                .get()
                 .isNotEqualTo(expectedBook);
 
         var returnedBook = bookServiceImpl.update(expectedBook.getId(), expectedBook.getTitle(), expectedBook.getAuthor().getId(), expectedBook.getGenre().getId());
@@ -117,12 +115,10 @@ class BookServiceImplTest extends BaseTest {
     @Test
     void deleteById() {
         Long deletedBookId = dbBooks.get(2).getId();
-        var book= bookServiceImpl.findById(deletedBookId);
-        assertThat(book).isPresent();
+        Assertions.assertThrows(EntityNotFoundException.class, () -> {bookServiceImpl.findById(deletedBookId);});
         List<Remark> expectedRemarks = bookServiceImpl.findAll().stream().filter(x->x.getId()==deletedBookId).flatMap(x->x.getRemarks().stream()).toList();
         bookServiceImpl.deleteById(deletedBookId);
-        Throwable exception = Assertions.assertThrows(EntityNotFoundException.class, () -> {bookServiceImpl.findById(deletedBookId)
-                .orElseThrow(()->new EntityNotFoundException("Book with id %s not found".formatted(deletedBookId)));});
+        Throwable exception = Assertions.assertThrows(EntityNotFoundException.class, () -> {bookServiceImpl.findById(deletedBookId);});
         assertEquals("Book with id %s not found".formatted(deletedBookId), exception.getMessage());
         for (Remark expectedRemark: expectedRemarks) {
             var remark = remarkRepository.findById(expectedRemark.getId());

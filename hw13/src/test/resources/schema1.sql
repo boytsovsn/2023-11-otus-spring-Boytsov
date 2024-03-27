@@ -1,3 +1,8 @@
+drop table remark;
+drop table book;
+drop table author;
+drop table genre;
+
 create table author (
                         id bigserial not null,
                         full_name varchar(255),
@@ -26,10 +31,11 @@ alter table if exists book add constraint FKklnrv3weler2ftkweewlky958 foreign ke
 alter table if exists book add constraint FKm1t3yvw5i7olwdf32cwuul7ta foreign key (genre_id) references genre;
 alter table if exists remark add constraint FK3r3qrq3bm49cg50n7na33qf4l foreign key (book_id) references book;
 
+drop table users;
+
 create table users (
-                       lock boolean,
-                       roles smallint check (roles between 0 and 1),
                        id bigserial not null,
+                       lock boolean,
                        email varchar(255),
                        firstname varchar(255),
                        lastname varchar(255),
@@ -40,43 +46,48 @@ create table users (
                        primary key (id)
 );
 
-CREATE TABLE IF NOT EXISTS acl_sid (
-                                       id bigserial NOT NULL,
-                                       principal int NOT NULL,
-                                       sid varchar(100) NOT NULL,
-                                       PRIMARY KEY (id),
-                                       CONSTRAINT unique_uk_1 UNIQUE (sid,principal)
+drop table acl_entry;
+drop table acl_object_identity;
+drop table acl_class;
+drop table acl_sid;
+
+CREATE TABLE acl_sid (
+                         id bigserial NOT NULL,
+                         principal boolean NOT NULL,
+                         sid varchar(100) NOT NULL,
+                         PRIMARY KEY (id),
+                         CONSTRAINT unique_uk_1 UNIQUE (sid,principal)
 );
 
-CREATE TABLE IF NOT EXISTS acl_class (
-                                         id bigserial NOT NULL,
-                                         class varchar(255) NOT NULL,
-                                         PRIMARY KEY (id),
-                                         CONSTRAINT unique_uk_2 UNIQUE (class)
+CREATE TABLE acl_class (
+                           id bigserial NOT NULL,
+                           class varchar(100) NOT NULL,
+                           PRIMARY KEY (id),
+                           CONSTRAINT unique_uk_2 UNIQUE (class)
 );
 
-CREATE TABLE IF NOT EXISTS acl_entry (
-                                         id bigserial NOT NULL,
-                                         acl_object_identity bigint NOT NULL,
-                                         ace_order int NOT NULL,
-                                         sid bigint NOT NULL,
-                                         mask int NOT NULL,
-                                         granting int NOT NULL,
-                                         audit_success int NOT NULL,
-                                         audit_failure int NOT NULL,
-                                         PRIMARY KEY (id),
-                                         CONSTRAINT unique_uk_4 UNIQUE (acl_object_identity,ace_order)
+CREATE TABLE acl_entry (
+                           id bigserial NOT NULL,
+                           acl_object_identity bigint NOT NULL,
+                           ace_order int NOT NULL,
+                           sid bigint NOT NULL,
+                           mask integer NOT NULL,
+                           granting boolean NOT NULL,
+                           audit_success boolean NOT NULL,
+                           audit_failure boolean NOT NULL,
+                           PRIMARY KEY (id),
+                           CONSTRAINT unique_uk_4 UNIQUE (acl_object_identity,ace_order)
 );
 
-CREATE TABLE IF NOT EXISTS acl_object_identity (
-                                                   id bigserial NOT NULL,
-                                                   object_id_class bigint NOT NULL,
-                                                   object_id_identity bigint NOT NULL,
-                                                   parent_object bigint DEFAULT NULL,
-                                                   owner_sid bigint DEFAULT NULL,
-                                                   entries_inheriting int NOT NULL,
-                                                   PRIMARY KEY (id),
-                                                   CONSTRAINT unique_uk_3 UNIQUE (object_id_class,object_id_identity)
+CREATE TABLE acl_object_identity (
+                                     id bigserial NOT NULL,
+                                     object_id_class bigint NOT NULL,
+                                     object_id_identity varchar(36) NOT NULL,
+                                     parent_object bigint DEFAULT NULL,
+                                     owner_sid bigint DEFAULT NULL,
+                                     entries_inheriting boolean NOT NULL,
+                                     PRIMARY KEY (id),
+                                     CONSTRAINT unique_uk_3 UNIQUE (object_id_class,object_id_identity)
 );
 
 ALTER TABLE acl_entry

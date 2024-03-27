@@ -20,7 +20,7 @@ spring:
 #      schema-locations: classpath:schema1.sql
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/testDB
+    url: jdbc:postgresql://localhost:5432/mainDB
     username: usr
     password: pwd
     driver-class-name: org.postgresql.Driver

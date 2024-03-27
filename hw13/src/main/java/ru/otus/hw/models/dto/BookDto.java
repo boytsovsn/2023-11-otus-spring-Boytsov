@@ -19,15 +19,15 @@ public class BookDto {
     private String title;
 
     @NotBlank(message = "{field-should-not-be-blank}")
-    @Size(min = 0, max = 24, message = "{id-field-should-has-expected-size}")
+    @Size(min = 1, max = 24, message = "{id-field-should-has-expected-size}")
     private String authorId;
 
     @NotBlank(message = "{field-should-not-be-blank}")
-    @Size(min = 0, max = 24, message = "{id-field-should-has-expected-size}")
+    @Size(min = 1, max = 24, message = "{id-field-should-has-expected-size}")
     private String genreId;
 
     public Book toDomainObject(){
-        return new Book(id, title, new Author(Long.getLong(authorId), null), new Genre(Long.getLong(genreId), null), null);
+        return new Book(id, title, new Author(Long.valueOf(authorId), null), new Genre(Long.valueOf(genreId), null), null);
     }
 
     public static BookDto fromDomainObject(Book book) {

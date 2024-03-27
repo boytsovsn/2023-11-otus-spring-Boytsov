@@ -39,7 +39,7 @@ public class BookController {
         BookDto bookDto;
         String sReturn = "edit";
         if (id != null && !id.equals(0L)) {
-            Book book = bookService.findById(id).orElseThrow(NotFoundException::new);
+            Book book = bookService.findById(id);
             bookDto = new BookDto(book.getId(), book.getTitle(), book.getAuthor().getId().toString(), book.getGenre().getId().toString());
         } else {
             bookDto = new BookDto(0L, "", null, null);
@@ -56,7 +56,8 @@ public class BookController {
     @DeleteMapping("/book/{id}")
     public String deleteBook(@PathVariable("id") Long id, Model model) {
         if (id != null && !id.equals(0L)) {
-            bookService.deleteById(id);
+            Book book = bookService.findById(id);
+            bookService.delete(book);
         }
         return "redirect:/";
     }
@@ -67,7 +68,7 @@ public class BookController {
         if (!bindingResult.hasErrors()) {
             if (bookDto.getId()!=null && !bookDto.getId().equals(0L) &&
                 id != null && id.equals(bookDto.getId().toString())) {
-                bookService.update(bookDto.getId(), bookDto.getTitle(), Long.valueOf(bookDto.getAuthorId()), Long.valueOf(bookDto.getGenreId()));
+                bookService.update(bookDto.toDomainObject());
                 return "redirect:/";
             } else {
                 return "create";

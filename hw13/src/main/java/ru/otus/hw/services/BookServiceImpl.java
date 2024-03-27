@@ -1,6 +1,8 @@
 package ru.otus.hw.services;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.exceptions.EntityNotFoundException;
@@ -25,8 +27,8 @@ public class BookServiceImpl implements BookService {
     private final RemarkService remarkServiceImpl;
 
     @Override
-    public Optional<Book> findById(Long id) {
-        var book = bookRepository.findById(id);
+    public Book findById(Long id) {
+        Book book = bookRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Book with id %s not found".formatted(id)));;
         return book;
     }
 
@@ -48,8 +50,20 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    public Book update(Book book) {
+        var remarks = remarkServiceImpl.findByBookId(book.getId());
+        book = new Book(book.getId(), book.getTitle(), book.getAuthor(), book.getGenre(), remarks);
+        return bookRepository.save(book);
+    }
+
+    @Override
     public void deleteById(Long id) {
         bookRepository.deleteById(id);
+    }
+
+    @Override
+    public void delete(Book book) {
+        deleteById(book.getId());
     }
 
     private Book save(Long id, String title, Long authorId, Long genreId) {

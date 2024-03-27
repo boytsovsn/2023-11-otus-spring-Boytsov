@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
 
 
 import java.util.Arrays;
@@ -38,4 +39,14 @@ public class Book {
         this.genre = genre;
         this.remarks = Arrays.asList(remarks);
     }
+
+    @Override
+    public String toString() {
+        return "[Id: %d, title: %s, author: %s, genres: %s]".formatted(
+                this.getId(),
+                this.getTitle(),
+                author.toString(),
+                genre.toString());
+    }
+
 }

@@ -19,9 +19,6 @@ import org.springframework.security.web.SecurityFilterChain;
 //@EnableMethodSecurity(securedEnabled = true, jsr250Enabled = true)
 public class SecurityConfig {
 
-//    @Autowired
-//    UserRepository userRepository;
-
     private UserDetailsService userDetailsService;
 
     @Bean
@@ -56,19 +53,4 @@ public class SecurityConfig {
                 .passwordEncoder(passwordEncoder());
         return authenticationManagerBuilder.build();
     }
-
-//    @Bean
-//    public InMemoryUserDetailsManager userDetailsService() {
-//        var users = new ArrayList<UserDetails>();
-//        List<ru.otus.hw.models.entities.User> usersDB = userRepository.findAll();
-//
-//        for (ru.otus.hw.models.entities.User user: usersDB) {
-//            if (user.getLock() != true) {
-//                users.add(User
-//                        .builder().username(user.getUsername()).password(user.getPassword()).roles(user.getRole())
-//                        .build());
-//            }
-//        }
-//        return new InMemoryUserDetailsManager(users);
-//    }
 }

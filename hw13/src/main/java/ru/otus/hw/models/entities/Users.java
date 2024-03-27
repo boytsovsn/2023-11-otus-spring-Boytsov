@@ -38,12 +38,10 @@ public class Users implements UserDetails {
     private Boolean lock;
 
     private String role;
-    @Transient
-    private Role roles;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        roles = Role.valueOf(role);
+        Role roles = Role.valueOf(role);
         return roles.getAuthorities();
     }
 
