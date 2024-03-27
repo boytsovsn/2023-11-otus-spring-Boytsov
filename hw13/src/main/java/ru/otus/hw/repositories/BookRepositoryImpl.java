@@ -2,6 +2,7 @@ package ru.otus.hw.repositories;
 
 import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -33,6 +34,11 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
         var query = em.createQuery("select distinct b from Book b left join fetch b.remarks where b.id = :id", Book.class);
         query.setHint(FETCH.getKey(), entityGraph);
         query.setParameter("id", Id);
-        return Optional.of(query.getSingleResult());
+        try {
+            Book res = query.getSingleResult();
+            return Optional.of(res);
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.security.test.context.support.WithMockUser;
 import ru.otus.hw.BaseTest;
 import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.models.entities.Book;
@@ -51,6 +52,11 @@ class BookServiceImplTest extends BaseTest {
         }
     }
 
+    @WithMockUser(
+            username = "user",
+            password = "password",
+            roles = {"USER"}
+    )
     @DisplayName("Список всех книг")
     @Test
     void findAll() {
