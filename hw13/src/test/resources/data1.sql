@@ -12,6 +12,9 @@ values (1, 'Детектив'), (2, 'Роман'), (3, 'Поэма');
 insert into book(id, title, author_id, genre_id)
 values (1, 'Шерлок Холмс', 1, 1), (2, 'Восточный экспресс', 2, 1), (3, 'Капитанская дочка', 3, 3);
 ALTER SEQUENCE book_id_seq RESTART WITH 4;
+ALTER SEQUENCE remark_id_seq RESTART WITH 1;
+ALTER SEQUENCE author_id_seq RESTART WITH 4;
+ALTER SEQUENCE genre_id_seq RESTART WITH 4;
 
 UPDATE BOOK SET GENRE_ID=2 WHERE ID=3;
 UPDATE BOOK SET AUTHOR_ID=3 WHERE ID=2;

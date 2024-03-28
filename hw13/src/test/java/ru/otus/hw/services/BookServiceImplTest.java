@@ -17,6 +17,7 @@ import ru.otus.hw.models.entities.Book;
 import ru.otus.hw.models.entities.Remark;
 import ru.otus.hw.repositories.RemarkRepository;
 
+import java.nio.file.AccessDeniedException;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -38,7 +39,7 @@ class BookServiceImplTest extends BaseTest {
 
     @BeforeEach
     public void setUp() {
-        testN = 3; //(4 тест, если считать с 0)
+        testN = allEntitiesModelImpl.getTestsCount(); //(номер особых данных теста из предзаписанных данных в БД для тестирования ACL)
         super.setUp(testN);
     }
 
@@ -57,25 +58,43 @@ class BookServiceImplTest extends BaseTest {
             password = "password",
             roles = {"USER"}
     )
-    @DisplayName("Список всех книг")
+    @DisplayName("Список всех книг для user")
     @Test
-    void findAll() {
-        // Список всех книг из БД
+    void findAllForUser() {
+        // Список всех книг из БД для пользователя user (2 книги)
         List<Book> books = bookServiceImpl.findAll().stream().sorted(Comparator.comparingLong(Book::getId)).toList();
-        // Список тестовых книг из набора для 4го теста  (индекс 3 в списке)
+        // Список тестовых книг (3 книги)
         List<Book> checkBooks = dbBooks;
-        int k = 0;
-        // Цикл по списку объектов для 4-го теста (индекс 3 в списке)
-        for (int i = testN * dbBooks.size(); i < (testN + 1) * dbBooks.size(); i++) {
-            assertThat(books.get(i).getId()).isEqualTo(checkBooks.get(k).getId());
-            k++;
-        }
+        assertThat(books.get(0).getId()).usingRecursiveComparison().isEqualTo(checkBooks.get(1).getId());
+        assertThat(books.get(1).getId()).usingRecursiveComparison().isEqualTo(checkBooks.get(2).getId());
     }
 
-    @DisplayName("Вставка книги")
+    @WithMockUser(
+            username = "admin",
+            password = "password",
+            roles = {"USER"}
+    )
+    @DisplayName("Список всех книг для admin")
     @Test
-    void insert() {
-        var newBook = new Book("BookTitle_10500", dbAuthors.get(0), dbGenres.get(1));
+    void findAllForAdmin() {
+        // Список всех книг из БД для пользователя админ (3 книги)
+        List<Book> books = bookServiceImpl.findAll().stream().sorted(Comparator.comparingLong(Book::getId)).toList();
+        // Список тестовых книг (3 книги)
+        List<Book> checkBooks = dbBooks;
+        assertThat(books.get(0).getId()).usingRecursiveComparison().isEqualTo(checkBooks.get(0).getId());
+        assertThat(books.get(1).getId()).usingRecursiveComparison().isEqualTo(checkBooks.get(1).getId());
+        assertThat(books.get(2).getId()).usingRecursiveComparison().isEqualTo(checkBooks.get(3).getId());
+    }
+
+    @WithMockUser(
+            username = "user",
+            password = "password",
+            roles = {"USER"}
+    )
+    @DisplayName("Вставка книги для user")
+    @Test
+    void insertForUser() {
+        var newBook = new Book(4L,"BookTitle_10500", dbAuthors.get(0), dbGenres.get(1), null);
         var returnedBook = bookServiceImpl.insert(newBook.getTitle(), dbAuthors.get(0).getId(), dbGenres.get(1).getId());
         newBook.setId(returnedBook.getId());
         assertThat(returnedBook).isNotNull()
@@ -87,10 +106,15 @@ class BookServiceImplTest extends BaseTest {
                 .isEqualTo(returnedBook.getId());
     }
 
+    @WithMockUser(
+            username = "user",
+            password = "password",
+            roles = {"USER"}
+    )
     @DisplayName("Обновление книги")
     @Test
-    void update() {
-        int updatedBookN = 1;
+    void updateForUserSuccess() {
+        int updatedBookN = 2;
         int fromBookN = 2;
         // dbRemarks - список - списков (список по книгам списков комментариев)
         List<Remark> expectedRemarks = dbRemarks.get(updatedBookN-1);
@@ -106,7 +130,7 @@ class BookServiceImplTest extends BaseTest {
         assertThat(bookServiceImpl.findById(expectedBook.getId()))
                 .isNotEqualTo(expectedBook);
 
-        var returnedBook = bookServiceImpl.update(expectedBook.getId(), expectedBook.getTitle(), expectedBook.getAuthor().getId(), expectedBook.getGenre().getId());
+        var returnedBook = bookServiceImpl.update(expectedBook);
         // Отзывы о книге в книге сохраняются в сервисе RemarkService, поэтому мы здесь комментарии просто
         // присваиваем, чтобы книги стали равны
         returnedBook.setRemarks(expectedRemarks);
@@ -116,6 +140,33 @@ class BookServiceImplTest extends BaseTest {
         // Восстанавливаем изменённую книгу
         bookServiceImpl.update(expectedBook.getId(), dbBooks.get(updatedBookN-1).getTitle(), dbAuthors.get(updatedBookN-1).getId(), dbGenres.get(updatedBookN-1).getId());
     }
+
+    @WithMockUser(
+            username = "admin",
+            password = "password",
+            roles = {"EDITOR"}
+    )
+    @DisplayName("Обновление книги")
+    @Test
+    void updateForAdminUnSuccess() {
+        int updatedBookN = 3;
+        int fromBookN = 2;
+        // dbRemarks - список - списков (список по книгам списков комментариев)
+        List<Remark> expectedRemarks = dbRemarks.get(updatedBookN-1);
+        int i = 0;
+        for (Remark expRemark : expectedRemarks) {
+            if (i >= dbRemarks.get(fromBookN).size())
+                break;
+            expRemark.setRemarkText(dbRemarks.get(fromBookN).get(i).getRemarkText());
+            i++;
+        }
+        var expectedBook = new Book(dbBooks.get(updatedBookN-1).getId(), "BookTitle_10500", dbAuthors.get(fromBookN), dbGenres.get(fromBookN), expectedRemarks);
+
+        assertThat(bookServiceImpl.findById(expectedBook.getId()))
+                .isNotEqualTo(expectedBook);
+
+        Throwable exception = Assertions.assertThrows(org.springframework.security.access.AccessDeniedException.class, () -> {var returnedBook = bookServiceImpl.update(expectedBook);});
+   }
 
     @DisplayName("Удаление книги")
     @Test

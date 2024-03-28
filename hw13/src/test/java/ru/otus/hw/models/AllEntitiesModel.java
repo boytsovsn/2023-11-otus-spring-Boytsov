@@ -24,4 +24,8 @@ public interface AllEntitiesModel {
     Map<Integer, List<Remark>> getRemarks();
 
     Map<Integer, List<Book>>   getBooks();
+
+    void init(int nTest);
+
+    int getTestsCount();
 }

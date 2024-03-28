@@ -1,7 +1,7 @@
--- drop table remark;
--- drop table book;
--- drop table author;
--- drop table genre;
+--drop table remark;
+--drop table book;
+--drop table author;
+--drop table genre;
 
 create table author (
                         id bigserial not null,
@@ -31,7 +31,7 @@ alter table if exists book add constraint FKklnrv3weler2ftkweewlky958 foreign ke
 alter table if exists book add constraint FKm1t3yvw5i7olwdf32cwuul7ta foreign key (genre_id) references genre;
 alter table if exists remark add constraint FK3r3qrq3bm49cg50n7na33qf4l foreign key (book_id) references book;
 
--- drop table users;
+--drop table users;
 
 create table users (
                        id bigserial not null,
@@ -46,10 +46,10 @@ create table users (
                        primary key (id)
 );
 
--- drop table acl_entry;
--- drop table acl_object_identity;
--- drop table acl_class;
--- drop table acl_sid;
+--drop table acl_entry;
+--drop table acl_object_identity;
+--drop table acl_class;
+--drop table acl_sid;
 
 CREATE TABLE acl_sid (
                          id bigserial NOT NULL,

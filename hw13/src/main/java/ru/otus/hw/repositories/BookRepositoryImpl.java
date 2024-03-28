@@ -4,7 +4,9 @@ import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Component;
 import ru.otus.hw.models.entities.Book;
 
@@ -41,4 +43,12 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
             return Optional.empty();
         }
     }
+
+    @Override
+    @Transactional
+    public void resetSequence() {
+        String queryStr = "ALTER SEQUENCE book_id_seq RESTART WITH 4";
+        var query = em.createNativeQuery(queryStr).executeUpdate();
+    }
+
 }

@@ -28,10 +28,18 @@ public class BaseTest {
     protected int testN;
 
     public void setUp(int testN) {
-        dbAuthors = getDbAuthors(testN);
-        dbGenres = getDbGenres(testN);
-        dbRemarks = getDbRemarks(testN);
-        dbBooks = getDbBooks(testN, dbAuthors, dbGenres, dbRemarks);
+        allEntitiesModelImpl.init(testN);
+        if (testN < allEntitiesModelImpl.getTestsCount()) {
+            dbAuthors = getDbAuthors(testN);
+            dbGenres = getDbGenres(testN);
+            dbRemarks = getDbRemarks(testN, testN);
+            dbBooks = getDbBooks(testN, dbAuthors, dbGenres, dbRemarks);
+        } else if (testN == allEntitiesModelImpl.getTestsCount()) {   //тесты для ACL Security
+            dbAuthors = allEntitiesModelImpl.getAuthors().get(testN);
+            dbGenres = allEntitiesModelImpl.getGenres().get(testN);
+            dbRemarks = getDbRemarks(testN, testN);
+            dbBooks = getDbACLBooks(testN, dbAuthors, dbGenres, dbRemarks);
+        }
     }
 
     protected List<Remark> convertToFlatDbRemarks() {
@@ -50,16 +58,22 @@ public class BaseTest {
                 .toList();
     }
 
-    protected List<List<Remark>> getDbRemarks(int t) {
+    protected List<List<Remark>> getDbRemarks(int t, int t1) {
         return IntStream.range(1, 4).boxed()
                 .map(id -> IntStream.range(1, id+1).boxed()
-                        .map(id1 -> new Remark(allEntitiesModelImpl.getRemarks().get(t).get(id*(id - 1)/2 + id1 - 1).getId(), "Remark_"+id+id1, allEntitiesModelImpl.getBooks().get(t).get(id - 1))).toList())
+                        .map(id1 -> new Remark(allEntitiesModelImpl.getRemarks().get(t).get(id*(id - 1)/2 + id1 - 1).getId(), "Remark_"+id+id1, allEntitiesModelImpl.getBooks().get(t1).get(id - 1))).toList())
                 .toList();
     }
 
     protected List<Book> getDbBooks(int t, List<Author> _dbAuthors, List<Genre> _dbGenres, List<List<Remark>> _dbRemarks) {
         return IntStream.range(1, 4).boxed()
                 .map(id -> new Book(allEntitiesModelImpl.getBooks().get(t).get(id-1).getId(), "BookTitle_" + id, _dbAuthors.get(id - 1), _dbGenres.get(id - 1), _dbRemarks.get(id - 1)))
+                .toList();
+    }
+
+    protected List<Book> getDbACLBooks(int t, List<Author> _dbAuthors, List<Genre> _dbGenres, List<List<Remark>> _dbRemarks) {
+        return IntStream.range(1, 4).boxed()
+                .map(id -> new Book(allEntitiesModelImpl.getBooks().get(t).get(id-1).getId(), allEntitiesModelImpl.getBooks().get(t).get(id-1).getTitle(), _dbAuthors.get(id - 1), _dbGenres.get(id - 1), _dbRemarks.get(id - 1)))
                 .toList();
     }
 
